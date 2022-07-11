@@ -1,1 +1,436 @@
-{"id":"id_81f546c0-47fd-4652-b3c4-424b40f78739","commandId":"62aaf3e8d316833cf19c2603","label":"Cart Header","image":{"src":"","width":0,"height":0},"addonIds":[],"currentVersion":"1","versionId":"8d9b3ffa-af7f-4e27-b39c-a1b8ff472258","data":{"js":"\r\nveda.plugins.countdown(container);\r\nveda.plugins.slider({\r\n  el: container.querySelector('.veda-slider'),\r\n  min: 0,\r\n  max: 500,\r\n  step: 1,\r\n  range: false,\r\n  value: [100, 200],\r\n  onChange: value => {\r\n  },\r\n  onChanged: value => {\r\n  }\r\n});\r\n","liquid":"{% liquid\r\n  if section_settings.background_fixed assign backgroundFixed = 'fixed' else assign backgroundFixed = 'scroll' endif\r\n  if section_settings.background_type == 'color' assign backgroundColor = 'background-color: ' | append: section_settings.background_color | append: ';' else assign backgroundColor = '' endif\r\n  if section_settings.background_type == 'image' assign backgroundImage = 'background-image: url(' | append: section_settings.background_image | append:\r\n  ');background-attachment: ' | append: backgroundFixed | append: ';background-size: ' | append: section_settings.background_size | append: ';' else assign backgroundImage = '' endif\r\n  assign sectionPadding = 'padding-top: ' | append: section_settings.padding.top | append: 'px;padding-right: ' | append: section_settings.padding.right | append: 'px;padding-bottom: ' | append: section_settings.padding.bottom | append: 'px;padding-left: ' | append: section_settings.padding.left | append: 'px;'\r\n%}\r\n\r\n\r\n<section data-id=\"{{uniqueId}}\" class=\"\" css=\"{{ backgroundColor }}{{ backgroundImage }}{{ sectionPadding }}\">\r\n  {% if section_settings.background_overlay_enable %}\r\n    <div class=\"pos:absolute ins:0 z:-1\" css=\"background-color: {{ section_settings.background_overlay_color }}\"></div>\r\n  {% endif %}\r\n  <div class=\"fz:15px c:color-gray4 mb:33px ml:5%\">\r\n    <shopify>\r\n      {% unless request.page_type == 'index' or request.page_type == 'list-collections' %}\r\n        <nav role=\"navigation\" aria-label=\"breadcrumbs\">\r\n            <a class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" href=\"{{ routes.root_url }}\" title=\"Home\">Home</a>\r\n            {% if request.page_type contains 'page' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\">></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ page.title }}</span>\r\n            {% elsif request.page_type contains 'product' %}\r\n              {% if collection.url %}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\">></span>\r\n                {{ collection.title | link_to: collection.url }}\r\n              {% endif %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\">></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ product.title }}</span>\r\n            {% elsif request.page_type contains 'collection' and collection.handle %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\">></span>\r\n              {% if current_tags %}\r\n                {% capture url %}/collections/{{ collection.handle }}{% endcapture %}\r\n                {{ collection.title | link_to: url }}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\">></span>\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ current_tags | join: \" + \" }}</span>\r\n              {% else %}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ collection.title }}</span>\r\n              {% endif %}\r\n            {% elsif request.page_type == 'blog' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\">></span>\r\n              {% if current_tags %}\r\n                {{ blog.title | link_to: blog.url }}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\">></span>\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ current_tags | join: \" + \" }}</span>\r\n              {% else %}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ blog.title }}</span>\r\n              {% endif %}\r\n            {% elsif request.page_type == 'article' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\">></span>\r\n              {{ blog.title | link_to: blog.url }}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\">></span>\r\n              <span>{{ article.title }}</span>\r\n            {% elsif request.page_type == 'cart' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\">></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">Cart</span>\r\n            {% else %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\">></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ page_title }}</span>\r\n            {% endif %}\r\n        </nav>\r\n      {% endunless %}\r\n    </shopify>\r\n  </div>\r\n  <div class=\"container\">\r\n    <div class=\"row jc:center\">\r\n      <div class=\"row row-cols-lg-{{ content.column.lg }} row-cols-md-{{ content.column.md }} row-cols-sm-{{ content.column.sm }} row-cols-{{ content.column.xs }}\">\r\n        <div class=\"col\">\r\n          <div class=\"d:flex fld:column jc:center ai:center\">\r\n            <div class=\"mb:30px fz:pfs(25px,35px) fw:500 c:color-gray9 ta:center\">{{content.title}}</div>\r\n            <div class=\"mb:30px fz:pfs(16px,25px) c:color-gray9 ta:center\">{{content.subtitle}}</div>\r\n            {% if content.countdown_enable %}\r\n              <div class=\"mb:30px d:flex jc:center ai:center w:pfs(200px,500px) h:100px  bd:1px_solid_color-gray4 veda-countdown ta:center\" data-options=\"{ timestamp: {{ content.countdown_date | date: \"%s\"}}000 }\">\r\n                <div class=\"fz:pfs(15px,35px) fw:900 veda-countdown__days c:color-gray9\">1</div>\r\n                <div class=\"fz:pfs(13px,23px) c:color-gray4 mr:2px mr:30px@md ml:pfs(2px,7px)  fw:400\">{{content.countdown_days_text}}</div>\r\n                <div class=\"fz:pfs(15px,35px) fw:900 veda-countdown__hours c:color-gray9\">17</div>\r\n                <div class=\"fz:pfs(13px,23px) c:color-gray4 mr:2px mr:30px@md ml:pfs(2px,7px) fw:400\">{{content.countdown_hrs_text}}</div>\r\n                <div class=\"fz:pfs(15px,35px) fw:900 veda-countdown__minutes c:color-gray9\">30</div>\r\n                <div class=\"fz:pfs(13px,23px) c:color-gray4 mr:2px mr:30px@md ml:pfs(2px,7px) fw:400\">{{content.countdown_mins_text}}</div>\r\n                <div class=\"fz:pfs(15px,35px) fw:900 veda-countdown__seconds c:color-gray9\">23</div>\r\n                <div class=\"fz:pfs(13px,23px) c:color-gray4 ml:pfs(2px,7px) fw:400\">{{content.countdown_secs_text}}</div>\r\n              </div>\r\n            {% endif %}\r\n            <div class=\"fz:pfs(15px,20px) mb:30px c:color-gray9 ta:center\">{{content.description}}</div>\r\n            <div class=\"veda-slider w:100% w:580px@md\" >\r\n              <div class=\"veda-slider__thumb w:19px h:19px bgc:#FEAA01\" data-index=\"0\"></div>\r\n              <div class=\"veda-slider__track h:5px\"></div>\r\n              <div class=\"veda-slider__tracked bgc:#FEAA01 h:5px\"></div>\r\n            </div>\r\n          </div>\r\n\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n","schema":{"blocks":[{"id":"id_e022014a-3838-4c3f-a9a9-492075ffa532","children":[{"children":false,"type":"switch","label":"Background Fixed","summary":"","name":"background_fixed","id":"id_c8ad8a93-f876-49a2-afba-8cf501e17c03","disable":false},{"children":"none","type":"select","label":"Background Type","summary":"","name":"background_type","id":"id_e6a95eca-b1d1-4e12-8cad-14680fd84565","disable":false,"options":[{"label":"Image","value":"image","id":"8218d848-671a-4f61-b24e-75616baf061c"},{"label":"Color","value":"color","id":"2da8ba55-42a3-4415-a36a-e4a2977d7e25"},{"label":"None","value":"none","id":"54adb463-72eb-4928-a27d-fa3617cadc62"}]},{"children":"","type":"image","label":"Background Image","summary":"","name":"background_image","id":"id_501da793-fbd3-4da5-84fc-ab2a3c001106","disable":false,"deps":"section_settings.background_type === \"image\""},{"children":"#fff","type":"color","label":"Background Color","summary":"","name":"background_color","id":"id_c87ed1e0-daaf-4a96-b8e5-48f7d2aaaad3","disable":false,"deps":"section_settings.background_type === \"color\""},{"children":"cover","type":"select","label":"Background Size","summary":"","name":"background_size","id":"id_5c2fdb78-382a-4c64-a0fd-c6a542403db9","disable":false,"options":[{"label":"Cover","value":"cover","id":"1fc49524-fc2f-4c6b-9d7e-d45cac47fc1e"},{"label":"Contain","value":"contain","id":"fd2aa9ff-bee4-4062-8806-c16c13d0d729"}]},{"children":false,"type":"switch","label":"Background Overlay Enable","summary":"","name":"background_overlay_enable","id":"id_de06e38e-82a4-49c9-a458-f72e94d923a0","disable":false},{"children":"#fff","type":"color","label":"Background Overlay Color","summary":"","name":"background_overlay_color","id":"id_64b29603-95a7-44c6-ad99-c88eb3dde760","disable":false},{"children":{"left":0},"type":"space","label":"Padding","summary":"","name":"padding","id":"id_3fe1fb9d-222f-42bd-850d-f0130ba9a2ce","disable":false}],"type":"object","label":"Section Settings","summary":"","name":"section_settings","open":false,"drawer":false,"disable":false},{"id":"id_239fcbc7-225a-430c-8756-2e5a95476a28","children":[{"children":"Shopping Cart","type":"text","label":"Title","summary":"","name":"title","id":"id_077562ef-e173-4094-946a-c84e724380ca","disable":false},{"children":"These products are limited, checkout within:","type":"text","label":"Subtitle","summary":"","name":"subtitle","id":"id_037f3783-a7a8-4ac4-aaca-1b9d8825230a","disable":false},{"children":"Buy $69.00 more to enjoy FREE Shipping","type":"text","label":"Description","summary":"","name":"description","id":"id_15803c8c-c2b9-4f5e-80d3-8f01e435daf2","disable":false},{"children":true,"type":"switch","label":"Countdown Enable","summary":"","name":"countdown_enable","id":"id_7b1d4e3a-bedd-4d26-9771-0afa27068b9b","disable":false},{"children":1655366850380,"type":"date","label":"Countdown Date","summary":"","name":"countdown_date","id":"id_08152295-b811-4f0c-98a7-07ab55d18489","disable":false},{"children":"days","type":"text","label":"Countdown Days Text","summary":"","name":"countdown_days_text","id":"id_adc5ecf3-eec2-42e6-99db-243680ad61d6","disable":false},{"children":"hrs","type":"text","label":"Countdown Hrs Text","summary":"","name":"countdown_hrs_text","id":"id_ef663dc1-9cb9-45d2-ac05-e99314954c55","disable":false},{"children":"mins","type":"text","label":"Countdown Mins Text","summary":"","name":"countdown_mins_text","id":"id_f9b306b0-0121-4d56-883b-8fc98c8449f0","disable":false},{"children":"secs","type":"text","label":"Countdown Secs Text","summary":"","name":"countdown_secs_text","id":"id_7227f19c-d00f-4d3e-ac26-9adf8405fdd7","disable":false},{"children":{"lg":1,"md":1,"sm":1,"xs":1},"type":"responsive","label":"Column","summary":"","name":"column","id":"id_12d5ed73-0184-49bf-9949-9d4b39473d50","disable":false,"max":12,"min":1}],"type":"object","label":"Content","summary":"","name":"content","open":false,"drawer":false,"disable":false}],"settings":[]},"scss":"$container: \"[data-id='#{$uniqueId}']\";","settings":[{"id":"id_e022014a-3838-4c3f-a9a9-492075ffa532","children":[{"children":false,"type":"switch","label":"Background Fixed","summary":"","name":"background_fixed","id":"id_c8ad8a93-f876-49a2-afba-8cf501e17c03","disable":false},{"children":"none","type":"select","label":"Background Type","summary":"","name":"background_type","id":"id_e6a95eca-b1d1-4e12-8cad-14680fd84565","disable":false,"options":[{"label":"Image","value":"image","id":"8218d848-671a-4f61-b24e-75616baf061c"},{"label":"Color","value":"color","id":"2da8ba55-42a3-4415-a36a-e4a2977d7e25"},{"label":"None","value":"none","id":"54adb463-72eb-4928-a27d-fa3617cadc62"}]},{"children":"","type":"image","label":"Background Image","summary":"","name":"background_image","id":"id_501da793-fbd3-4da5-84fc-ab2a3c001106","disable":false,"deps":"section_settings.background_type === \"image\""},{"children":"#fff","type":"color","label":"Background Color","summary":"","name":"background_color","id":"id_c87ed1e0-daaf-4a96-b8e5-48f7d2aaaad3","disable":false,"deps":"section_settings.background_type === \"color\""},{"children":"cover","type":"select","label":"Background Size","summary":"","name":"background_size","id":"id_5c2fdb78-382a-4c64-a0fd-c6a542403db9","disable":false,"options":[{"label":"Cover","value":"cover","id":"1fc49524-fc2f-4c6b-9d7e-d45cac47fc1e"},{"label":"Contain","value":"contain","id":"fd2aa9ff-bee4-4062-8806-c16c13d0d729"}]},{"children":false,"type":"switch","label":"Background Overlay Enable","summary":"","name":"background_overlay_enable","id":"id_de06e38e-82a4-49c9-a458-f72e94d923a0","disable":false},{"children":"#fff","type":"color","label":"Background Overlay Color","summary":"","name":"background_overlay_color","id":"id_64b29603-95a7-44c6-ad99-c88eb3dde760","disable":false},{"children":{"left":0},"type":"space","label":"Padding","summary":"","name":"padding","id":"id_3fe1fb9d-222f-42bd-850d-f0130ba9a2ce","disable":false}],"type":"object","label":"Section Settings","summary":"","name":"section_settings","open":false,"drawer":false,"disable":false},{"id":"id_239fcbc7-225a-430c-8756-2e5a95476a28","children":[{"children":"Shopping Cart","type":"text","label":"Title","summary":"","name":"title","id":"id_077562ef-e173-4094-946a-c84e724380ca","disable":false},{"children":"These products are limited, checkout within:","type":"text","label":"Subtitle","summary":"","name":"subtitle","id":"id_037f3783-a7a8-4ac4-aaca-1b9d8825230a","disable":false},{"children":"Buy $69.00 more to enjoy FREE Shipping","type":"text","label":"Description","summary":"","name":"description","id":"id_15803c8c-c2b9-4f5e-80d3-8f01e435daf2","disable":false},{"children":true,"type":"switch","label":"Countdown Enable","summary":"","name":"countdown_enable","id":"id_7b1d4e3a-bedd-4d26-9771-0afa27068b9b","disable":false},{"children":1655366850380,"type":"date","label":"Countdown Date","summary":"","name":"countdown_date","id":"id_08152295-b811-4f0c-98a7-07ab55d18489","disable":false},{"children":"days","type":"text","label":"Countdown Days Text","summary":"","name":"countdown_days_text","id":"id_adc5ecf3-eec2-42e6-99db-243680ad61d6","disable":false},{"children":"hrs","type":"text","label":"Countdown Hrs Text","summary":"","name":"countdown_hrs_text","id":"id_ef663dc1-9cb9-45d2-ac05-e99314954c55","disable":false},{"children":"mins","type":"text","label":"Countdown Mins Text","summary":"","name":"countdown_mins_text","id":"id_f9b306b0-0121-4d56-883b-8fc98c8449f0","disable":false},{"children":"secs","type":"text","label":"Countdown Secs Text","summary":"","name":"countdown_secs_text","id":"id_7227f19c-d00f-4d3e-ac26-9adf8405fdd7","disable":false},{"children":{"lg":1,"md":1,"sm":1,"xs":1},"type":"responsive","label":"Column","summary":"","name":"column","id":"id_12d5ed73-0184-49bf-9949-9d4b39473d50","disable":false,"max":12,"min":1}],"type":"object","label":"Content","summary":"","name":"content","open":false,"drawer":false,"disable":false}]},"scope":"private","pageTypes":["collection","product"],"sample":true,"enable":true,"userId":1,"synced":false,"category":{"commandId":"629879c0b57c6c4c8378755a","name":"products"},"createdDateTimestamp":1655370728769,"modifiedDateTimestamp":1655370728769,"parentCommandId":"62aaf3e8d316833cf19c2603","changelog":{"version":"1","versionId":"4e8a446c-ba50-4873-9763-5a6e995f52bd","content":""},"categoryId":"products"}
+{
+  "id": "id_81f546c0-47fd-4652-b3c4-424b40f78739",
+  "commandId": "62aaf3e8d316833cf19c2603",
+  "label": "Cart Header",
+  "image": {
+    "src": "",
+    "width": 0,
+    "height": 0
+  },
+  "addonIds": [],
+  "currentVersion": "1",
+  "versionId": "8d9b3ffa-af7f-4e27-b39c-a1b8ff472258",
+  "data": {
+    "js": "\r\nveda.plugins.countdown(container);\r\nveda.plugins.slider({\r\n  el: container.querySelector('.veda-slider'),\r\n  min: 0,\r\n  max: 500,\r\n  step: 1,\r\n  range: false,\r\n  value: [100, 200],\r\n  onChange: value => {\r\n  },\r\n  onChanged: value => {\r\n  }\r\n});\r\n",
+    "liquid": "{% liquid\r\n  if section_settings.background_fixed assign backgroundFixed = 'fixed' else assign backgroundFixed = 'scroll' endif\r\n  if section_settings.background_type == 'color' assign backgroundColor = 'background-color: ' | append: section_settings.background_color | append: ';' else assign backgroundColor = '' endif\r\n  if section_settings.background_type == 'image' assign backgroundImage = 'background-image: url(' | append: section_settings.background_image | append:\r\n  ');background-attachment: ' | append: backgroundFixed | append: ';background-size: ' | append: section_settings.background_size | append: ';' else assign backgroundImage = '' endif\r\n  assign sectionPadding = 'padding-top: ' | append: section_settings.padding.top | append: 'px;padding-right: ' | append: section_settings.padding.right | append: 'px;padding-bottom: ' | append: section_settings.padding.bottom | append: 'px;padding-left: ' | append: section_settings.padding.left | append: 'px;'\r\n%}\r\n\r\n\r\n<section data-id=\"{{uniqueId}}\" class=\"\" css=\"{{ backgroundColor }}{{ backgroundImage }}{{ sectionPadding }}\">\r\n  {% if section_settings.background_overlay_enable %}\r\n    <div class=\"pos:absolute ins:0 z:-1\" css=\"background-color: {{ section_settings.background_overlay_color }}\"></div>\r\n  {% endif %}\r\n  <div class=\"fz:15px c:color-gray4 mb:33px ml:5%\">\r\n    <shopify>\r\n      {% unless request.page_type == 'index' or request.page_type == 'list-collections' %}\r\n        <nav role=\"navigation\" aria-label=\"breadcrumbs\">\r\n            <a class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" href=\"{{ routes.root_url }}\" title=\"Home\">Home</a>\r\n            {% if request.page_type contains 'page' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\">></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ page.title }}</span>\r\n            {% elsif request.page_type contains 'product' %}\r\n              {% if collection.url %}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\">></span>\r\n                {{ collection.title | link_to: collection.url }}\r\n              {% endif %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\">></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ product.title }}</span>\r\n            {% elsif request.page_type contains 'collection' and collection.handle %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\">></span>\r\n              {% if current_tags %}\r\n                {% capture url %}/collections/{{ collection.handle }}{% endcapture %}\r\n                {{ collection.title | link_to: url }}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\">></span>\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ current_tags | join: \" + \" }}</span>\r\n              {% else %}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ collection.title }}</span>\r\n              {% endif %}\r\n            {% elsif request.page_type == 'blog' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\">></span>\r\n              {% if current_tags %}\r\n                {{ blog.title | link_to: blog.url }}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\">></span>\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ current_tags | join: \" + \" }}</span>\r\n              {% else %}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ blog.title }}</span>\r\n              {% endif %}\r\n            {% elsif request.page_type == 'article' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\">></span>\r\n              {{ blog.title | link_to: blog.url }}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\">></span>\r\n              <span>{{ article.title }}</span>\r\n            {% elsif request.page_type == 'cart' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\">></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">Cart</span>\r\n            {% else %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\">></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ page_title }}</span>\r\n            {% endif %}\r\n        </nav>\r\n      {% endunless %}\r\n    </shopify>\r\n  </div>\r\n  <div class=\"container\">\r\n    <div class=\"row jc:center\">\r\n      <div class=\"row row-cols-lg-{{ content.column.lg }} row-cols-md-{{ content.column.md }} row-cols-sm-{{ content.column.sm }} row-cols-{{ content.column.xs }}\">\r\n        <div class=\"col\">\r\n          <div class=\"d:flex fld:column jc:center ai:center\">\r\n            <div class=\"mb:30px fz:pfs(25px,35px) fw:500 c:color-gray9 ta:center\">{{content.title}}</div>\r\n            <div class=\"mb:30px fz:pfs(16px,25px) c:color-gray9 ta:center\">{{content.subtitle}}</div>\r\n            {% if content.countdown_enable %}\r\n              <div class=\"mb:30px d:flex jc:center ai:center w:pfs(200px,500px) h:100px  bd:1px_solid_color-gray4 veda-countdown ta:center\" data-options=\"{ timestamp: {{ content.countdown_date | date: \"%s\"}}000 }\">\r\n                <div class=\"fz:pfs(15px,35px) fw:900 veda-countdown__days c:color-gray9\">1</div>\r\n                <div class=\"fz:pfs(13px,23px) c:color-gray4 mr:2px mr:30px@md ml:pfs(2px,7px)  fw:400\">{{content.countdown_days_text}}</div>\r\n                <div class=\"fz:pfs(15px,35px) fw:900 veda-countdown__hours c:color-gray9\">17</div>\r\n                <div class=\"fz:pfs(13px,23px) c:color-gray4 mr:2px mr:30px@md ml:pfs(2px,7px) fw:400\">{{content.countdown_hrs_text}}</div>\r\n                <div class=\"fz:pfs(15px,35px) fw:900 veda-countdown__minutes c:color-gray9\">30</div>\r\n                <div class=\"fz:pfs(13px,23px) c:color-gray4 mr:2px mr:30px@md ml:pfs(2px,7px) fw:400\">{{content.countdown_mins_text}}</div>\r\n                <div class=\"fz:pfs(15px,35px) fw:900 veda-countdown__seconds c:color-gray9\">23</div>\r\n                <div class=\"fz:pfs(13px,23px) c:color-gray4 ml:pfs(2px,7px) fw:400\">{{content.countdown_secs_text}}</div>\r\n              </div>\r\n            {% endif %}\r\n            <div class=\"fz:pfs(15px,20px) mb:30px c:color-gray9 ta:center\">{{content.description}}</div>\r\n            <div class=\"veda-slider w:100% w:580px@md\" >\r\n              <div class=\"veda-slider__thumb w:19px h:19px bgc:#FEAA01\" data-index=\"0\"></div>\r\n              <div class=\"veda-slider__track h:5px\"></div>\r\n              <div class=\"veda-slider__tracked bgc:#FEAA01 h:5px\"></div>\r\n            </div>\r\n          </div>\r\n\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n",
+    "schema": {
+      "blocks": [{
+        "id": "id_e022014a-3838-4c3f-a9a9-492075ffa532",
+        "children": [{
+          "children": false,
+          "type": "switch",
+          "label": "Background Fixed",
+          "summary": "",
+          "name": "background_fixed",
+          "id": "id_c8ad8a93-f876-49a2-afba-8cf501e17c03",
+          "disable": false
+        }, {
+          "children": "none",
+          "type": "select",
+          "label": "Background Type",
+          "summary": "",
+          "name": "background_type",
+          "id": "id_e6a95eca-b1d1-4e12-8cad-14680fd84565",
+          "disable": false,
+          "options": [{
+            "label": "Image",
+            "value": "image",
+            "id": "8218d848-671a-4f61-b24e-75616baf061c"
+          }, {
+            "label": "Color",
+            "value": "color",
+            "id": "2da8ba55-42a3-4415-a36a-e4a2977d7e25"
+          }, {
+            "label": "None",
+            "value": "none",
+            "id": "54adb463-72eb-4928-a27d-fa3617cadc62"
+          }]
+        }, {
+          "children": "",
+          "type": "image",
+          "label": "Background Image",
+          "summary": "",
+          "name": "background_image",
+          "id": "id_501da793-fbd3-4da5-84fc-ab2a3c001106",
+          "disable": false,
+          "deps": "section_settings.background_type === \"image\""
+        }, {
+          "children": "#fff",
+          "type": "color",
+          "label": "Background Color",
+          "summary": "",
+          "name": "background_color",
+          "id": "id_c87ed1e0-daaf-4a96-b8e5-48f7d2aaaad3",
+          "disable": false,
+          "deps": "section_settings.background_type === \"color\""
+        }, {
+          "children": "cover",
+          "type": "select",
+          "label": "Background Size",
+          "summary": "",
+          "name": "background_size",
+          "id": "id_5c2fdb78-382a-4c64-a0fd-c6a542403db9",
+          "disable": false,
+          "options": [{
+            "label": "Cover",
+            "value": "cover",
+            "id": "1fc49524-fc2f-4c6b-9d7e-d45cac47fc1e"
+          }, {
+            "label": "Contain",
+            "value": "contain",
+            "id": "fd2aa9ff-bee4-4062-8806-c16c13d0d729"
+          }]
+        }, {
+          "children": false,
+          "type": "switch",
+          "label": "Background Overlay Enable",
+          "summary": "",
+          "name": "background_overlay_enable",
+          "id": "id_de06e38e-82a4-49c9-a458-f72e94d923a0",
+          "disable": false
+        }, {
+          "children": "#fff",
+          "type": "color",
+          "label": "Background Overlay Color",
+          "summary": "",
+          "name": "background_overlay_color",
+          "id": "id_64b29603-95a7-44c6-ad99-c88eb3dde760",
+          "disable": false
+        }, {
+          "children": {
+            "left": 0
+          },
+          "type": "space",
+          "label": "Padding",
+          "summary": "",
+          "name": "padding",
+          "id": "id_3fe1fb9d-222f-42bd-850d-f0130ba9a2ce",
+          "disable": false
+        }],
+        "type": "object",
+        "label": "Section Settings",
+        "summary": "",
+        "name": "section_settings",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_239fcbc7-225a-430c-8756-2e5a95476a28",
+        "children": [{
+          "children": "Shopping Cart",
+          "type": "text",
+          "label": "Title",
+          "summary": "",
+          "name": "title",
+          "id": "id_077562ef-e173-4094-946a-c84e724380ca",
+          "disable": false
+        }, {
+          "children": "These products are limited, checkout within:",
+          "type": "text",
+          "label": "Subtitle",
+          "summary": "",
+          "name": "subtitle",
+          "id": "id_037f3783-a7a8-4ac4-aaca-1b9d8825230a",
+          "disable": false
+        }, {
+          "children": "Buy $69.00 more to enjoy FREE Shipping",
+          "type": "text",
+          "label": "Description",
+          "summary": "",
+          "name": "description",
+          "id": "id_15803c8c-c2b9-4f5e-80d3-8f01e435daf2",
+          "disable": false
+        }, {
+          "children": true,
+          "type": "switch",
+          "label": "Countdown Enable",
+          "summary": "",
+          "name": "countdown_enable",
+          "id": "id_7b1d4e3a-bedd-4d26-9771-0afa27068b9b",
+          "disable": false
+        }, {
+          "children": 1655366850380,
+          "type": "date",
+          "label": "Countdown Date",
+          "summary": "",
+          "name": "countdown_date",
+          "id": "id_08152295-b811-4f0c-98a7-07ab55d18489",
+          "disable": false
+        }, {
+          "children": "days",
+          "type": "text",
+          "label": "Countdown Days Text",
+          "summary": "",
+          "name": "countdown_days_text",
+          "id": "id_adc5ecf3-eec2-42e6-99db-243680ad61d6",
+          "disable": false
+        }, {
+          "children": "hrs",
+          "type": "text",
+          "label": "Countdown Hrs Text",
+          "summary": "",
+          "name": "countdown_hrs_text",
+          "id": "id_ef663dc1-9cb9-45d2-ac05-e99314954c55",
+          "disable": false
+        }, {
+          "children": "mins",
+          "type": "text",
+          "label": "Countdown Mins Text",
+          "summary": "",
+          "name": "countdown_mins_text",
+          "id": "id_f9b306b0-0121-4d56-883b-8fc98c8449f0",
+          "disable": false
+        }, {
+          "children": "secs",
+          "type": "text",
+          "label": "Countdown Secs Text",
+          "summary": "",
+          "name": "countdown_secs_text",
+          "id": "id_7227f19c-d00f-4d3e-ac26-9adf8405fdd7",
+          "disable": false
+        }, {
+          "children": {
+            "lg": 1,
+            "md": 1,
+            "sm": 1,
+            "xs": 1
+          },
+          "type": "responsive",
+          "label": "Column",
+          "summary": "",
+          "name": "column",
+          "id": "id_12d5ed73-0184-49bf-9949-9d4b39473d50",
+          "disable": false,
+          "max": 12,
+          "min": 1
+        }],
+        "type": "object",
+        "label": "Content",
+        "summary": "",
+        "name": "content",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }],
+      "settings": []
+    },
+    "scss": "$container: \"[data-id='#{$uniqueId}']\";",
+    "settings": [{
+      "id": "id_e022014a-3838-4c3f-a9a9-492075ffa532",
+      "children": [{
+        "children": false,
+        "type": "switch",
+        "label": "Background Fixed",
+        "summary": "",
+        "name": "background_fixed",
+        "id": "id_c8ad8a93-f876-49a2-afba-8cf501e17c03",
+        "disable": false
+      }, {
+        "children": "none",
+        "type": "select",
+        "label": "Background Type",
+        "summary": "",
+        "name": "background_type",
+        "id": "id_e6a95eca-b1d1-4e12-8cad-14680fd84565",
+        "disable": false,
+        "options": [{
+          "label": "Image",
+          "value": "image",
+          "id": "8218d848-671a-4f61-b24e-75616baf061c"
+        }, {
+          "label": "Color",
+          "value": "color",
+          "id": "2da8ba55-42a3-4415-a36a-e4a2977d7e25"
+        }, {
+          "label": "None",
+          "value": "none",
+          "id": "54adb463-72eb-4928-a27d-fa3617cadc62"
+        }]
+      }, {
+        "children": "",
+        "type": "image",
+        "label": "Background Image",
+        "summary": "",
+        "name": "background_image",
+        "id": "id_501da793-fbd3-4da5-84fc-ab2a3c001106",
+        "disable": false,
+        "deps": "section_settings.background_type === \"image\""
+      }, {
+        "children": "#fff",
+        "type": "color",
+        "label": "Background Color",
+        "summary": "",
+        "name": "background_color",
+        "id": "id_c87ed1e0-daaf-4a96-b8e5-48f7d2aaaad3",
+        "disable": false,
+        "deps": "section_settings.background_type === \"color\""
+      }, {
+        "children": "cover",
+        "type": "select",
+        "label": "Background Size",
+        "summary": "",
+        "name": "background_size",
+        "id": "id_5c2fdb78-382a-4c64-a0fd-c6a542403db9",
+        "disable": false,
+        "options": [{
+          "label": "Cover",
+          "value": "cover",
+          "id": "1fc49524-fc2f-4c6b-9d7e-d45cac47fc1e"
+        }, {
+          "label": "Contain",
+          "value": "contain",
+          "id": "fd2aa9ff-bee4-4062-8806-c16c13d0d729"
+        }]
+      }, {
+        "children": false,
+        "type": "switch",
+        "label": "Background Overlay Enable",
+        "summary": "",
+        "name": "background_overlay_enable",
+        "id": "id_de06e38e-82a4-49c9-a458-f72e94d923a0",
+        "disable": false
+      }, {
+        "children": "#fff",
+        "type": "color",
+        "label": "Background Overlay Color",
+        "summary": "",
+        "name": "background_overlay_color",
+        "id": "id_64b29603-95a7-44c6-ad99-c88eb3dde760",
+        "disable": false
+      }, {
+        "children": {
+          "left": 0
+        },
+        "type": "space",
+        "label": "Padding",
+        "summary": "",
+        "name": "padding",
+        "id": "id_3fe1fb9d-222f-42bd-850d-f0130ba9a2ce",
+        "disable": false
+      }],
+      "type": "object",
+      "label": "Section Settings",
+      "summary": "",
+      "name": "section_settings",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_239fcbc7-225a-430c-8756-2e5a95476a28",
+      "children": [{
+        "children": "Shopping Cart",
+        "type": "text",
+        "label": "Title",
+        "summary": "",
+        "name": "title",
+        "id": "id_077562ef-e173-4094-946a-c84e724380ca",
+        "disable": false
+      }, {
+        "children": "These products are limited, checkout within:",
+        "type": "text",
+        "label": "Subtitle",
+        "summary": "",
+        "name": "subtitle",
+        "id": "id_037f3783-a7a8-4ac4-aaca-1b9d8825230a",
+        "disable": false
+      }, {
+        "children": "Buy $69.00 more to enjoy FREE Shipping",
+        "type": "text",
+        "label": "Description",
+        "summary": "",
+        "name": "description",
+        "id": "id_15803c8c-c2b9-4f5e-80d3-8f01e435daf2",
+        "disable": false
+      }, {
+        "children": true,
+        "type": "switch",
+        "label": "Countdown Enable",
+        "summary": "",
+        "name": "countdown_enable",
+        "id": "id_7b1d4e3a-bedd-4d26-9771-0afa27068b9b",
+        "disable": false
+      }, {
+        "children": 1655366850380,
+        "type": "date",
+        "label": "Countdown Date",
+        "summary": "",
+        "name": "countdown_date",
+        "id": "id_08152295-b811-4f0c-98a7-07ab55d18489",
+        "disable": false
+      }, {
+        "children": "days",
+        "type": "text",
+        "label": "Countdown Days Text",
+        "summary": "",
+        "name": "countdown_days_text",
+        "id": "id_adc5ecf3-eec2-42e6-99db-243680ad61d6",
+        "disable": false
+      }, {
+        "children": "hrs",
+        "type": "text",
+        "label": "Countdown Hrs Text",
+        "summary": "",
+        "name": "countdown_hrs_text",
+        "id": "id_ef663dc1-9cb9-45d2-ac05-e99314954c55",
+        "disable": false
+      }, {
+        "children": "mins",
+        "type": "text",
+        "label": "Countdown Mins Text",
+        "summary": "",
+        "name": "countdown_mins_text",
+        "id": "id_f9b306b0-0121-4d56-883b-8fc98c8449f0",
+        "disable": false
+      }, {
+        "children": "secs",
+        "type": "text",
+        "label": "Countdown Secs Text",
+        "summary": "",
+        "name": "countdown_secs_text",
+        "id": "id_7227f19c-d00f-4d3e-ac26-9adf8405fdd7",
+        "disable": false
+      }, {
+        "children": {
+          "lg": 1,
+          "md": 1,
+          "sm": 1,
+          "xs": 1
+        },
+        "type": "responsive",
+        "label": "Column",
+        "summary": "",
+        "name": "column",
+        "id": "id_12d5ed73-0184-49bf-9949-9d4b39473d50",
+        "disable": false,
+        "max": 12,
+        "min": 1
+      }],
+      "type": "object",
+      "label": "Content",
+      "summary": "",
+      "name": "content",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }]
+  },
+  "scope": "private",
+  "pageTypes": ["collection", "product", "cart"],
+  "sample": true,
+  "enable": true,
+  "userId": 1,
+  "synced": false,
+  "category": {
+    "commandId": "629879c0b57c6c4c8378755a",
+    "name": "products"
+  },
+  "createdDateTimestamp": 1655370728769,
+  "modifiedDateTimestamp": 1655370728769,
+  "parentCommandId": "62aaf3e8d316833cf19c2603",
+  "changelog": {
+    "version": "1",
+    "versionId": "4e8a446c-ba50-4873-9763-5a6e995f52bd",
+    "content": ""
+  },
+  "categoryId": "products"
+}

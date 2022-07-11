@@ -1,1 +1,638 @@
-{"id":"id_832628d2-c0fb-4239-87a1-56825aec9faf","commandId":"62aaf1fdd316833cf19c2601","label":"Cart Checkout","image":{"src":"","width":0,"height":0},"addonIds":[],"currentVersion":"1","versionId":"8c970be7-f63d-4313-b3cb-f2f2445c138e","data":{"js":"\r\n\r\nveda.plugins.select({\r\n  el: document.querySelector(\".select-country\"),\r\n  onChange: value => {\r\n    console.log(value);\r\n  }\r\n});\r\nveda.plugins.select({\r\n  el: document.querySelector(\".select-state\"),\r\n  onChange: value => {\r\n    console.log(value);\r\n  }\r\n});\r\n\r\n","liquid":"{% liquid\r\n  if section_settings.background_fixed assign backgroundFixed = 'fixed' else assign backgroundFixed = 'scroll' endif\r\n  if section_settings.background_type == 'color' assign backgroundColor = 'background-color: ' | append: section_settings.background_color | append: ';' else assign backgroundColor = '' endif\r\n  if section_settings.background_type == 'image' assign backgroundImage = 'background-image: url(' | append: section_settings.background_image | append:\r\n  ');background-attachment: ' | append: backgroundFixed | append: ';background-size: ' | append: section_settings.background_size | append: ';' else assign backgroundImage = '' endif\r\n  assign sectionPadding = 'padding-top: ' | append: section_settings.padding.top | append: 'px;padding-right: ' | append: section_settings.padding.right | append: 'px;padding-bottom: ' | append: section_settings.padding.bottom | append: 'px;padding-left: ' | append: section_settings.padding.left | append: 'px;'\r\n%}\r\n\r\n\r\n<section data-id=\"{{uniqueId}}\" class=\"\" css=\"{{ backgroundColor }}{{ backgroundImage }}{{ sectionPadding }}\">\r\n  {% if section_settings.background_overlay_enable %}\r\n    <div class=\"pos:absolute ins:0 z:-1\" css=\"background-color: {{ section_settings.background_overlay_color }}\"></div>\r\n  {% endif %}\r\n  <div class=\"container\">\r\n    <div class=\"row jc:center\">\r\n      <div class=\"row row-cols-lg-{{ content.column.lg }} row-cols-md-{{ content.column.md }} row-cols-sm-{{ content.column.sm }} row-cols-{{ content.column.xs }}\">\r\n        <div class=\"col d:flex flw:wrap\">\r\n          <div class=\"w:100% w:33%@md pr:pfs(0px,100px)\">\r\n            <h3 class=\"fz:15px fw:500\">{{content.note_for_seller_text}}</h3>\r\n            <textarea class=\"maw:289px w:95% h:144px fz:13px fw:400 c:color-gray3 fw:400||placeholder fz:13px||placeholder\" placeholder=\"{{content.note_for_seller_placeholder}}\"></textarea>\r\n          </div>\r\n          <div class=\"w:100% w:33%@md mt:10px mt:0px@md\">\r\n            <h3 class=\"fz:15px fw:500\">{{content.estimated_shipping_text}}</h3>\r\n            <p class=\"fz:15px mt:10px mb:10px fw:400\">{{content.country_select_text}}</p>\r\n            <div class=\"veda-select select-country\">\r\n              <div class=\"veda-select__view maw:282px w:95% w:282px@md h:43px bd:1px_solid_color-gray3 pl:15px cur:pointer d:flex ai:center\">\r\n                <div class=\"veda-select__label w:242px cur:pointer d:flex ai:center fz:15px fw:400 c:color-dark\"></div>\r\n                <i class=\"fal fa-angle-down\"></i>\r\n              </div>\r\n              <div class=\"veda-select__options select-custom pos:absolute t:50px w:282px z:100 bgc:color-light bd:1px_solid_color-gray3\">\r\n                {% assign first_country_option = country_select_data | first %}\r\n                {% for item in country_select_data %}\r\n                  <div class=\"veda-select__option select-custom__item w:280px h:43px fz:15px fw:400 pl:15px cur:pointer bgc:#DEDEE9|h! d:flex ai:center bd:none!\" value=\"{{item.value}}\" {% if first_country_option.name  == option.name %}selected=\"true\"{% endif %}>{{item.name}}</div>\r\n                {% endfor %}\r\n              </div>\r\n            </div>\r\n            <p class=\"fz:15px mt:30px mb:10px fw:400\">{{State}}</p>\r\n            <div class=\"veda-select select-state\">\r\n              <div class=\"veda-select__view maw:282px w:95% w:282px@md h:43px bd:1px_solid_color-gray3 pl:15px cur:pointer d:flex ai:center\">\r\n                <div class=\"veda-select__label w:242px cur:pointer d:flex ai:center fz:15px fw:400 c:color-dark\"></div>\r\n                <i class=\"fal fa-angle-down\"></i>\r\n              </div>\r\n              <div class=\"veda-select__options select-custom pos:absolute t:50px w:282px z:100 bgc:color-light bd:1px_solid_#DEDEE9\">\r\n                {% assign first_state_option = state_select_data | first %}\r\n                {% for item in state_select_data %}\r\n                  <div class=\"veda-select__option select-custom__item w:280px h:43px fz:15px fw:400 pl:15px cur:pointer bgc:#DEDEE9|h! d:flex ai:center bd:none!\" value=\"{{item.value}}\" {% if first_state_option.name  == option.name %}selected=\"true\"{% endif %}>{{item.name}}</div>\r\n                {% endfor %}\r\n              </div>\r\n            </div>\r\n            <p class=\"fz:15px mt:30px mb:10px fw:400\">{{content.zip_code_text}}</p>\r\n            <input class=\"w:95% maw:282px w:282px@md! h:43px bdrs:0px!\" type=\"text\">\r\n            <button class=\"mt:30px maw:282px w:95% w:282px@md bgc:color-light c:color-dark bd:1px_solid_color-dark ml:0px bdrs:0px p:13px_0px_13px_0px fz:15px fw:500 bgc:color-light|h! c:color-dark|h! bd:1px_solid_color-dark|h!\">{{content.button_calculate_shipping_text}}</button>\r\n          </div>\r\n          <div class=\"w:100% w:33%@md mt:10px mt:0px@md pl:90px@md\">\r\n            <h3 class=\"fz:15px fw:500\">{{content.subtotal_title_text}} <span class=\"fl:right fz:20px fw:500\">$96.00</span></h3>\r\n            <p class=\"mt:20px fz:12px fw:400\">{{content.subtotal_description_text}}</p>\r\n            <button class=\"mt:30px ml:0px w:100% bdrs:0px bgc:color-dark c:color-light fz:15px fw:500 p:16px_0_16px_0 bd:1px_solid_color-dark bgc:color-dark|h! bd:1px_solid_color-dark|h! cur:pointer\">\r\n              {{content.button_check_out_text}}\r\n            </button>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n","schema":{"blocks":[{"id":"id_1159e5d4-816b-42b0-9fa4-aa089527bf59","children":[{"children":false,"type":"switch","label":"Background Fixed","summary":"","name":"background_fixed","id":"id_c9ece744-124d-4a02-9b9b-decef94bc0e9","disable":false},{"children":"none","type":"select","label":"Background Type","summary":"","name":"background_type","id":"id_1e796eeb-dd3e-42d3-a9f0-5dd41816ddb5","disable":false,"options":[{"label":"Image","value":"image","id":"6c584ed9-1935-4eea-9468-b70ebe69de67"},{"label":"Color","value":"color","id":"d25fc2d3-16c0-48f2-aea4-e537b5ef4012"},{"label":"None","value":"none","id":"ee411474-649f-473b-9c89-25431bd4b08d"}]},{"children":"","type":"image","label":"Background Image","summary":"","name":"background_image","id":"id_52f34cb3-29ad-48b2-9153-ab21d757dedc","disable":false,"deps":"section_settings.background_type === \"image\""},{"children":"#fff","type":"color","label":"Background Color","summary":"","name":"background_color","id":"id_70746885-9ecf-45be-8a75-85e89849e51e","disable":false,"deps":"section_settings.background_type === \"color\""},{"children":"cover","type":"select","label":"Background Size","summary":"","name":"background_size","id":"id_78d0643b-2e11-472f-b31a-d784286ed644","disable":false,"options":[{"label":"Cover","value":"cover","id":"1eed0b78-27ce-49d8-aec1-488f17fd9c41"},{"label":"Contain","value":"contain","id":"96bbe33d-8009-410e-8a09-479d5ff794b2"}]},{"children":false,"type":"switch","label":"Background Overlay Enable","summary":"","name":"background_overlay_enable","id":"id_b7664aaa-12ae-4112-b993-a2d7d1b06f8a","disable":false},{"children":"#fff","type":"color","label":"Background Overlay Color","summary":"","name":"background_overlay_color","id":"id_f86052d2-2d7d-4202-b7bc-b7490937e4c5","disable":false},{"children":{"left":0},"type":"space","label":"Padding","summary":"","name":"padding","id":"id_14edb4dd-5fe1-4bed-9a75-16c125d2a40f","disable":false}],"type":"object","label":"Section Settings","summary":"","name":"section_settings","open":false,"drawer":false,"disable":false},{"id":"id_7cdeeaa4-2b3d-45e3-bf9d-33f721e7be61","children":[{"children":"Add note for seller","type":"text","label":"Note For Seller Text","summary":"","name":"note_for_seller_text","id":"id_ca8600a7-c7ee-49df-a09c-9c2e473631a0","disable":false},{"children":"Special instrutions for seller","type":"text","label":"Note for Seller Placeholder","summary":"","name":"note_for_seller_placeholder","id":"id_7e000331-253d-41e5-8346-39d4a18f907a","disable":false},{"children":"Estimate shipping rates","type":"text","label":"Estimated Shipping Text","summary":"","name":"estimated_shipping_text","id":"id_53de432a-26ec-43cc-8958-339a70c4e92e","disable":false},{"children":"Country/region","type":"text","label":"Country Select Text","summary":"","name":"country_select_text","id":"id_778fe371-6020-4d7f-b487-320f2ffb1f65","disable":false},{"children":"State","type":"text","label":"State Select Text","summary":"","name":"state_select_text","id":"id_299ef59e-665b-4272-aab5-d04ff3636371","disable":false},{"children":"Zip Code","type":"text","label":"Zip Code Text","summary":"","name":"zip_code_text","id":"id_5a7850de-c093-4040-849c-33866a055bd8","disable":false},{"children":"Button Calculate Shipping","type":"text","label":"Button Calculate Shipping Text","summary":"","name":"button_calculate_shipping_text","id":"id_51f60547-7e2f-466b-b6dc-f6ed1b8c0a21","disable":false},{"children":"SUBTOTAL: ","type":"text","label":"Subtotal Title Text","summary":"","name":"subtotal_title_text","id":"id_29d0bb7d-7416-4c46-a26d-6fd3d34e0e00","disable":false},{"children":"Taxes and shipping calculated at checkout","type":"textarea","label":"Subtotal Description Text","summary":"","name":"subtotal_description_text","id":"id_a848e6bd-696a-430e-b2fb-b43c9d82bd92","disable":false},{"children":"CHECK OUT","type":"text","label":"Button Check out Text","summary":"","name":"button_check_out_text","id":"id_36cc9fbc-2e47-4325-b98e-2216dc80ddc8","disable":false},{"children":{"lg":1,"md":1,"sm":1,"xs":1},"type":"responsive","label":"Column","summary":"","name":"column","id":"id_618f723c-f89e-48ea-8998-1978770523a1","disable":false,"max":12,"min":1}],"type":"object","label":"Content","summary":"","name":"content","open":false,"drawer":false,"disable":false},{"id":"id_1d98c60d-da2b-49a6-8197-39eb240d7718","children":[{"children":"al","type":"text","label":"Value","summary":"","name":"value","id":"id_f81cea7d-47e6-4c30-bbfd-f9f5144b70b4","disable":false},{"children":"Alabama","type":"text","label":"Name","summary":"","name":"name","id":"id_6611ed3d-f5ce-40b7-8e29-a8580843638a","disable":false}],"type":"array","label":"State Select Data","summary":"","name":"state_select_data","open":false,"drawer":false,"disable":false},{"id":"id_64a9064d-a95b-4223-ad01-123d3b473d2c","children":[{"children":"us","type":"text","label":"Value","summary":"","name":"value","id":"id_f81cea7d-47e6-4c30-bbfd-f9f5144b70b4","disable":false},{"children":"United State","type":"text","label":"Name","summary":"","name":"name","id":"id_6611ed3d-f5ce-40b7-8e29-a8580843638a","disable":false}],"type":"array","label":"Country Select Data","summary":"","name":"country_select_data","open":false,"drawer":false,"disable":false}],"settings":[]},"scss":"$container: \"[data-id='#{$uniqueId}']\";","settings":[{"id":"id_1159e5d4-816b-42b0-9fa4-aa089527bf59","children":[{"children":false,"type":"switch","label":"Background Fixed","summary":"","name":"background_fixed","id":"id_c9ece744-124d-4a02-9b9b-decef94bc0e9","disable":false},{"children":"none","type":"select","label":"Background Type","summary":"","name":"background_type","id":"id_1e796eeb-dd3e-42d3-a9f0-5dd41816ddb5","disable":false,"options":[{"label":"Image","value":"image","id":"6c584ed9-1935-4eea-9468-b70ebe69de67"},{"label":"Color","value":"color","id":"d25fc2d3-16c0-48f2-aea4-e537b5ef4012"},{"label":"None","value":"none","id":"ee411474-649f-473b-9c89-25431bd4b08d"}]},{"children":"","type":"image","label":"Background Image","summary":"","name":"background_image","id":"id_52f34cb3-29ad-48b2-9153-ab21d757dedc","disable":false,"deps":"section_settings.background_type === \"image\""},{"children":"#fff","type":"color","label":"Background Color","summary":"","name":"background_color","id":"id_70746885-9ecf-45be-8a75-85e89849e51e","disable":false,"deps":"section_settings.background_type === \"color\""},{"children":"cover","type":"select","label":"Background Size","summary":"","name":"background_size","id":"id_78d0643b-2e11-472f-b31a-d784286ed644","disable":false,"options":[{"label":"Cover","value":"cover","id":"1eed0b78-27ce-49d8-aec1-488f17fd9c41"},{"label":"Contain","value":"contain","id":"96bbe33d-8009-410e-8a09-479d5ff794b2"}]},{"children":false,"type":"switch","label":"Background Overlay Enable","summary":"","name":"background_overlay_enable","id":"id_b7664aaa-12ae-4112-b993-a2d7d1b06f8a","disable":false},{"children":"#fff","type":"color","label":"Background Overlay Color","summary":"","name":"background_overlay_color","id":"id_f86052d2-2d7d-4202-b7bc-b7490937e4c5","disable":false},{"children":{"left":0},"type":"space","label":"Padding","summary":"","name":"padding","id":"id_14edb4dd-5fe1-4bed-9a75-16c125d2a40f","disable":false}],"type":"object","label":"Section Settings","summary":"","name":"section_settings","open":false,"drawer":false,"disable":false},{"id":"id_7cdeeaa4-2b3d-45e3-bf9d-33f721e7be61","children":[{"children":"Add note for seller","type":"text","label":"Note For Seller Text","summary":"","name":"note_for_seller_text","id":"id_ca8600a7-c7ee-49df-a09c-9c2e473631a0","disable":false},{"children":"Special instrutions for seller","type":"text","label":"Note for Seller Placeholder","summary":"","name":"note_for_seller_placeholder","id":"id_7e000331-253d-41e5-8346-39d4a18f907a","disable":false},{"children":"Estimate shipping rates","type":"text","label":"Estimated Shipping Text","summary":"","name":"estimated_shipping_text","id":"id_53de432a-26ec-43cc-8958-339a70c4e92e","disable":false},{"children":"Country/region","type":"text","label":"Country Select Text","summary":"","name":"country_select_text","id":"id_778fe371-6020-4d7f-b487-320f2ffb1f65","disable":false},{"children":"State","type":"text","label":"State Select Text","summary":"","name":"state_select_text","id":"id_299ef59e-665b-4272-aab5-d04ff3636371","disable":false},{"children":"Zip Code","type":"text","label":"Zip Code Text","summary":"","name":"zip_code_text","id":"id_5a7850de-c093-4040-849c-33866a055bd8","disable":false},{"children":"Button Calculate Shipping","type":"text","label":"Button Calculate Shipping Text","summary":"","name":"button_calculate_shipping_text","id":"id_51f60547-7e2f-466b-b6dc-f6ed1b8c0a21","disable":false},{"children":"SUBTOTAL: ","type":"text","label":"Subtotal Title Text","summary":"","name":"subtotal_title_text","id":"id_29d0bb7d-7416-4c46-a26d-6fd3d34e0e00","disable":false},{"children":"Taxes and shipping calculated at checkout","type":"textarea","label":"Subtotal Description Text","summary":"","name":"subtotal_description_text","id":"id_a848e6bd-696a-430e-b2fb-b43c9d82bd92","disable":false},{"children":"CHECK OUT","type":"text","label":"Button Check out Text","summary":"","name":"button_check_out_text","id":"id_36cc9fbc-2e47-4325-b98e-2216dc80ddc8","disable":false},{"children":{"lg":1,"md":1,"sm":1,"xs":1},"type":"responsive","label":"Column","summary":"","name":"column","id":"id_618f723c-f89e-48ea-8998-1978770523a1","disable":false,"max":12,"min":1}],"type":"object","label":"Content","summary":"","name":"content","open":false,"drawer":false,"disable":false},{"id":"id_1d98c60d-da2b-49a6-8197-39eb240d7718","children":[{"id":"f4aac672-ffc8-4a5a-a9c7-087090ca46af","children":[{"children":"al","type":"text","label":"Value","summary":"","name":"value","id":"id_f81cea7d-47e6-4c30-bbfd-f9f5144b70b4","disable":false},{"children":"Alabama","type":"text","label":"Name","summary":"","name":"name","id":"id_6611ed3d-f5ce-40b7-8e29-a8580843638a","disable":false}]},{"id":"26efac7d-1d06-48ad-a52a-e76e1526802c","children":[{"children":"ak","type":"text","label":"Value","summary":"","name":"value","id":"id_f81cea7d-47e6-4c30-bbfd-f9f5144b70b4","disable":false},{"children":"Alaska","type":"text","label":"Name","summary":"","name":"name","id":"id_6611ed3d-f5ce-40b7-8e29-a8580843638a","disable":false}]},{"id":"f00ef114-b7b5-44d6-a332-bbb7541502dd","children":[{"children":"az","type":"text","label":"Value","summary":"","name":"value","id":"id_f81cea7d-47e6-4c30-bbfd-f9f5144b70b4","disable":false},{"children":"Arizona","type":"text","label":"Name","summary":"","name":"name","id":"id_6611ed3d-f5ce-40b7-8e29-a8580843638a","disable":false}]}],"type":"array","label":"State Select Data","summary":"","name":"state_select_data","open":false,"drawer":false,"disable":false},{"id":"id_64a9064d-a95b-4223-ad01-123d3b473d2c","children":[{"id":"id_2d02b7db-029b-46ec-a8c9-ec3fda0f9940","children":[{"children":"us","type":"text","label":"Value","summary":"","name":"value","id":"id_f81cea7d-47e6-4c30-bbfd-f9f5144b70b4","disable":false},{"children":"United State","type":"text","label":"Name","summary":"","name":"name","id":"id_6611ed3d-f5ce-40b7-8e29-a8580843638a","disable":false}]},{"id":"c5eeb4a3-6f46-4695-955f-bfcaa36e1765","children":[{"children":"ca","type":"text","label":"Value","summary":"","name":"value","id":"id_f81cea7d-47e6-4c30-bbfd-f9f5144b70b4","disable":false},{"children":"Canada","type":"text","label":"Name","summary":"","name":"name","id":"id_6611ed3d-f5ce-40b7-8e29-a8580843638a","disable":false}]},{"id":"81249858-3e29-481a-be7f-611c7fb89437","children":[{"children":"uk","type":"text","label":"Value","summary":"","name":"value","id":"id_f81cea7d-47e6-4c30-bbfd-f9f5144b70b4","disable":false},{"children":"United Kingdom","type":"text","label":"Name","summary":"","name":"name","id":"id_6611ed3d-f5ce-40b7-8e29-a8580843638a","disable":false}]}],"type":"array","label":"Country Select Data","summary":"","name":"country_select_data","open":false,"drawer":false,"disable":false}]},"scope":"private","pageTypes":["collection","product"],"sample":true,"enable":true,"userId":1,"synced":false,"category":{"commandId":"629879c0b57c6c4c8378755a","name":"products"},"createdDateTimestamp":1655370237925,"modifiedDateTimestamp":1655370237925,"parentCommandId":"62aaf1fdd316833cf19c2601","changelog":{"version":"1","versionId":"624f29e2-59df-4520-b9c4-bb8a4b7c8c8b","content":""},"categoryId":"products"}
+{
+  "id": "id_832628d2-c0fb-4239-87a1-56825aec9faf",
+  "commandId": "62aaf1fdd316833cf19c2601",
+  "label": "Cart Checkout",
+  "image": {
+    "src": "",
+    "width": 0,
+    "height": 0
+  },
+  "addonIds": [],
+  "currentVersion": "1",
+  "versionId": "8c970be7-f63d-4313-b3cb-f2f2445c138e",
+  "data": {
+    "js": "\r\n\r\nveda.plugins.select({\r\n  el: document.querySelector(\".select-country\"),\r\n  onChange: value => {\r\n    console.log(value);\r\n  }\r\n});\r\nveda.plugins.select({\r\n  el: document.querySelector(\".select-state\"),\r\n  onChange: value => {\r\n    console.log(value);\r\n  }\r\n});\r\n\r\n",
+    "liquid": "{% liquid\r\n  if section_settings.background_fixed assign backgroundFixed = 'fixed' else assign backgroundFixed = 'scroll' endif\r\n  if section_settings.background_type == 'color' assign backgroundColor = 'background-color: ' | append: section_settings.background_color | append: ';' else assign backgroundColor = '' endif\r\n  if section_settings.background_type == 'image' assign backgroundImage = 'background-image: url(' | append: section_settings.background_image | append:\r\n  ');background-attachment: ' | append: backgroundFixed | append: ';background-size: ' | append: section_settings.background_size | append: ';' else assign backgroundImage = '' endif\r\n  assign sectionPadding = 'padding-top: ' | append: section_settings.padding.top | append: 'px;padding-right: ' | append: section_settings.padding.right | append: 'px;padding-bottom: ' | append: section_settings.padding.bottom | append: 'px;padding-left: ' | append: section_settings.padding.left | append: 'px;'\r\n%}\r\n\r\n\r\n<section data-id=\"{{uniqueId}}\" class=\"\" css=\"{{ backgroundColor }}{{ backgroundImage }}{{ sectionPadding }}\">\r\n  {% if section_settings.background_overlay_enable %}\r\n    <div class=\"pos:absolute ins:0 z:-1\" css=\"background-color: {{ section_settings.background_overlay_color }}\"></div>\r\n  {% endif %}\r\n  <div class=\"container\">\r\n    <div class=\"row jc:center\">\r\n      <div class=\"row row-cols-lg-{{ content.column.lg }} row-cols-md-{{ content.column.md }} row-cols-sm-{{ content.column.sm }} row-cols-{{ content.column.xs }}\">\r\n        <div class=\"col d:flex flw:wrap\">\r\n          <div class=\"w:100% w:33%@md pr:pfs(0px,100px)\">\r\n            <h3 class=\"fz:15px fw:500\">{{content.note_for_seller_text}}</h3>\r\n            <textarea class=\"maw:289px w:95% h:144px fz:13px fw:400 c:color-gray3 fw:400||placeholder fz:13px||placeholder\" placeholder=\"{{content.note_for_seller_placeholder}}\"></textarea>\r\n          </div>\r\n          <div class=\"w:100% w:33%@md mt:10px mt:0px@md\">\r\n            <h3 class=\"fz:15px fw:500\">{{content.estimated_shipping_text}}</h3>\r\n            <p class=\"fz:15px mt:10px mb:10px fw:400\">{{content.country_select_text}}</p>\r\n            <div class=\"veda-select select-country\">\r\n              <div class=\"veda-select__view maw:282px w:95% w:282px@md h:43px bd:1px_solid_color-gray3 pl:15px cur:pointer d:flex ai:center\">\r\n                <div class=\"veda-select__label w:242px cur:pointer d:flex ai:center fz:15px fw:400 c:color-dark\"></div>\r\n                <i class=\"fal fa-angle-down\"></i>\r\n              </div>\r\n              <div class=\"veda-select__options select-custom pos:absolute t:50px w:282px z:100 bgc:color-light bd:1px_solid_color-gray3\">\r\n                {% assign first_country_option = country_select_data | first %}\r\n                {% for item in country_select_data %}\r\n                  <div class=\"veda-select__option select-custom__item w:280px h:43px fz:15px fw:400 pl:15px cur:pointer bgc:#DEDEE9|h! d:flex ai:center bd:none!\" value=\"{{item.value}}\" {% if first_country_option.name  == option.name %}selected=\"true\"{% endif %}>{{item.name}}</div>\r\n                {% endfor %}\r\n              </div>\r\n            </div>\r\n            <p class=\"fz:15px mt:30px mb:10px fw:400\">{{State}}</p>\r\n            <div class=\"veda-select select-state\">\r\n              <div class=\"veda-select__view maw:282px w:95% w:282px@md h:43px bd:1px_solid_color-gray3 pl:15px cur:pointer d:flex ai:center\">\r\n                <div class=\"veda-select__label w:242px cur:pointer d:flex ai:center fz:15px fw:400 c:color-dark\"></div>\r\n                <i class=\"fal fa-angle-down\"></i>\r\n              </div>\r\n              <div class=\"veda-select__options select-custom pos:absolute t:50px w:282px z:100 bgc:color-light bd:1px_solid_#DEDEE9\">\r\n                {% assign first_state_option = state_select_data | first %}\r\n                {% for item in state_select_data %}\r\n                  <div class=\"veda-select__option select-custom__item w:280px h:43px fz:15px fw:400 pl:15px cur:pointer bgc:#DEDEE9|h! d:flex ai:center bd:none!\" value=\"{{item.value}}\" {% if first_state_option.name  == option.name %}selected=\"true\"{% endif %}>{{item.name}}</div>\r\n                {% endfor %}\r\n              </div>\r\n            </div>\r\n            <p class=\"fz:15px mt:30px mb:10px fw:400\">{{content.zip_code_text}}</p>\r\n            <input class=\"w:95% maw:282px w:282px@md! h:43px bdrs:0px!\" type=\"text\">\r\n            <button class=\"mt:30px maw:282px w:95% w:282px@md bgc:color-light c:color-dark bd:1px_solid_color-dark ml:0px bdrs:0px p:13px_0px_13px_0px fz:15px fw:500 bgc:color-light|h! c:color-dark|h! bd:1px_solid_color-dark|h!\">{{content.button_calculate_shipping_text}}</button>\r\n          </div>\r\n          <div class=\"w:100% w:33%@md mt:10px mt:0px@md pl:90px@md\">\r\n            <h3 class=\"fz:15px fw:500\">{{content.subtotal_title_text}} <span class=\"fl:right fz:20px fw:500\">$96.00</span></h3>\r\n            <p class=\"mt:20px fz:12px fw:400\">{{content.subtotal_description_text}}</p>\r\n            <button class=\"mt:30px ml:0px w:100% bdrs:0px bgc:color-dark c:color-light fz:15px fw:500 p:16px_0_16px_0 bd:1px_solid_color-dark bgc:color-dark|h! bd:1px_solid_color-dark|h! cur:pointer\">\r\n              {{content.button_check_out_text}}\r\n            </button>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n",
+    "schema": {
+      "blocks": [{
+        "id": "id_1159e5d4-816b-42b0-9fa4-aa089527bf59",
+        "children": [{
+          "children": false,
+          "type": "switch",
+          "label": "Background Fixed",
+          "summary": "",
+          "name": "background_fixed",
+          "id": "id_c9ece744-124d-4a02-9b9b-decef94bc0e9",
+          "disable": false
+        }, {
+          "children": "none",
+          "type": "select",
+          "label": "Background Type",
+          "summary": "",
+          "name": "background_type",
+          "id": "id_1e796eeb-dd3e-42d3-a9f0-5dd41816ddb5",
+          "disable": false,
+          "options": [{
+            "label": "Image",
+            "value": "image",
+            "id": "6c584ed9-1935-4eea-9468-b70ebe69de67"
+          }, {
+            "label": "Color",
+            "value": "color",
+            "id": "d25fc2d3-16c0-48f2-aea4-e537b5ef4012"
+          }, {
+            "label": "None",
+            "value": "none",
+            "id": "ee411474-649f-473b-9c89-25431bd4b08d"
+          }]
+        }, {
+          "children": "",
+          "type": "image",
+          "label": "Background Image",
+          "summary": "",
+          "name": "background_image",
+          "id": "id_52f34cb3-29ad-48b2-9153-ab21d757dedc",
+          "disable": false,
+          "deps": "section_settings.background_type === \"image\""
+        }, {
+          "children": "#fff",
+          "type": "color",
+          "label": "Background Color",
+          "summary": "",
+          "name": "background_color",
+          "id": "id_70746885-9ecf-45be-8a75-85e89849e51e",
+          "disable": false,
+          "deps": "section_settings.background_type === \"color\""
+        }, {
+          "children": "cover",
+          "type": "select",
+          "label": "Background Size",
+          "summary": "",
+          "name": "background_size",
+          "id": "id_78d0643b-2e11-472f-b31a-d784286ed644",
+          "disable": false,
+          "options": [{
+            "label": "Cover",
+            "value": "cover",
+            "id": "1eed0b78-27ce-49d8-aec1-488f17fd9c41"
+          }, {
+            "label": "Contain",
+            "value": "contain",
+            "id": "96bbe33d-8009-410e-8a09-479d5ff794b2"
+          }]
+        }, {
+          "children": false,
+          "type": "switch",
+          "label": "Background Overlay Enable",
+          "summary": "",
+          "name": "background_overlay_enable",
+          "id": "id_b7664aaa-12ae-4112-b993-a2d7d1b06f8a",
+          "disable": false
+        }, {
+          "children": "#fff",
+          "type": "color",
+          "label": "Background Overlay Color",
+          "summary": "",
+          "name": "background_overlay_color",
+          "id": "id_f86052d2-2d7d-4202-b7bc-b7490937e4c5",
+          "disable": false
+        }, {
+          "children": {
+            "left": 0
+          },
+          "type": "space",
+          "label": "Padding",
+          "summary": "",
+          "name": "padding",
+          "id": "id_14edb4dd-5fe1-4bed-9a75-16c125d2a40f",
+          "disable": false
+        }],
+        "type": "object",
+        "label": "Section Settings",
+        "summary": "",
+        "name": "section_settings",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_7cdeeaa4-2b3d-45e3-bf9d-33f721e7be61",
+        "children": [{
+          "children": "Add note for seller",
+          "type": "text",
+          "label": "Note For Seller Text",
+          "summary": "",
+          "name": "note_for_seller_text",
+          "id": "id_ca8600a7-c7ee-49df-a09c-9c2e473631a0",
+          "disable": false
+        }, {
+          "children": "Special instrutions for seller",
+          "type": "text",
+          "label": "Note for Seller Placeholder",
+          "summary": "",
+          "name": "note_for_seller_placeholder",
+          "id": "id_7e000331-253d-41e5-8346-39d4a18f907a",
+          "disable": false
+        }, {
+          "children": "Estimate shipping rates",
+          "type": "text",
+          "label": "Estimated Shipping Text",
+          "summary": "",
+          "name": "estimated_shipping_text",
+          "id": "id_53de432a-26ec-43cc-8958-339a70c4e92e",
+          "disable": false
+        }, {
+          "children": "Country/region",
+          "type": "text",
+          "label": "Country Select Text",
+          "summary": "",
+          "name": "country_select_text",
+          "id": "id_778fe371-6020-4d7f-b487-320f2ffb1f65",
+          "disable": false
+        }, {
+          "children": "State",
+          "type": "text",
+          "label": "State Select Text",
+          "summary": "",
+          "name": "state_select_text",
+          "id": "id_299ef59e-665b-4272-aab5-d04ff3636371",
+          "disable": false
+        }, {
+          "children": "Zip Code",
+          "type": "text",
+          "label": "Zip Code Text",
+          "summary": "",
+          "name": "zip_code_text",
+          "id": "id_5a7850de-c093-4040-849c-33866a055bd8",
+          "disable": false
+        }, {
+          "children": "Button Calculate Shipping",
+          "type": "text",
+          "label": "Button Calculate Shipping Text",
+          "summary": "",
+          "name": "button_calculate_shipping_text",
+          "id": "id_51f60547-7e2f-466b-b6dc-f6ed1b8c0a21",
+          "disable": false
+        }, {
+          "children": "SUBTOTAL: ",
+          "type": "text",
+          "label": "Subtotal Title Text",
+          "summary": "",
+          "name": "subtotal_title_text",
+          "id": "id_29d0bb7d-7416-4c46-a26d-6fd3d34e0e00",
+          "disable": false
+        }, {
+          "children": "Taxes and shipping calculated at checkout",
+          "type": "textarea",
+          "label": "Subtotal Description Text",
+          "summary": "",
+          "name": "subtotal_description_text",
+          "id": "id_a848e6bd-696a-430e-b2fb-b43c9d82bd92",
+          "disable": false
+        }, {
+          "children": "CHECK OUT",
+          "type": "text",
+          "label": "Button Check out Text",
+          "summary": "",
+          "name": "button_check_out_text",
+          "id": "id_36cc9fbc-2e47-4325-b98e-2216dc80ddc8",
+          "disable": false
+        }, {
+          "children": {
+            "lg": 1,
+            "md": 1,
+            "sm": 1,
+            "xs": 1
+          },
+          "type": "responsive",
+          "label": "Column",
+          "summary": "",
+          "name": "column",
+          "id": "id_618f723c-f89e-48ea-8998-1978770523a1",
+          "disable": false,
+          "max": 12,
+          "min": 1
+        }],
+        "type": "object",
+        "label": "Content",
+        "summary": "",
+        "name": "content",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_1d98c60d-da2b-49a6-8197-39eb240d7718",
+        "children": [{
+          "children": "al",
+          "type": "text",
+          "label": "Value",
+          "summary": "",
+          "name": "value",
+          "id": "id_f81cea7d-47e6-4c30-bbfd-f9f5144b70b4",
+          "disable": false
+        }, {
+          "children": "Alabama",
+          "type": "text",
+          "label": "Name",
+          "summary": "",
+          "name": "name",
+          "id": "id_6611ed3d-f5ce-40b7-8e29-a8580843638a",
+          "disable": false
+        }],
+        "type": "array",
+        "label": "State Select Data",
+        "summary": "",
+        "name": "state_select_data",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_64a9064d-a95b-4223-ad01-123d3b473d2c",
+        "children": [{
+          "children": "us",
+          "type": "text",
+          "label": "Value",
+          "summary": "",
+          "name": "value",
+          "id": "id_f81cea7d-47e6-4c30-bbfd-f9f5144b70b4",
+          "disable": false
+        }, {
+          "children": "United State",
+          "type": "text",
+          "label": "Name",
+          "summary": "",
+          "name": "name",
+          "id": "id_6611ed3d-f5ce-40b7-8e29-a8580843638a",
+          "disable": false
+        }],
+        "type": "array",
+        "label": "Country Select Data",
+        "summary": "",
+        "name": "country_select_data",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }],
+      "settings": []
+    },
+    "scss": "$container: \"[data-id='#{$uniqueId}']\";",
+    "settings": [{
+      "id": "id_1159e5d4-816b-42b0-9fa4-aa089527bf59",
+      "children": [{
+        "children": false,
+        "type": "switch",
+        "label": "Background Fixed",
+        "summary": "",
+        "name": "background_fixed",
+        "id": "id_c9ece744-124d-4a02-9b9b-decef94bc0e9",
+        "disable": false
+      }, {
+        "children": "none",
+        "type": "select",
+        "label": "Background Type",
+        "summary": "",
+        "name": "background_type",
+        "id": "id_1e796eeb-dd3e-42d3-a9f0-5dd41816ddb5",
+        "disable": false,
+        "options": [{
+          "label": "Image",
+          "value": "image",
+          "id": "6c584ed9-1935-4eea-9468-b70ebe69de67"
+        }, {
+          "label": "Color",
+          "value": "color",
+          "id": "d25fc2d3-16c0-48f2-aea4-e537b5ef4012"
+        }, {
+          "label": "None",
+          "value": "none",
+          "id": "ee411474-649f-473b-9c89-25431bd4b08d"
+        }]
+      }, {
+        "children": "",
+        "type": "image",
+        "label": "Background Image",
+        "summary": "",
+        "name": "background_image",
+        "id": "id_52f34cb3-29ad-48b2-9153-ab21d757dedc",
+        "disable": false,
+        "deps": "section_settings.background_type === \"image\""
+      }, {
+        "children": "#fff",
+        "type": "color",
+        "label": "Background Color",
+        "summary": "",
+        "name": "background_color",
+        "id": "id_70746885-9ecf-45be-8a75-85e89849e51e",
+        "disable": false,
+        "deps": "section_settings.background_type === \"color\""
+      }, {
+        "children": "cover",
+        "type": "select",
+        "label": "Background Size",
+        "summary": "",
+        "name": "background_size",
+        "id": "id_78d0643b-2e11-472f-b31a-d784286ed644",
+        "disable": false,
+        "options": [{
+          "label": "Cover",
+          "value": "cover",
+          "id": "1eed0b78-27ce-49d8-aec1-488f17fd9c41"
+        }, {
+          "label": "Contain",
+          "value": "contain",
+          "id": "96bbe33d-8009-410e-8a09-479d5ff794b2"
+        }]
+      }, {
+        "children": false,
+        "type": "switch",
+        "label": "Background Overlay Enable",
+        "summary": "",
+        "name": "background_overlay_enable",
+        "id": "id_b7664aaa-12ae-4112-b993-a2d7d1b06f8a",
+        "disable": false
+      }, {
+        "children": "#fff",
+        "type": "color",
+        "label": "Background Overlay Color",
+        "summary": "",
+        "name": "background_overlay_color",
+        "id": "id_f86052d2-2d7d-4202-b7bc-b7490937e4c5",
+        "disable": false
+      }, {
+        "children": {
+          "left": 0
+        },
+        "type": "space",
+        "label": "Padding",
+        "summary": "",
+        "name": "padding",
+        "id": "id_14edb4dd-5fe1-4bed-9a75-16c125d2a40f",
+        "disable": false
+      }],
+      "type": "object",
+      "label": "Section Settings",
+      "summary": "",
+      "name": "section_settings",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_7cdeeaa4-2b3d-45e3-bf9d-33f721e7be61",
+      "children": [{
+        "children": "Add note for seller",
+        "type": "text",
+        "label": "Note For Seller Text",
+        "summary": "",
+        "name": "note_for_seller_text",
+        "id": "id_ca8600a7-c7ee-49df-a09c-9c2e473631a0",
+        "disable": false
+      }, {
+        "children": "Special instrutions for seller",
+        "type": "text",
+        "label": "Note for Seller Placeholder",
+        "summary": "",
+        "name": "note_for_seller_placeholder",
+        "id": "id_7e000331-253d-41e5-8346-39d4a18f907a",
+        "disable": false
+      }, {
+        "children": "Estimate shipping rates",
+        "type": "text",
+        "label": "Estimated Shipping Text",
+        "summary": "",
+        "name": "estimated_shipping_text",
+        "id": "id_53de432a-26ec-43cc-8958-339a70c4e92e",
+        "disable": false
+      }, {
+        "children": "Country/region",
+        "type": "text",
+        "label": "Country Select Text",
+        "summary": "",
+        "name": "country_select_text",
+        "id": "id_778fe371-6020-4d7f-b487-320f2ffb1f65",
+        "disable": false
+      }, {
+        "children": "State",
+        "type": "text",
+        "label": "State Select Text",
+        "summary": "",
+        "name": "state_select_text",
+        "id": "id_299ef59e-665b-4272-aab5-d04ff3636371",
+        "disable": false
+      }, {
+        "children": "Zip Code",
+        "type": "text",
+        "label": "Zip Code Text",
+        "summary": "",
+        "name": "zip_code_text",
+        "id": "id_5a7850de-c093-4040-849c-33866a055bd8",
+        "disable": false
+      }, {
+        "children": "Button Calculate Shipping",
+        "type": "text",
+        "label": "Button Calculate Shipping Text",
+        "summary": "",
+        "name": "button_calculate_shipping_text",
+        "id": "id_51f60547-7e2f-466b-b6dc-f6ed1b8c0a21",
+        "disable": false
+      }, {
+        "children": "SUBTOTAL: ",
+        "type": "text",
+        "label": "Subtotal Title Text",
+        "summary": "",
+        "name": "subtotal_title_text",
+        "id": "id_29d0bb7d-7416-4c46-a26d-6fd3d34e0e00",
+        "disable": false
+      }, {
+        "children": "Taxes and shipping calculated at checkout",
+        "type": "textarea",
+        "label": "Subtotal Description Text",
+        "summary": "",
+        "name": "subtotal_description_text",
+        "id": "id_a848e6bd-696a-430e-b2fb-b43c9d82bd92",
+        "disable": false
+      }, {
+        "children": "CHECK OUT",
+        "type": "text",
+        "label": "Button Check out Text",
+        "summary": "",
+        "name": "button_check_out_text",
+        "id": "id_36cc9fbc-2e47-4325-b98e-2216dc80ddc8",
+        "disable": false
+      }, {
+        "children": {
+          "lg": 1,
+          "md": 1,
+          "sm": 1,
+          "xs": 1
+        },
+        "type": "responsive",
+        "label": "Column",
+        "summary": "",
+        "name": "column",
+        "id": "id_618f723c-f89e-48ea-8998-1978770523a1",
+        "disable": false,
+        "max": 12,
+        "min": 1
+      }],
+      "type": "object",
+      "label": "Content",
+      "summary": "",
+      "name": "content",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_1d98c60d-da2b-49a6-8197-39eb240d7718",
+      "children": [{
+        "id": "f4aac672-ffc8-4a5a-a9c7-087090ca46af",
+        "children": [{
+          "children": "al",
+          "type": "text",
+          "label": "Value",
+          "summary": "",
+          "name": "value",
+          "id": "id_f81cea7d-47e6-4c30-bbfd-f9f5144b70b4",
+          "disable": false
+        }, {
+          "children": "Alabama",
+          "type": "text",
+          "label": "Name",
+          "summary": "",
+          "name": "name",
+          "id": "id_6611ed3d-f5ce-40b7-8e29-a8580843638a",
+          "disable": false
+        }]
+      }, {
+        "id": "26efac7d-1d06-48ad-a52a-e76e1526802c",
+        "children": [{
+          "children": "ak",
+          "type": "text",
+          "label": "Value",
+          "summary": "",
+          "name": "value",
+          "id": "id_f81cea7d-47e6-4c30-bbfd-f9f5144b70b4",
+          "disable": false
+        }, {
+          "children": "Alaska",
+          "type": "text",
+          "label": "Name",
+          "summary": "",
+          "name": "name",
+          "id": "id_6611ed3d-f5ce-40b7-8e29-a8580843638a",
+          "disable": false
+        }]
+      }, {
+        "id": "f00ef114-b7b5-44d6-a332-bbb7541502dd",
+        "children": [{
+          "children": "az",
+          "type": "text",
+          "label": "Value",
+          "summary": "",
+          "name": "value",
+          "id": "id_f81cea7d-47e6-4c30-bbfd-f9f5144b70b4",
+          "disable": false
+        }, {
+          "children": "Arizona",
+          "type": "text",
+          "label": "Name",
+          "summary": "",
+          "name": "name",
+          "id": "id_6611ed3d-f5ce-40b7-8e29-a8580843638a",
+          "disable": false
+        }]
+      }],
+      "type": "array",
+      "label": "State Select Data",
+      "summary": "",
+      "name": "state_select_data",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_64a9064d-a95b-4223-ad01-123d3b473d2c",
+      "children": [{
+        "id": "id_2d02b7db-029b-46ec-a8c9-ec3fda0f9940",
+        "children": [{
+          "children": "us",
+          "type": "text",
+          "label": "Value",
+          "summary": "",
+          "name": "value",
+          "id": "id_f81cea7d-47e6-4c30-bbfd-f9f5144b70b4",
+          "disable": false
+        }, {
+          "children": "United State",
+          "type": "text",
+          "label": "Name",
+          "summary": "",
+          "name": "name",
+          "id": "id_6611ed3d-f5ce-40b7-8e29-a8580843638a",
+          "disable": false
+        }]
+      }, {
+        "id": "c5eeb4a3-6f46-4695-955f-bfcaa36e1765",
+        "children": [{
+          "children": "ca",
+          "type": "text",
+          "label": "Value",
+          "summary": "",
+          "name": "value",
+          "id": "id_f81cea7d-47e6-4c30-bbfd-f9f5144b70b4",
+          "disable": false
+        }, {
+          "children": "Canada",
+          "type": "text",
+          "label": "Name",
+          "summary": "",
+          "name": "name",
+          "id": "id_6611ed3d-f5ce-40b7-8e29-a8580843638a",
+          "disable": false
+        }]
+      }, {
+        "id": "81249858-3e29-481a-be7f-611c7fb89437",
+        "children": [{
+          "children": "uk",
+          "type": "text",
+          "label": "Value",
+          "summary": "",
+          "name": "value",
+          "id": "id_f81cea7d-47e6-4c30-bbfd-f9f5144b70b4",
+          "disable": false
+        }, {
+          "children": "United Kingdom",
+          "type": "text",
+          "label": "Name",
+          "summary": "",
+          "name": "name",
+          "id": "id_6611ed3d-f5ce-40b7-8e29-a8580843638a",
+          "disable": false
+        }]
+      }],
+      "type": "array",
+      "label": "Country Select Data",
+      "summary": "",
+      "name": "country_select_data",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }]
+  },
+  "scope": "private",
+  "pageTypes": ["collection", "product", "cart"],
+  "sample": true,
+  "enable": true,
+  "userId": 1,
+  "synced": false,
+  "category": {
+    "commandId": "629879c0b57c6c4c8378755a",
+    "name": "products"
+  },
+  "createdDateTimestamp": 1655370237925,
+  "modifiedDateTimestamp": 1655370237925,
+  "parentCommandId": "62aaf1fdd316833cf19c2601",
+  "changelog": {
+    "version": "1",
+    "versionId": "624f29e2-59df-4520-b9c4-bb8a4b7c8c8b",
+    "content": ""
+  },
+  "categoryId": "products"
+}
