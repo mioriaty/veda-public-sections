@@ -320,7 +320,9 @@
       "password": "Mật khẩu",
       "title": "Đăng nhập",
       "sign_in": "Đăng nhập",
-      "submit": "Gửi"
+      "submit": "Gửi",
+      "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing",
+      "login": "Đăng nhập"
     },
     "orders": {
       "title": "Lịch sử đặt hàng",
@@ -343,7 +345,8 @@
       "last_name": "Họ",
       "email": "Email",
       "password": "Mật khẩu",
-      "submit": "Tạo"
+      "submit": "Tạo",
+      "description": "Sign up for early Sale access plus tailored new arrivals, trends and promotions. To opt out, click unsubscribe in our emails."
     },
     "reset_password": {
       "title": "Đặt lại mật khẩu tài khoản",

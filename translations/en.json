@@ -316,7 +316,9 @@
       "password": "Password",
       "title": "Login",
       "sign_in": "Sign in",
-      "submit": "Submit"
+      "submit": "Submit",
+      "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing",
+      "login": "Login"
     },
     "order": {
       "title": "Order {{ name }}",
@@ -363,7 +365,8 @@
       "last_name": "Last name",
       "email": "Email",
       "password": "Password",
-      "submit": "Create"
+      "submit": "Create",
+      "description": "Sign up for early Sale access plus tailored new arrivals, trends and promotions. To opt out, click unsubscribe in our emails."
     },
     "reset_password": {
       "title": "Reset account password",
