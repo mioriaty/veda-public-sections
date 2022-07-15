@@ -1,1 +1,257 @@
-{"id":"id_fddc5e3a-ff7c-47a7-ac06-16056e630986","commandId":"62c6ade8c96c9867a474dd95","label":"Gift Card","image":{"src":"","width":0,"height":0},"addonIds":[],"megaMenuId":"","currentVersion":"1.0","versionId":"77222e36-e141-45cb-9d55-34f3be2bbe6e","data":{"js":"\r\nconst { message } = veda.plugins;\r\nconst { objectParse } = veda.utils;\r\nconst giftCardTextEl = container.querySelector(\".gift-card-text-js\");\r\nconst giftCardText = objectParse(giftCardTextEl.textContent);\r\n\r\nfunction createQRCode() {\r\n  new QRCode('qr-code', {\r\n    text: `${giftCardText.qr_identifier}`,\r\n    width: 120,\r\n    height: 120\r\n  });\r\n}\r\n\r\nfunction copyGiftCode() {\r\n  const btnCopyEl = container.querySelector(\".btn-copy-gift-code-js\");\r\n  const giftCodeValueEl = container.querySelector(\".gift-code-value-js\");\r\n  btnCopyEl.addEventListener(\"click\", () => {\r\n    navigator.clipboard.writeText(giftCodeValueEl.textContent);\r\n    message.success(giftCardText.copy_code_success);\r\n  })\r\n}\r\n\r\nfunction printGiftCard() {\r\n  const btnPrintGiftCard = container.querySelector(\".btn-print-gift-card-js\");\r\n  btnPrintGiftCard.addEventListener(\"click\", () => {\r\n    var html = \"<html>\";\r\n    html += container.querySelector(\".print-gift-card-content-js\").innerHTML;\r\n    html += \"</html>\";\r\n    var printWin = window.open('', '', 'width=600,height=400,toolbar=0,scrollbars=0,status=0');\r\n    printWin.document.write(html);\r\n    printWin.document.close();\r\n    printWin.focus();\r\n    printWin.print();\r\n  })\r\n}\r\n\r\ncreateQRCode();\r\ncopyGiftCode();\r\nprintGiftCard();\r\n\r\n","liquid":"{% liquid\r\n  if section_settings.background_fixed assign backgroundFixed = 'fixed' else assign backgroundFixed = 'scroll' endif\r\n  if section_settings.background_type == 'color' assign backgroundColor = 'background-color: ' | append: section_settings.background_color | append: ';' else assign backgroundColor = '' endif\r\n  if section_settings.background_type == 'image' assign backgroundImage = 'background-image: url(' | append: section_settings.background_image | append:\r\n  ');background-attachment: ' | append: backgroundFixed | append: ';background-size: ' | append: section_settings.background_size | append: ';' else assign backgroundImage = '' endif\r\n  assign sectionPadding = 'padding-top: ' | append: section_settings.padding.top | append: 'px;padding-right: ' | append: section_settings.padding.right | append: 'px;padding-bottom: ' | append: section_settings.padding.bottom | append: 'px;padding-left: ' | append: section_settings.padding.left | append: 'px;'\r\n%}\r\n\r\n\r\n<section data-id=\"{{uniqueId}}\" css=\"{{ backgroundColor }}{{ backgroundImage }}{{ sectionPadding }}\">\r\n  {% if section_settings.background_overlay_enable %}\r\n    <div class=\"pos:absolute ins:0 z:-1\" css=\"background-color: {{ section_settings.background_overlay_color }}\"></div>\r\n  {% endif %}\r\n  <div class=\"fz:15px c:color-gray4 mb:33px ml:5%\">\r\n    <shopify>\r\n      {% unless request.page_type == 'index' or request.page_type == 'list-collections' %}\r\n        <nav role=\"navigation\" aria-label=\"breadcrumbs\">\r\n            <a class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" href=\"{{ routes.root_url }}\" title=\"Home\">Home</a>\r\n            {% if request.page_type contains 'page' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ page.title }}</span>\r\n            {% elsif request.page_type contains 'product' %}\r\n              {% if collection.url %}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n                {{ collection.title | link_to: collection.url }}\r\n              {% endif %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ product.title }}</span>\r\n            {% elsif request.page_type contains 'collection' and collection.handle %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              {% if current_tags %}\r\n                {% capture url %}/collections/{{ collection.handle }}{% endcapture %}\r\n                {{ collection.title | link_to: url }}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ current_tags | join: \" + \" }}</span>\r\n              {% else %}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ collection.title }}</span>\r\n              {% endif %}\r\n            {% elsif request.page_type == 'blog' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              {% if current_tags %}\r\n                {{ blog.title | link_to: blog.url }}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ current_tags | join: \" + \" }}</span>\r\n              {% else %}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ blog.title }}</span>\r\n              {% endif %}\r\n            {% elsif request.page_type == 'article' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              {{ blog.title | link_to: blog.url }}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span>{{ article.title }}</span>\r\n            {% elsif request.page_type == 'cart' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">Cart</span>\r\n            {% else %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ page_title }}</span>\r\n            {% endif %}\r\n        </nav>\r\n      {% endunless %}\r\n    </shopify>\r\n  </div>\r\n  <div class=\"container\">\r\n    <shopify>\r\n      <div class=\"row jc:center\">\r\n        <div class=\"col-lg-5 d:flex fld:column ai:center\">\r\n          <div class=\"print-gift-card-content-js d:flex fld:column ai:center\">\r\n            <script class=\"gift-card-text-js\" type=\"application/json\">\r\n              {\r\n                copy_code_success: {{ 'veda.gift_cards.issued.copy_code_success' | t | json }},\r\n                qr_identifier: {{ gift_card.qr_identifier | json}}\r\n              }\r\n            </script>\r\n            <h3 class=\"mb:30px ta:center fz:35px fw:500 ff:font-primary fw:500\">{{'veda.gift_cards.issued.subtext' | t }}</h3>\r\n            <div class=\"c:color-gray9 fz:16px ta:center mb:20px\">{{gift_card.balance | money }}</div>\r\n            \r\n            <div class=\"veda-image-cover d:block w:300px\" style=\"--aspect-ratio:4/3\">\r\n              <img src=\"{{gift_card_image}}\" alt=\"\">\r\n            </div>\r\n            <div id=\"qr-code\" class=\"mt:20px\"></div>\r\n            <div class=\"gift-code-value-js ff:font-primary fz:18px c:color-gray9 mt:20px\">{{gift_card.code}}</div>\r\n          </div>\r\n          <div class=\"btn-copy-gift-code-js ff:font-primary! fz:14px c:color-gray5 td:underline cur:pointer mt:20px\">{{'veda.gift_cards.issued.copy_code' | t }}</div>\r\n          <a href=\"{{shop.url}}\" class=\"button miw:202px ff:font-primary! fz:20px bgc:color-gray9 bgc:color-gray9|h! c:color-light c:color-light|h! bd:1px_solid_color-gray9 bd:1px_solid_color-gray9|h! mt:20px\">{{'veda.gift_cards.issued.shop_link' | t }}</a>\r\n          <button class=\"btn-print-gift-card-js miw:202px ff:font-primary! fz:20px bgc:color-light bgc:color-light|h! c:color-gray9 c:color-gray9|h! bd:1px_solid_color-gray9 bd:1px_solid_color-gray9|h! mt:15px\">{{'veda.gift_cards.issued.print_gift_card' | t }}</button>\r\n        </div>\r\n      </div>\r\n    </shopify>\r\n  </div>\r\n</section>\r\n","schema":{"blocks":[{"id":"id_2ffe84d8-02dd-4023-8216-93ae8f4cd509","children":[{"children":false,"type":"switch","label":"Background Fixed","summary":"","name":"background_fixed","id":"id_d0067df3-c2e6-4fef-8097-416e8ef85014","disable":false},{"children":"none","type":"select","label":"Background Type","summary":"","name":"background_type","id":"id_e9f3900d-f05a-469a-88da-5bf25ea6bdf6","disable":false,"options":[{"label":"Image","value":"image","id":"57e81d7d-fff2-4639-afe9-09ace0a41d4b"},{"label":"Color","value":"color","id":"fa30afdd-2461-4403-acd7-232677593fde"},{"label":"None","value":"none","id":"c4076912-f7c8-4cf4-8152-3ac3204e3095"}]},{"children":"","type":"image","label":"Background Image","summary":"","name":"background_image","id":"id_dc98d02b-2d7b-4ad0-8786-40e976cdab8f","disable":false,"deps":"section_settings.background_type === \"image\""},{"children":"#fff","type":"color","label":"Background Color","summary":"","name":"background_color","id":"id_7421705b-a7c5-442b-934a-ebd884bfc967","disable":false,"deps":"section_settings.background_type === \"color\""},{"children":"cover","type":"select","label":"Background Size","summary":"","name":"background_size","id":"id_c0acef79-8606-418f-a187-9a2cc5e06fb0","disable":false,"options":[{"label":"Cover","value":"cover","id":"41d3cb7c-4df8-47e8-a7be-ec785830878d"},{"label":"Contain","value":"contain","id":"83a8ce3d-66e9-498b-b476-52e71b01c720"}]},{"children":false,"type":"switch","label":"Background Overlay Enable","summary":"","name":"background_overlay_enable","id":"id_cf3d0dcc-f82c-4f8a-b0b8-2da8488d73eb","disable":false},{"children":"#fff","type":"color","label":"Background Overlay Color","summary":"","name":"background_overlay_color","id":"id_1374f2d4-034d-4859-94fc-e8f6065d3156","disable":false},{"children":{"left":0},"type":"space","label":"Padding","summary":"","name":"padding","id":"id_97805d28-f618-42fe-a28d-8d3f41cf7996","disable":false}],"type":"object","label":"Section Settings","summary":"","name":"section_settings","open":false,"drawer":false,"disable":false}],"settings":[{"id":"id_c4cffe50-5fc8-41f1-a8b8-1a74ea044c5a","type":"image","children":"","label":"Gift Card Image","summary":"","name":"gift_card_image","disable":false}]},"scss":"$container: \"[data-id='#{$uniqueId}']\";","settings":[{"id":"id_2ffe84d8-02dd-4023-8216-93ae8f4cd509","children":[{"children":false,"type":"switch","label":"Background Fixed","summary":"","name":"background_fixed","id":"id_d0067df3-c2e6-4fef-8097-416e8ef85014","disable":false},{"children":"none","type":"select","label":"Background Type","summary":"","name":"background_type","id":"id_e9f3900d-f05a-469a-88da-5bf25ea6bdf6","disable":false,"options":[{"label":"Image","value":"image","id":"57e81d7d-fff2-4639-afe9-09ace0a41d4b"},{"label":"Color","value":"color","id":"fa30afdd-2461-4403-acd7-232677593fde"},{"label":"None","value":"none","id":"c4076912-f7c8-4cf4-8152-3ac3204e3095"}]},{"children":"","type":"image","label":"Background Image","summary":"","name":"background_image","id":"id_dc98d02b-2d7b-4ad0-8786-40e976cdab8f","disable":false,"deps":"section_settings.background_type === \"image\""},{"children":"#fff","type":"color","label":"Background Color","summary":"","name":"background_color","id":"id_7421705b-a7c5-442b-934a-ebd884bfc967","disable":false,"deps":"section_settings.background_type === \"color\""},{"children":"cover","type":"select","label":"Background Size","summary":"","name":"background_size","id":"id_c0acef79-8606-418f-a187-9a2cc5e06fb0","disable":false,"options":[{"label":"Cover","value":"cover","id":"41d3cb7c-4df8-47e8-a7be-ec785830878d"},{"label":"Contain","value":"contain","id":"83a8ce3d-66e9-498b-b476-52e71b01c720"}]},{"children":false,"type":"switch","label":"Background Overlay Enable","summary":"","name":"background_overlay_enable","id":"id_cf3d0dcc-f82c-4f8a-b0b8-2da8488d73eb","disable":false},{"children":"#fff","type":"color","label":"Background Overlay Color","summary":"","name":"background_overlay_color","id":"id_1374f2d4-034d-4859-94fc-e8f6065d3156","disable":false},{"children":{"left":0},"type":"space","label":"Padding","summary":"","name":"padding","id":"id_97805d28-f618-42fe-a28d-8d3f41cf7996","disable":false}],"type":"object","label":"Section Settings","summary":"","name":"section_settings","open":false,"drawer":false,"disable":false},{"id":"id_c4cffe50-5fc8-41f1-a8b8-1a74ea044c5a","type":"image","children":"https://app.vedabuilder.com/api/v1/command/medias/files/2022/07/hpnlqrxpxq.png","label":"Gift Card Image","summary":"","name":"gift_card_image","disable":false}]},"scope":"private","pageTypes":["page","article","collection","product","home","cart","pagenotfound","password","search","customerslogin","customersresetpassword","customersactivateaccount","customersregister","customersaccount","customersorder","customersaddresses","giftcard","collectionlisting"],"sample":true,"enable":true,"userId":1,"synced":true,"category":{"commandId":"62aab089d316833cf19c25d4","name":"tuong"},"type":"default","changelog":{"content":"","version":"1.0","versionId":""}}
+{
+  "id": "id_fddc5e3a-ff7c-47a7-ac06-16056e630986",
+  "commandId": "62c6ade8c96c9867a474dd95",
+  "label": "Gift Card",
+  "image": {
+    "src": "",
+    "width": 0,
+    "height": 0
+  },
+  "addonIds": [],
+  "megaMenuId": "",
+  "currentVersion": "",
+  "versionId": "",
+  "scope": "private",
+  "pageTypes": ["page", "article", "collection", "product", "home", "cart", "pageNotFound", "password", "search", "login", "resetPassword", "activateAccount", "register", "account", "order", "addresses", "giftCard", "collections"],
+  "type": "default",
+  "sample": true,
+  "enable": true,
+  "userId": 1,
+  "synced": false,
+  "category": {
+    "commandId": "",
+    "name": ""
+  },
+  "hitCache": false,
+  "data": {
+    "js": "\r\nconst { message } = veda.plugins;\r\nconst { objectParse } = veda.utils;\r\nconst giftCardTextEl = container.querySelector(\".gift-card-text-js\");\r\nconst giftCardText = objectParse(giftCardTextEl.textContent);\r\n\r\nfunction createQRCode() {\r\n  new QRCode('qr-code', {\r\n    text: `${giftCardText.qr_identifier}`,\r\n    width: 120,\r\n    height: 120\r\n  });\r\n}\r\n\r\nfunction copyGiftCode() {\r\n  const btnCopyEl = container.querySelector(\".btn-copy-gift-code-js\");\r\n  const giftCodeValueEl = container.querySelector(\".gift-code-value-js\");\r\n  btnCopyEl.addEventListener(\"click\", () => {\r\n    navigator.clipboard.writeText(giftCodeValueEl.textContent);\r\n    message.success(giftCardText.copy_code_success);\r\n  })\r\n}\r\n\r\nfunction printGiftCard() {\r\n  const btnPrintGiftCard = container.querySelector(\".btn-print-gift-card-js\");\r\n  btnPrintGiftCard.addEventListener(\"click\", () => {\r\n    var html = \"<html>\";\r\n    html += container.querySelector(\".print-gift-card-content-js\").innerHTML;\r\n    html += \"</html>\";\r\n    var printWin = window.open('', '', 'width=600,height=400,toolbar=0,scrollbars=0,status=0');\r\n    printWin.document.write(html);\r\n    printWin.document.close();\r\n    printWin.focus();\r\n    printWin.print();\r\n  })\r\n}\r\n\r\ncreateQRCode();\r\ncopyGiftCode();\r\nprintGiftCard();\r\n\r\n",
+    "liquid": "{% liquid\r\n  if section_settings.background_fixed assign backgroundFixed = 'fixed' else assign backgroundFixed = 'scroll' endif\r\n  if section_settings.background_type == 'color' assign backgroundColor = 'background-color: ' | append: section_settings.background_color | append: ';' else assign backgroundColor = '' endif\r\n  if section_settings.background_type == 'image' assign backgroundImage = 'background-image: url(' | append: section_settings.background_image | append:\r\n  ');background-attachment: ' | append: backgroundFixed | append: ';background-size: ' | append: section_settings.background_size | append: ';' else assign backgroundImage = '' endif\r\n  assign sectionPadding = 'padding-top: ' | append: section_settings.padding.top | append: 'px;padding-right: ' | append: section_settings.padding.right | append: 'px;padding-bottom: ' | append: section_settings.padding.bottom | append: 'px;padding-left: ' | append: section_settings.padding.left | append: 'px;'\r\n%}\r\n\r\n\r\n<section data-id=\"{{uniqueId}}\" css=\"{{ backgroundColor }}{{ backgroundImage }}{{ sectionPadding }}\">\r\n  {% if section_settings.background_overlay_enable %}\r\n    <div class=\"pos:absolute ins:0 z:-1\" css=\"background-color: {{ section_settings.background_overlay_color }}\"></div>\r\n  {% endif %}\r\n  <div class=\"fz:15px c:color-gray4 mb:33px ml:5%\">\r\n    <shopify>\r\n      {% unless request.page_type == 'index' or request.page_type == 'list-collections' %}\r\n        <nav role=\"navigation\" aria-label=\"breadcrumbs\">\r\n            <a class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" href=\"{{ routes.root_url }}\" title=\"Home\">Home</a>\r\n            {% if request.page_type contains 'page' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ page.title }}</span>\r\n            {% elsif request.page_type contains 'product' %}\r\n              {% if collection.url %}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n                {{ collection.title | link_to: collection.url }}\r\n              {% endif %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ product.title }}</span>\r\n            {% elsif request.page_type contains 'collection' and collection.handle %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              {% if current_tags %}\r\n                {% capture url %}/collections/{{ collection.handle }}{% endcapture %}\r\n                {{ collection.title | link_to: url }}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ current_tags | join: \" + \" }}</span>\r\n              {% else %}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ collection.title }}</span>\r\n              {% endif %}\r\n            {% elsif request.page_type == 'blog' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              {% if current_tags %}\r\n                {{ blog.title | link_to: blog.url }}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ current_tags | join: \" + \" }}</span>\r\n              {% else %}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ blog.title }}</span>\r\n              {% endif %}\r\n            {% elsif request.page_type == 'article' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              {{ blog.title | link_to: blog.url }}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span>{{ article.title }}</span>\r\n            {% elsif request.page_type == 'cart' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">Cart</span>\r\n            {% else %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ page_title }}</span>\r\n            {% endif %}\r\n        </nav>\r\n      {% endunless %}\r\n    </shopify>\r\n  </div>\r\n  <div class=\"container\">\r\n    <shopify>\r\n      <div class=\"row jc:center\">\r\n        <div class=\"col-lg-5 d:flex fld:column ai:center\">\r\n          <div class=\"print-gift-card-content-js d:flex fld:column ai:center\">\r\n            <script class=\"gift-card-text-js\" type=\"application/json\">\r\n              {\r\n                copy_code_success: {{ 'veda.gift_cards.issued.copy_code_success' | t | json }},\r\n                qr_identifier: {{ gift_card.qr_identifier | json}}\r\n              }\r\n            </script>\r\n            <h3 class=\"mb:30px ta:center fz:35px fw:500 ff:font-primary fw:500\">{{'veda.gift_cards.issued.subtext' | t }}</h3>\r\n            <div class=\"c:color-gray9 fz:16px ta:center mb:20px\">{{gift_card.balance | money }}</div>\r\n            \r\n            <div class=\"veda-image-cover d:block w:300px\" style=\"--aspect-ratio:4/3\">\r\n              <img src=\"{{gift_card_image}}\" alt=\"\">\r\n            </div>\r\n            <div id=\"qr-code\" class=\"mt:20px\"></div>\r\n            <div class=\"gift-code-value-js ff:font-primary fz:18px c:color-gray9 mt:20px\">{{gift_card.code}}</div>\r\n          </div>\r\n          <div class=\"btn-copy-gift-code-js ff:font-primary! fz:14px c:color-gray5 td:underline cur:pointer mt:20px\">{{'veda.gift_cards.issued.copy_code' | t }}</div>\r\n          <a href=\"{{shop.url}}\" class=\"button miw:202px ff:font-primary! fz:20px bgc:color-gray9 bgc:color-gray9|h! c:color-light c:color-light|h! bd:1px_solid_color-gray9 bd:1px_solid_color-gray9|h! mt:20px\">{{'veda.gift_cards.issued.shop_link' | t }}</a>\r\n          <button class=\"btn-print-gift-card-js miw:202px ff:font-primary! fz:20px bgc:color-light bgc:color-light|h! c:color-gray9 c:color-gray9|h! bd:1px_solid_color-gray9 bd:1px_solid_color-gray9|h! mt:15px\">{{'veda.gift_cards.issued.print_gift_card' | t }}</button>\r\n        </div>\r\n      </div>\r\n    </shopify>\r\n  </div>\r\n</section>\r\n",
+    "schema": {
+      "blocks": [{
+        "id": "id_2ffe84d8-02dd-4023-8216-93ae8f4cd509",
+        "children": [{
+          "children": false,
+          "type": "switch",
+          "label": "Background Fixed",
+          "summary": "",
+          "name": "background_fixed",
+          "id": "id_d0067df3-c2e6-4fef-8097-416e8ef85014",
+          "disable": false
+        }, {
+          "children": "none",
+          "type": "select",
+          "label": "Background Type",
+          "summary": "",
+          "name": "background_type",
+          "id": "id_e9f3900d-f05a-469a-88da-5bf25ea6bdf6",
+          "disable": false,
+          "options": [{
+            "label": "Image",
+            "value": "image",
+            "id": "57e81d7d-fff2-4639-afe9-09ace0a41d4b"
+          }, {
+            "label": "Color",
+            "value": "color",
+            "id": "fa30afdd-2461-4403-acd7-232677593fde"
+          }, {
+            "label": "None",
+            "value": "none",
+            "id": "c4076912-f7c8-4cf4-8152-3ac3204e3095"
+          }]
+        }, {
+          "children": "",
+          "type": "image",
+          "label": "Background Image",
+          "summary": "",
+          "name": "background_image",
+          "id": "id_dc98d02b-2d7b-4ad0-8786-40e976cdab8f",
+          "disable": false,
+          "deps": "section_settings.background_type === \"image\""
+        }, {
+          "children": "#fff",
+          "type": "color",
+          "label": "Background Color",
+          "summary": "",
+          "name": "background_color",
+          "id": "id_7421705b-a7c5-442b-934a-ebd884bfc967",
+          "disable": false,
+          "deps": "section_settings.background_type === \"color\""
+        }, {
+          "children": "cover",
+          "type": "select",
+          "label": "Background Size",
+          "summary": "",
+          "name": "background_size",
+          "id": "id_c0acef79-8606-418f-a187-9a2cc5e06fb0",
+          "disable": false,
+          "options": [{
+            "label": "Cover",
+            "value": "cover",
+            "id": "41d3cb7c-4df8-47e8-a7be-ec785830878d"
+          }, {
+            "label": "Contain",
+            "value": "contain",
+            "id": "83a8ce3d-66e9-498b-b476-52e71b01c720"
+          }]
+        }, {
+          "children": false,
+          "type": "switch",
+          "label": "Background Overlay Enable",
+          "summary": "",
+          "name": "background_overlay_enable",
+          "id": "id_cf3d0dcc-f82c-4f8a-b0b8-2da8488d73eb",
+          "disable": false
+        }, {
+          "children": "#fff",
+          "type": "color",
+          "label": "Background Overlay Color",
+          "summary": "",
+          "name": "background_overlay_color",
+          "id": "id_1374f2d4-034d-4859-94fc-e8f6065d3156",
+          "disable": false
+        }, {
+          "children": {
+            "left": 0
+          },
+          "type": "space",
+          "label": "Padding",
+          "summary": "",
+          "name": "padding",
+          "id": "id_97805d28-f618-42fe-a28d-8d3f41cf7996",
+          "disable": false
+        }],
+        "type": "object",
+        "label": "Section Settings",
+        "summary": "",
+        "name": "section_settings",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }],
+      "settings": [{
+        "id": "id_c4cffe50-5fc8-41f1-a8b8-1a74ea044c5a",
+        "type": "image",
+        "children": "",
+        "label": "Gift Card Image",
+        "summary": "",
+        "name": "gift_card_image",
+        "disable": false
+      }]
+    },
+    "scss": "$container: \"[data-id='#{$uniqueId}']\";",
+    "settings": [{
+      "id": "id_2ffe84d8-02dd-4023-8216-93ae8f4cd509",
+      "children": [{
+        "children": false,
+        "type": "switch",
+        "label": "Background Fixed",
+        "summary": "",
+        "name": "background_fixed",
+        "id": "id_d0067df3-c2e6-4fef-8097-416e8ef85014",
+        "disable": false
+      }, {
+        "children": "none",
+        "type": "select",
+        "label": "Background Type",
+        "summary": "",
+        "name": "background_type",
+        "id": "id_e9f3900d-f05a-469a-88da-5bf25ea6bdf6",
+        "disable": false,
+        "options": [{
+          "label": "Image",
+          "value": "image",
+          "id": "57e81d7d-fff2-4639-afe9-09ace0a41d4b"
+        }, {
+          "label": "Color",
+          "value": "color",
+          "id": "fa30afdd-2461-4403-acd7-232677593fde"
+        }, {
+          "label": "None",
+          "value": "none",
+          "id": "c4076912-f7c8-4cf4-8152-3ac3204e3095"
+        }]
+      }, {
+        "children": "",
+        "type": "image",
+        "label": "Background Image",
+        "summary": "",
+        "name": "background_image",
+        "id": "id_dc98d02b-2d7b-4ad0-8786-40e976cdab8f",
+        "disable": false,
+        "deps": "section_settings.background_type === \"image\""
+      }, {
+        "children": "#fff",
+        "type": "color",
+        "label": "Background Color",
+        "summary": "",
+        "name": "background_color",
+        "id": "id_7421705b-a7c5-442b-934a-ebd884bfc967",
+        "disable": false,
+        "deps": "section_settings.background_type === \"color\""
+      }, {
+        "children": "cover",
+        "type": "select",
+        "label": "Background Size",
+        "summary": "",
+        "name": "background_size",
+        "id": "id_c0acef79-8606-418f-a187-9a2cc5e06fb0",
+        "disable": false,
+        "options": [{
+          "label": "Cover",
+          "value": "cover",
+          "id": "41d3cb7c-4df8-47e8-a7be-ec785830878d"
+        }, {
+          "label": "Contain",
+          "value": "contain",
+          "id": "83a8ce3d-66e9-498b-b476-52e71b01c720"
+        }]
+      }, {
+        "children": false,
+        "type": "switch",
+        "label": "Background Overlay Enable",
+        "summary": "",
+        "name": "background_overlay_enable",
+        "id": "id_cf3d0dcc-f82c-4f8a-b0b8-2da8488d73eb",
+        "disable": false
+      }, {
+        "children": "#fff",
+        "type": "color",
+        "label": "Background Overlay Color",
+        "summary": "",
+        "name": "background_overlay_color",
+        "id": "id_1374f2d4-034d-4859-94fc-e8f6065d3156",
+        "disable": false
+      }, {
+        "children": {
+          "left": 0
+        },
+        "type": "space",
+        "label": "Padding",
+        "summary": "",
+        "name": "padding",
+        "id": "id_97805d28-f618-42fe-a28d-8d3f41cf7996",
+        "disable": false
+      }],
+      "type": "object",
+      "label": "Section Settings",
+      "summary": "",
+      "name": "section_settings",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_c4cffe50-5fc8-41f1-a8b8-1a74ea044c5a",
+      "type": "image",
+      "children": "https://app.vedabuilder.com/api/v1/command/medias/files/2022/07/nfnqdzfmqa.png",
+      "label": "Gift Card Image",
+      "summary": "",
+      "name": "gift_card_image",
+      "disable": false
+    }]
+  },
+  "changelog": {
+    "content": "",
+    "version": "",
+    "versionId": ""
+  }
+}

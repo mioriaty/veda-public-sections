@@ -1,1 +1,1443 @@
-{"id":"id_00e01cd5-5c3b-4e06-a1c2-598b8ef620a9","commandId":"62cb8c8e0b4692714e96c495","label":"Collection Content","image":{"src":"","width":0,"height":0},"addonIds":[],"megaMenuId":"","currentVersion":"1.0","versionId":"cf09f504-0f74-4dfe-8e9a-30d1588225ac","data":{"js":"\r\nconst {\r\n  collectionsFilters,\r\n  message,\r\n  productCompare,\r\n  productWishList,\r\n  productQuickView,\r\n  productColor,\r\n  cart,\r\n} = veda.plugins;\r\nconst { objectParse, queryString } = veda.utils;\r\nconst { html } = veda.utils.csr;\r\nlet unsubscribeCompare = () => { };\r\nlet unsubscribeWishList = () => { };\r\nfunction checkHasItem(productData, storeData) {\r\n  return storeData?.some((item) => item.id === productData.id);\r\n}\r\nfunction changeStatus(el, hasItem) {\r\n  if (hasItem()) {\r\n    el.setAttribute(\"data-tooltip-active\", true);\r\n    el.classList.add(\"toggle-active-js\");\r\n  } else {\r\n    el.setAttribute(\"data-tooltip-active\", false);\r\n    el.classList.remove(\"toggle-active-js\");\r\n  }\r\n  return hasItem;\r\n}\r\nfunction handleCompare() {\r\n  const listCard = container.querySelectorAll(\".product-card-js\");\r\n  listCard.forEach((card) => {\r\n    const compareDataEl = card.querySelector(\".product-card-data-js\");\r\n    const productData = objectParse(compareDataEl.textContent);\r\n    const btnCompareEl = card.querySelector(\".compare-toggle-js\");\r\n    const ratingCustom = card.querySelector(\".compare-rating-js\");\r\n    if (!btnCompareEl) {\r\n      return;\r\n    }\r\n    const hasItem = () => checkHasItem(productData, productCompare.getData());\r\n    changeStatus(btnCompareEl, hasItem);\r\n    btnCompareEl.addEventListener(\"click\", () => {\r\n      productCompare.toggleProduct({\r\n        ...productData,\r\n        rating: ratingCustom?.innerHTML,\r\n      });\r\n      const tooltipText = btnCompareEl.getAttribute(\"data-tooltip-text\");\r\n      const tooltipActiveText = btnCompareEl.getAttribute(\r\n        \"data-tooltip-active-text\"\r\n      );\r\n      changeStatus(btnCompareEl, hasItem);\r\n      if (hasItem()) {\r\n        tooltipText && message.success(tooltipText);\r\n      } else {\r\n        tooltipActiveText && message.error(tooltipActiveText);\r\n      }\r\n    });\r\n  });\r\n  unsubscribeCompare();\r\n  unsubscribeCompare = productCompare.subscribe((state) => {\r\n    const listCard = container.querySelectorAll(\".product-card-js\");\r\n    listCard.forEach((card) => {\r\n      const compareDataEl = card.querySelector(\".product-card-data-js\");\r\n      const productData = objectParse(compareDataEl.textContent);\r\n      const btnCompareEl = card.querySelector(\".compare-toggle-js\");\r\n      const hasItem = () => checkHasItem(productData, state);\r\n      changeStatus(btnCompareEl, hasItem);\r\n    });\r\n  });\r\n}\r\nfunction handleWishList() {\r\n  const listCard = container.querySelectorAll(\".product-card-js\");\r\n  listCard.forEach((card) => {\r\n    const compareDataEl = card.querySelector(\".product-card-data-js\");\r\n    const productData = objectParse(compareDataEl.textContent);\r\n    const btnWishListEl = card.querySelector(\".wishlist-toggle-js\");\r\n    if (!btnWishListEl) {\r\n      return;\r\n    }\r\n    const hasItem = () =>\r\n      checkHasItem(productData, productWishList.getData());\r\n    productQuickView.customQuickView({\r\n      link: productData.url,\r\n    });\r\n    changeStatus(btnWishListEl, hasItem);\r\n    btnWishListEl.addEventListener(\"click\", () => {\r\n      productWishList.toggleWishList(productData);\r\n      const tooltipText = btnWishListEl.getAttribute(\"data-tooltip-text\");\r\n      const tooltipActiveText = btnWishListEl.getAttribute(\r\n        \"data-tooltip-active-text\"\r\n      );\r\n      changeStatus(btnWishListEl, hasItem);\r\n      if (hasItem()) {\r\n        tooltipText && message.success(tooltipText);\r\n      } else {\r\n        tooltipActiveText && message.error(tooltipActiveText);\r\n      }\r\n    });\r\n  });\r\n  unsubscribeWishList();\r\n  unsubscribeWishList = productWishList.subscribe((state) => {\r\n    const listCard = container.querySelectorAll(\".product-card-js\");\r\n    listCard.forEach((card) => {\r\n      const dataEl = card.querySelector(\".product-card-data-js\");\r\n      const productData = objectParse(dataEl.textContent);\r\n      const btnWishList = card.querySelector(\".wishlist-toggle-js\");\r\n      const hasItem = () => checkHasItem(productData, state);\r\n      changeStatus(btnWishList, hasItem);\r\n    });\r\n  });\r\n}\r\nfunction handleCart() {\r\n  if (builderMode) {\r\n    return;\r\n  }\r\n  const listCard = container.querySelectorAll(\".product-card-js\");\r\n  listCard.forEach((card) => {\r\n    const cartDataEl = card.querySelector(\".product-card-data-js\");\r\n    const productData = objectParse(cartDataEl.textContent);\r\n    const btnAddCart = card.querySelector(\".product-card-add-js\");\r\n    if (!btnAddCart) {\r\n      return;\r\n    }\r\n    btnAddCart.addEventListener(\"click\", async (event) => {\r\n      event.preventDefault();\r\n      await cart.addToCart(Number(productData), 1);\r\n      cart.toggleDraw();\r\n    });\r\n  });\r\n}\r\nfunction handleQuickView() {\r\n  const listCard = container.querySelectorAll(\".product-card-js\");\r\n  listCard.forEach((card) => {\r\n    const cartDataEl = card.querySelector(\".product-card-data-js\");\r\n    const productData = objectParse(cartDataEl.textContent);\r\n    const btnQuickView = card.querySelector(\".quickview-toggle-js\");\r\n    if (!btnQuickView) {\r\n      return;\r\n    }\r\n    btnQuickView.addEventListener(\"click\", () => {\r\n      productQuickView.togglePopup(productData);\r\n    });\r\n  });\r\n}\r\nfunction handleColor() {\r\n  const listCard = container.querySelectorAll(\".product-card-js\");\r\n  productColor.init({\r\n    onChange: (color, image, currentEl) => {\r\n      const currentImage = currentEl\r\n        .closest(\".product-card-js\")\r\n        .querySelector(\".product-card-image-js\");\r\n      currentImage.src = image;\r\n    },\r\n  });\r\n  listCard.forEach((card) => {\r\n    const cartDataEl = card.querySelector(\".product-card-data-js\");\r\n    const productData = objectParse(cartDataEl.textContent);\r\n    const colorWrapper = card.querySelector(\".product-card-colors-js\");\r\n    if (!colorWrapper) {\r\n      return;\r\n    }\r\n    productColor.render(colorWrapper, productData);\r\n  });\r\n}\r\nfunction productActions() {\r\n  handleCompare();\r\n  handleWishList();\r\n  handleQuickView();\r\n  handleCart();\r\n  handleColor();\r\n}\r\nproductActions();\r\n\r\n// FILTER\r\nasync function getContentCollections(url) {\r\n  const domParser = new DOMParser();\r\n  const res = await fetch(url);\r\n  const html = await res.text();\r\n  const doc = domParser.parseFromString(html, \"text/html\");\r\n  const contentCollectionsEl = doc.querySelector(\".content-collections-js\");\r\n  if (contentCollectionsEl) {\r\n    const contentCollections = contentCollectionsEl.innerHTML;\r\n    return contentCollections;\r\n  }\r\n  return \"\";\r\n}\r\n\r\ncollectionsFilters(container, {\r\n  formSelector: \".filter-form-js\",\r\n  sortBySelector: \".filter-sort-by-js\",\r\n  refineRootSelector: \".filter-refine-js\",\r\n  clearAllRootSelector: \".filter-clear-all-js\",\r\n  priceStep: 0.01,\r\n  renderRefineItem({ item, onRemove }) {\r\n    return html`\r\n      <div\r\n      key=${item.value}\r\n      class=\"pos:relative d:inline-block bd:1px_solid_color-gray2 w:fit-content p:2px_25px_2px_5px cur:pointer c:color-gray4 ff:font-primary mr:5px mb:5px\"\r\n    >\r\n      <span class=\"c:color-gray4\">${item.label}</span>\r\n      <span\r\n        class=\"cur:pointer\"\r\n      >\r\n        <i class=\"fal fa-times pos:absolute t:55% r:1% trf:translate(-50%,-50%) c:color-gray4 c:color-gray9!|h\" onClick=${onRemove}></i>\r\n      </span>\r\n    </div>\r\n      `;\r\n  },\r\n  renderClearAllButton({ onClear }) {\r\n    const text =\r\n      container\r\n        .querySelector(\".filter-clear-all-js\")\r\n        ?.getAttribute(\"data-text\") ?? \"Clear All\";\r\n    return html`<div\r\n        class=\"c:color-gray9 ff:font-primary bgc:color-light bgc:color-light|h! bd:none! c:color-gray9|h! p:0! c:color-primary|h!\"\r\n        onClick=${onClear}\r\n      >\r\n        ${text}\r\n      </div>`;\r\n  },\r\n  async onChange({ url, urlRequest, category, done }) {\r\n    if (builderMode) {\r\n      return;\r\n    }\r\n    try {\r\n      const sectionId = container\r\n        .querySelector(\"[data-shopify-id]\")\r\n        ?.getAttribute(\"data-shopify-id\");\r\n      if (category) {\r\n        url.pathname = `/${category}`;\r\n        urlRequest.pathname = `/${category}`;\r\n      }\r\n      if (sectionId) {\r\n        urlRequest.search = `${urlRequest.search}&section_id=${sectionId}`;\r\n      }\r\n      const contentCollectionsEl = container.querySelector(\r\n        \".content-collections-js\"\r\n      );\r\n      contentCollectionsEl.style.opacity = 0.6;\r\n      const content = await getContentCollections(urlRequest);\r\n      contentCollectionsEl.style.opacity = 1;\r\n      contentCollectionsEl.innerHTML = content;\r\n      productActions();\r\n      done();\r\n    } catch (err) {\r\n      console.log(err);\r\n    }\r\n  },\r\n  onChangePrice({ min, max }) {\r\n    const priceViewEl = container.querySelector(\".filter-price-view-js\");\r\n    priceViewEl.textContent = `${min} - ${max}`;\r\n  },\r\n  refineListener(items) {\r\n    const refineWrapperEl = container.querySelector(\r\n      \".filter-refine-wrapper-js\"\r\n    );\r\n    if (items.length) {\r\n      refineWrapperEl.classList.add(\"d:block\");\r\n    } else {\r\n      refineWrapperEl.classList.remove(\"d:block\");\r\n    }\r\n  },\r\n});\r\n\r\n// Handle layout grid and list\r\nfunction handleLayout() {\r\n  const layoutEls = container.querySelectorAll(\".product-layout-js\");\r\n  function getCurrentlayout() {\r\n    return queryString.parse(window.location.search, true).layout || \"grid\";\r\n  }\r\n  function changeLayout() {\r\n    const currentLayout = getCurrentlayout();\r\n    layoutEls.forEach((layoutEl) => {\r\n      const activeClasses = layoutEl\r\n        .getAttribute(\"data-active-class\")\r\n        .replace(/\\s+/g, \" \")\r\n        .trim()\r\n        .split(\" \");\r\n      if (currentLayout === layoutEl.getAttribute(\"data-layout\")) {\r\n        layoutEl.classList.add(...activeClasses);\r\n      } else {\r\n        layoutEl.classList.remove(...activeClasses);\r\n      }\r\n    });\r\n  }\r\n  changeLayout();\r\n\r\n  if (builderMode) {\r\n    return;\r\n  }\r\n  layoutEls.forEach((layoutEl) => {\r\n    layoutEl.addEventListener(\"click\", async () => {\r\n      const currentLayout = getCurrentlayout();\r\n      const layout = layoutEl.getAttribute(\"data-layout\");\r\n      if (layout === currentLayout) {\r\n        return;\r\n      }\r\n      const url = new URL(window.location.href);\r\n      const params = queryString.parse(url.search);\r\n      const newParams = [\r\n        ...params.filter((item) => item[0] !== \"layout\"),\r\n        [\"layout\", layout],\r\n      ];\r\n      const search = queryString.stringify(newParams);\r\n      url.search = search;\r\n      window.history.pushState(null, null, url.href);\r\n      const contentCollectionsEl = container.querySelector(\r\n        \".content-collections-js\"\r\n      );\r\n      contentCollectionsEl.style.opacity = 0.6;\r\n      const content = await getContentCollections(url);\r\n      contentCollectionsEl.style.opacity = 1;\r\n      contentCollectionsEl.innerHTML = content;\r\n      changeLayout();\r\n    });\r\n  });\r\n}\r\nhandleLayout();\r\n\r\n","liquid":"{% liquid\r\n  if section_settings.background_fixed assign backgroundFixed = 'fixed' else assign backgroundFixed = 'scroll' endif\r\n  if section_settings.background_type == 'color' assign backgroundColor = 'background-color: ' | append: section_settings.background_color | append: ';' else assign backgroundColor = '' endif\r\n  if section_settings.background_type == 'image' assign backgroundImage = 'background-image: url(' | append: section_settings.background_image | append:\r\n  ');background-attachment: ' | append: backgroundFixed | append: ';background-size: ' | append: section_settings.background_size | append: ';' else assign backgroundImage = '' endif\r\n  assign sectionPadding = 'padding-top: ' | append: section_settings.padding.top | append: 'px;padding-right: ' | append: section_settings.padding.right | append: 'px;padding-bottom: ' | append: section_settings.padding.bottom | append: 'px;padding-left: ' | append: section_settings.padding.left | append: 'px;'\r\n%}\r\n\r\n<section data-id=\"{{uniqueId}}\" css=\"{{ backgroundColor }}{{ backgroundImage }}{{ sectionPadding }}\">\r\n  {% if section_settings.background_overlay_enable %}\r\n    <div class=\"pos:absolute ins:0 z:-1\" css=\"background-color: {{ section_settings.background_overlay_color }}\"></div>\r\n  {% endif %}\r\n  <shopify>\r\n    <div data-shopify-id=\"{{ section.id }}\"></div>\r\n    {% if builderMode %}\r\n      {% assign searchParams = testing.layout %}\r\n    {% else %}\r\n      {% capture searchParams %}\r\n        {% assign pageUrlWithHost = content_for_header | split:'\"pageurl\":\"' | last | split:'\"' | first |\r\n          replace:'\\/','/' |\r\n          replace:'%20',' ' |\r\n          replace:'\\u0026','&'\r\n        %}\r\n        {{ pageUrlWithHost | split: \"?\" | last }}\r\n      {% endcapture %}\r\n    {% endif %}\r\n  </shopify>\r\n  <div class=\"container pt:35px\">\r\n    <shopify>\r\n      {% unless request.page_type == 'index' or request.page_type == 'list-collections' %}\r\n        <nav role=\"navigation\" aria-label=\"breadcrumbs\">\r\n            <a class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" href=\"{{ routes.root_url }}\" title=\"Home\">Home</a>\r\n            {% if request.page_type contains 'page' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ page.title }}</span>\r\n            {% elsif request.page_type contains 'product' %}\r\n              {% if collection.url %}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n                {{ collection.title | link_to: collection.url }}\r\n              {% endif %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ product.title }}</span>\r\n            {% elsif request.page_type contains 'collection' and collection.handle %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              {% if current_tags %}\r\n                {% capture url %}/collections/{{ collection.handle }}{% endcapture %}\r\n                {{ collection.title | link_to: url }}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ current_tags | join: \" + \" }}</span>\r\n              {% else %}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ collection.title }}</span>\r\n              {% endif %}\r\n            {% elsif request.page_type == 'blog' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              {% if current_tags %}\r\n                {{ blog.title | link_to: blog.url }}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ current_tags | join: \" + \" }}</span>\r\n              {% else %}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ blog.title }}</span>\r\n              {% endif %}\r\n            {% elsif request.page_type == 'article' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              {{ blog.title | link_to: blog.url }}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span>{{ article.title }}</span>\r\n            {% elsif request.page_type == 'cart' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">Cart</span>\r\n            {% else %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ page_title }}</span>\r\n            {% endif %}\r\n        </nav>\r\n      {% endunless %}\r\n    </shopify>\r\n    <div class=\"view-as mb:20px d:flex ai:center jc:space-between mt:30px fz:15px c:color-gray9 flw:wrap w:75% pr:35px@md\">\r\n      <div class=\"d:flex\">\r\n        <span class=\"product-layout-js p:0px_5px_0px_5px ml:10px cur:pointer c:color-gray2 bd:1px_solid_color-gray2\" data-layout=\"grid\" data-active-class=\"c:color-gray9! bd:1px_solid_color-gray9\">\r\n          <i class=\"fas fa-th\"></i>\r\n        </span>\r\n        <span class=\"product-layout-js p:0px_5px_0px_5px ml:10px cur:pointer c:color-gray2 bd:1px_solid_color-gray2\" data-layout=\"list\" data-active-class=\"c:color-gray9! bd:1px_solid_color-gray9\">\r\n          <i class=\"fal fa-list\"></i>\r\n        </span>\r\n      </div>\r\n      <shopify>\r\n        {% assign collection_prs = collection.products %}\r\n        {%- assign arr_price = collection_prs | map:'price_min' | uniq | sort -%}\r\n        {%- assign min_price = arr_price | first -%}\r\n        {%- assign max_price = arr_price | last -%}\r\n\r\n        {% assign my_collection_sort = collection.sort_options %}\r\n        <form id=\"filter-form\" class=\"filter_form\">\r\n          <div class=\"d:flex whs:nowrap ai:center pos:relative mt:10px mt:0px@md filter_field sort_by pos:relative\">\r\n            <p class=\"mr:10px fz:15px fw:500\">Sort</p>\r\n            <div class=\"veda-select filter-sort-by-js\">\r\n              <div class=\"veda-select__view w:pfs(130px,190px) h:43px bd:1px_solid_#DEDEE9 pl:15px cur:pointer d:flex ai:center ff:font-secondary\">\r\n                <div class=\"veda-select__label w:pfs(100px,150px) cur:pointer d:flex ai:center fz:pfs(12px,15px) fw:400 c:color-gray4 ff:font-secondary\"></div>\r\n                <i class=\"fal fa-angle-down\"></i>\r\n              </div>\r\n              <div class=\"veda-select__options select-custom pos:absolute t:50px w:pfs(130px,190px) z:100 bgc:color-light bd:1px_solid_#DEDEE9\">\r\n                {% assign first_sort_option = my_collection_sort | first %}\r\n                {% for option in my_collection_sort %}\r\n                  <div class=\"veda-select__option select-custom__item w:pfs(128px,188px) h:43px fz:pfs(12px,15px) fw:400 pl:15px cur:pointer bgc:#DEDEE9|h! d:flex ai:center bd:none! ff:font-secondary\" value=\"{{ option.value | escape }}\" {% if first_sort_option.value  == option.value %}selected=\"true\"{% endif %} >{{ option.name | escape }}</div>\r\n                {% endfor %}\r\n\r\n              </div>\r\n            </div>\r\n          </div>\r\n        </form>\r\n      </shopify>\r\n    </div>\r\n    <div class=\"row\">\r\n      <shopify>\r\n        <div class=\"col-lg-9 pr:40px@md d:block\">\r\n          {% if searchParams contains \"layout=list\" %}\r\n            {% assign quantity_product_displayed = 4 %}\r\n          {% else %}\r\n            {% assign quantity_product_displayed = 9 %}\r\n          {% endif %}\r\n          <div component=\"content\" class=\"content-collections-js pb:100px\">\r\n            {% paginate collection.products by quantity_product_displayed %}\r\n              {% if searchParams contains \"layout=list\" %}\r\n                {%- comment -%} wrap for list {%- endcomment -%}\r\n                <div>\r\n              {% else %}\r\n                {%- comment -%} wrap for grid {%- endcomment -%}\r\n                <div class=\"row row-cols-lg-{{ product_settings.column.lg }} row-cols-md-{{ product_settings.column.md }} row-cols-sm-{{ product_settings.column.sm }} row-cols-{{ product_settings.column.xs }}\">\r\n              {% endif %}\r\n                {% for product in collection.products %}\r\n                  {% if searchParams contains \"layout=list\" %}\r\n                    {%- comment -%} list item {%- endcomment -%}\r\n                    <div class=\"product-card-js d:flex fld:row ai:center ta:center mb:15px pb:15px fxw:wrap\">\r\n                      <script class=\"product-card-data-js\" type=\"application/json\">\r\n                        {\r\n                          id: {{ product.id | json }},\r\n                          title: {{ product.title | json }},\r\n                          vendor: {{ product.vendor | json }},\r\n                          handle: {{ product.handle | json }},\r\n                          available: {{ product.available | json }},\r\n                          content: {{ product.content | json }},\r\n                          description: {{ product.description | json }},\r\n                          featured_image: {{ product.featured_image | json }},\r\n                          images: {{ product.images | json }},\r\n                          options: {{ product.options | json }},\r\n                          price_max: {{ product.price_max | json }},\r\n                          price_min: {{ product.price_min | json }},\r\n                          type: {{ product.type | json }},\r\n                          tags: {{ product.tags | json }},\r\n                          variants: {{ product.variants | json }},\r\n                          price: {{ product.price | json }},\r\n                          options_with_values: {{ product.options_with_values | json }},\r\n                          url: {{ product.url | json }}\r\n                        }\r\n                      </script>\r\n                      <div class=\"group* w:250px pos:relative ov:hidden mr:0px mr:30px@sm\">\r\n                        <div class=\"ov:hidden w:100%\">\r\n                          <a href=\"{{product.url}}\" class=\"veda-image-cover d:block w:100%\" style=\"--aspect-ratio:{{product_settings.aspect_ratio}}\">\r\n                            <img class=\"product-card-image-js\" src=\"{{ product.featured_image.src | img_url: '250x' }}\" alt=\"{{ product.title }}\">\r\n                          </a>\r\n                        </div>\r\n\r\n                        <div class=\"pos:absolute t:5px l:5px d:flex\">\r\n                          {% if product.compare_at_price > product.price and product_settings.sale_enable %}\r\n                            <div class=\"d:flex jc:center ai:center w:60px h:30px bgc:#219653 mr:5px bdrs:2px\">\r\n                              <p class=\"fz:16px pos:absolute z:10 fw:600 c:color-light-freeze\" css=\"{{ product_settings.sale_design }}\">{{ product_settings.sale_text}}</p>\r\n                            </div>\r\n                          {% endif %}\r\n                        </div>\r\n                        <div class=\"pos:absolute t:10px r:10px w:35px h:127px\">\r\n                          {% if wishlist_action.enabled %}\r\n                              <div class=\"wishlist-toggle-js pos:relative d:flex ai:center jc:center w:36px h:36px bdrs:50% bgc:color-light fz:17px c:color-gray9 mb:10px cur:pointer bgc:color-gray9|h! c:color-light|h!\" data-tooltip=\"{{wishlist_action.text_add}}\" data-tooltip-position=\"left\" data-tooltip-active=\"true\" data-tooltip-text=\"{{wishlist_action.text_add}}\" data-tooltip-active-text=\"{{wishlist_action.text_remove}}\">\r\n                                {{wishlist_action.icon}}\r\n                              </div>\r\n                            {% endif %}\r\n                            {% if quickview_action.enabled %}\r\n                              <div class=\"trf:translateX(0)*group-hover quickview-toggle-js pos:relative d:flex ai:center jc:center w:36px h:36px bdrs:50% bgc:color-light fz:17px c:color-gray9 mb:10px cur:pointer bgc:color-gray9|h! c:color-light|h! trf:translateX(50px) trs:all_0.3s\" data-tooltip=\"{{quickview_action.text}}\" data-tooltip-text=\"{{quickview_action.text}}\" data-tooltip-position=\"left\" data-tooltip-active=\"false\" >\r\n                                {{quickview_action.icon}}\r\n                              </div>\r\n                            {% endif %}\r\n                            {% if compare_action.enabled %}\r\n                              <div class=\"trf:translateX(0)*group-hover compare-toggle-js pos:relative d:flex ai:center jc:center w:36px h:36px bdrs:50% bgc:color-light fz:17px c:color-gray9 mb:10px cur:pointer bgc:color-gray9|h! c:color-light|h! trf:translateX(50px) trs:all_0.3s\" data-tooltip=\"{{compare_action.text_add}}\" data-tooltip-position=\"left\" data-tooltip-active=\"false\" data-tooltip-text=\"{{compare_action.text_add}}\" data-tooltip-active-text=\"{{compare_action.text_remove}}\">\r\n                                {{compare_action.icon}}\r\n                              </div>\r\n                            {% endif %}\r\n                        </div>\r\n                      </div>\r\n                      <div class=\"d:flex fld:column jc:flex-start ai:flex-start h:100%\">\r\n                        <div class=\"c:color-gray5 mt:11px fz:14px\">{{product.vendor}}</div>\r\n                        <a class=\"fz:16px mt:15px c:color-gray9\" href=\"{{product.url}}\">{{product.title}}</a>\r\n                        <div class=\"compare-rating-js\">\r\n                          {% if product_settings.review_app %}\r\n                            {% case product_settings.review_app_html %}\r\n                              {% when 'product_reviews' %}\r\n                                <rivio-review-badge item=\"product\" />\r\n                                <span class=\"shopify-product-reviews-badge\" data-id=\"{{ product.id }}\"></span>\r\n                              {% when 'rivyo_reviews' %}\r\n                                <rivio-review-badge item=\"product\" />\r\n                              {% when 'loox_reviews' %}\r\n                                <loox-review-badge item=\"product\" />\r\n                              {% when 'ali_reviews' %}\r\n                                <ali-review-badge item=\"product\" />\r\n                              {% when 'stamped_reviews' %}\r\n                                <stamped-review-badge item=\"product\" />\r\n                              {% when 'judge_me_reviews' %}\r\n                                <judge-me-review-badge item=\"product\" />\r\n                              {% when 'other' %}\r\n                                {% if builderMode %}\r\n                                  <review-badge item=\"product\" />\r\n                                {% else %}\r\n                                  {{ product_settings.review_app_html }}\r\n                                {% endif %}\r\n                                {% else %}\r\n                            {% endcase %}\r\n                          {% endif %}\r\n                        </div>\r\n                        <a class=\" mt:14px\" href=\"#\">\r\n                          <ins class=\"fw:500 fz:15px c:color-primary td:none\">{{ product.price | money }}</ins>\r\n                          {% if product.compare_at_price > product.price %}\r\n                            <del class=\"fw:500 fz:15px c:#9E9E9E\">{{ product.compare_at_price | money }}</del>\r\n                          {% endif %}\r\n                        </a>\r\n\r\n                        <div class=\"product-card-colors-js d:flex mt:8px\">\r\n                        </div>\r\n                        <div class=\"lines-4 w:100% ff:font-secondary fw:300 fz:13px c:color-gray9 ta:left mt:20px\">\r\n                          {{product.description | strip_html }}\r\n                        </div>\r\n                        {% if add_to_cart_action.enabled %}\r\n                          <div class=\"product-card-add-js d:flex jc:center ai:center w:pfs(140px,244px) bgc:color-gray9 h:50px trs:all_0.3s ta:center lts:0.15px fw:600 fz:17px pos:relative mt:25px cur:pointer fz:17px td:none va:middle lh:50px c:color-light c:color-light|h! whs:nowrap us:none\" css=\"{{ add_to_cart_action.design }}\">\r\n                            {{add_to_cart_action.text}}\r\n                          </div>\r\n                        {% endif %}\r\n                      </div>\r\n                    </div>\r\n                  {% else %}\r\n                    {%- comment -%} grid item {%- endcomment -%}\r\n                    <div class=\"col\">\r\n                      <div class=\"product-card-js d:flex fld:column ai:center ta:center mb:15px pb:35px\">\r\n                        <script class=\"product-card-data-js\" type=\"application/json\">\r\n                          {\r\n                            id: {{ product.id | json }},\r\n                            title: {{ product.title | json }},\r\n                            vendor: {{ product.vendor | json }},\r\n                            handle: {{ product.handle | json }},\r\n                            available: {{ product.available | json }},\r\n                            content: {{ product.content | json }},\r\n                            description: {{ product.description | json }},\r\n                            featured_image: {{ product.featured_image | json }},\r\n                            images: {{ product.images | json }},\r\n                            options: {{ product.options | json }},\r\n                            price_max: {{ product.price_max | json }},\r\n                            price_min: {{ product.price_min | json }},\r\n                            type: {{ product.type | json }},\r\n                            tags: {{ product.tags | json }},\r\n                            variants: {{ product.variants | json }},\r\n                            price: {{ product.price | json }},\r\n                            options_with_values: {{ product.options_with_values | json }},\r\n                            url: {{ product.url | json }}\r\n                          }\r\n                        </script>\r\n                        <div class=\"group* w:100% pos:relative ov:hidden\">\r\n                          <div class=\"ov:hidden\">\r\n                            <a href=\"{{product.url}}\" class=\"veda-image-cover d:block\" style=\"--aspect-ratio:{{product_settings.aspect_ratio}}\" >\r\n                              <img class=\"product-card-image-js\" src=\"{{ product.featured_image.src | img_url: '400x' }}\" alt=\"{{ product.title }}\">\r\n                            </a>\r\n                          </div>\r\n                          {% if add_to_cart_action.enabled %}\r\n                            <div class=\"trf:translateY(0)*group-hover product-card-add-js d:flex jc:center ai:center pos:absolute b:0 l:0 w:100% bgc:color-gray9-freeze h:50px trf:translateY(50px) trs:all_0.3s ta:center lts:0.15px fw:600 fz:17px cur:pointer fz:17px td:none w:100% c:color-light-freeze c:color-light-freeze|h! us:none\" css=\"{{add_to_cart_action.design}}\">\r\n                              {{add_to_cart_action.text}}\r\n                            </div>\r\n                          {% endif %}\r\n                          <div class=\"pos:absolute t:5px l:5px d:flex\">\r\n                            {% if product.compare_at_price > product.price and product_settings.sale_enable %}\r\n                              <div class=\"d:flex jc:center ai:center w:60px h:30px bgc:#219653 mr:5px bdrs:2px\">\r\n                                <p class=\"fz:16px pos:absolute z:10 fw:600 c:color-light-freeze\" css=\"{{product_settings.sale_design}}\">{{ product_settings.sale_text}}</p>\r\n                              </div>\r\n                            {% endif %}\r\n                          </div>\r\n                          <div class=\"pos:absolute t:10px r:10px w:35px h:127px\">\r\n                            {% if wishlist_action.enabled %}\r\n                              <div class=\"wishlist-toggle-js pos:relative d:flex ai:center jc:center w:36px h:36px bdrs:50% bgc:color-light fz:17px c:color-gray9 mb:10px cur:pointer bgc:color-gray9|h! c:color-light|h!\" data-tooltip=\"{{wishlist_action.text_add}}\" data-tooltip-position=\"left\" data-tooltip-active=\"true\" data-tooltip-text=\"{{wishlist_action.text_add}}\" data-tooltip-active-text=\"{{wishlist_action.text_remove}}\">\r\n                                {{wishlist_action.icon}}\r\n                              </div>\r\n                            {% endif %}\r\n                            {% if quickview_action.enabled %}\r\n                              <div class=\"trf:translateX(0)*group-hover quickview-toggle-js pos:relative d:flex ai:center jc:center w:36px h:36px bdrs:50% bgc:color-light fz:17px c:color-gray9 mb:10px cur:pointer bgc:color-gray9|h! c:color-light|h! trf:translateX(50px) trs:all_0.3s\" data-tooltip=\"{{quickview_action.text}}\" data-tooltip-text=\"{{quickview_action.text}}\" data-tooltip-position=\"left\" data-tooltip-active=\"false\" >\r\n                                {{quickview_action.icon}}\r\n                              </div>\r\n                            {% endif %}\r\n                            {% if compare_action.enabled %}\r\n                              <div class=\"trf:translateX(0)*group-hover compare-toggle-js pos:relative d:flex ai:center jc:center w:36px h:36px bdrs:50% bgc:color-light fz:17px c:color-gray9 mb:10px cur:pointer bgc:color-gray9|h! c:color-light|h! trf:translateX(50px) trs:all_0.3s\" data-tooltip=\"{{compare_action.text_add}}\" data-tooltip-position=\"left\" data-tooltip-active=\"false\" data-tooltip-text=\"{{compare_action.text_add}}\" data-tooltip-active-text=\"{{compare_action.text_remove}}\">\r\n                                {{compare_action.icon}}\r\n                              </div>\r\n                            {% endif %}\r\n                          </div>\r\n                        </div>\r\n                        <div class=\"d:flex fld:column jc:center ai:center\">\r\n                          <div class=\"c:color-gray5 mt:11px fz:14px\">{{product.vendor}}</div>\r\n                          <a class=\"fz:16px mt:15px c:color-gray9\" href=\"{{product.url}}\">{{product.title}}</a>\r\n                          <a class=\" mt:14px\" href=\"#\">\r\n                            <ins class=\"fw:500 fz:15px c:color-primary td:none\">{{ product.price | money }}</ins>\r\n                            {% if product.compare_at_price > product.price %}\r\n                              <del class=\"fw:500 fz:15px c:#9E9E9E\">{{ product.compare_at_price | money }}</del>\r\n                            {% endif %}\r\n                          </a>\r\n                          <div class=\"product-card-colors-js d:flex mt:8px\">\r\n                          </div>\r\n                        </div>\r\n                      </div>\r\n                    </div>\r\n                  {% endif %}\r\n                {% endfor %}\r\n              </div>\r\n              {% if paginate.pages > 1 %}\r\n                <nav role=\"navigation\">\r\n                  <ol class=\"d:flex ls:none\">\r\n                    {% if paginate.previous %}\r\n                      <li>\r\n                        <a class=\"d:flex ai:center jc:center w:50px h:50px mr:5px ta:center cur:pointer ff:font-primary fz:15px cur:pointer cur:pointer c:color-gray9 bgc:color-gray9|h! c:color-light|h! bd:1px_solid_color-gray2\" aria-label=\"Previous\" href=\"{{ paginate.previous.url }}\">\r\n                          <i class=\"far fa-arrow-left\"></i>\r\n                        </a>\r\n                      </li>\r\n                    {% endif %}\r\n                    {% for part in paginate.parts %}\r\n                      {% if part.is_link %}\r\n                        <li>\r\n                          <a class=\"d:flex ai:center jc:center w:50px h:50px mr:5px ta:center cur:pointer ff:font-primary fz:15px cur:pointer cur:pointer c:color-gray9 bgc:color-gray9|h! c:color-light|h! bd:1px_solid_color-gray2\" aria-label=\"Page {{ part.title }}\" href=\"{{ part.url }}\">\r\n                            {{ part.title }}\r\n                          </a>\r\n                        </li>\r\n                      {% else %}\r\n                        {% if part.title == paginate.current_page %}\r\n                          <li>\r\n                            <span class=\"d:flex ai:center jc:center w:50px h:50px mr:5px ta:center cur:pointer ff:font-primary fz:15px cur:pointer cur:pointer c:color-light! bgc:color-gray9 bgc:color-gray9|h! c:color-light|h!\" aria-current=\"page\" aria-label=\"Page {{ part.title }}\">\r\n                              {{ part.title }}\r\n                            </span>\r\n                          </li>\r\n                        {% else %}\r\n                          <li>\r\n                            <span class=\"d:flex ai:center jc:center w:50px h:50px mr:5px ta:center cur:pointer ff:font-primary fz:15px cur:pointer cur:pointer c:color-gray9 bgc:color-gray9|h! c:color-light|h! bd:1px_solid_color-gray2\" aria-label=\"Page {{ part.title }}\">\r\n                              {{ part.title }}\r\n                            </span>\r\n                          </li>\r\n                        {% endif %}\r\n                      {% endif %}\r\n                    {% endfor %}\r\n\r\n                    {% if paginate.next %}\r\n                      <li>\r\n                        <a class=\"d:flex ai:center jc:center w:50px h:50px mr:5px ta:center cur:pointer ff:font-primary fz:15px cur:pointer cur:pointer c:color-gray9 bgc:color-gray9|h! c:color-light|h! bd:1px_solid_color-gray2\" aria-label=\"Next\" href=\"{{ paginate.next.url }}\">\r\n                          <i class=\"far fa-arrow-right\"></i>\r\n                        </a>\r\n                      </li>\r\n                    {% endif %}\r\n                  </ol>\r\n                </nav>\r\n              {% endif %}\r\n            {% endpaginate %}\r\n          </div>\r\n        </div>\r\n\r\n      </shopify>\r\n      <div data-id=\"yasmina-filter\" class=\"col-lg-3\">\r\n        <div class=\"row row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 d:flex ai:center jc:center\">\r\n          <div class=\"product-box maw:330px w:100% h:auto bd:1px_solid_#DEDEE9 p:34px_20px_30px_20px mb:10px\">\r\n            <shopify>\r\n              <form action=\"{{ routes.search_url }}\">\r\n                <div class=\"product-box__search mb:30px\">\r\n                  <h2 class=\"product-box__title fz:20px fw:500 mb:15px ff:font-primary\">Search</h2>\r\n                  <div class=\"product-box__box-search d:flex ai:center bd:1px_solid_#DEDEE9\">\r\n                    <button class=\"p:10px bd:1px_solid_color-light bd:1px_solid_color-light|h! bgc:color-light! c:color-gray9! bgc:color-light|h! c:color-gray9|h!\" type=\"submit\"><i class=\"fal fa-search cur:pointer\"></i></button>\r\n                    <input class=\"h:40px! w:90%! bd:none! o:none c:color-gray4 fz:15px c:color-gray4||placeholder pl:0px! fz:15px||placeholder\" type=\"text\"\r\n                    placeholder=\"Search\"\r\n                    name=\"q\"\r\n                    value=\"{{ search.terms | escape }}\"\r\n                    />\r\n                    <input type=\"hidden\" name=\"type\" value=\"product,page\" />\r\n                    <input type=\"hidden\" name=\"options[unavailable_products]\" value=\"hide\" />\r\n                    <input type=\"hidden\" name=\"options[prefix]\" value=\"last\" />\r\n                  </div>\r\n                </div>\r\n\r\n                </form>\r\n              </shopify>\r\n                <form id=\"filter_form\" class=\"filter-form-js\">\r\n                    <div class=\"filter-refine-wrapper-js product-box__refine mb:20px pos:relative\">\r\n                      <div class=\"d:flex jc:space-between mb:15px\">\r\n                        <h2 class=\"product-box__title fz:20px fw:500 ff:font-primary\">Refine By</h2>\r\n                        <div class=\"filter-clear-all-js mt:3px\"></div>\r\n                      </div>\r\n                      <div class=\"filter-refine-js\"></div>\r\n                    </div>\r\n                  {% if categories.enable %}\r\n                    <div class=\"filter_field filter_by_categories\">\r\n                      <h2 class=\"product-box__title fz:20px fw:500 mb:8px ff:font-primary\" css=\"{{ categories.title_design }}\">{{categories.title}}</h2>\r\n                      <div>\r\n                        <div class=\"d:flex fld:column\">\r\n                          {% for category in categories_data %}\r\n                            <div class=\"d:flex ai:center mb:10px pos:relative\">\r\n                              <div class=\"w:5px h:5px bgc:color-gray4 bdrs:50% mr:7px\"></div>\r\n                              <input class=\"yasmina-filter-input-radio v:hidden\" type=\"radio\" id=\"{{category.value}}\" name=\"filter.v.category\" value=\"{{category.value}}\" data-label=\"{{category.label}}\">\r\n                              <label css=\"{{category.label_design}}\" class=\"fz:15px fw:400 c:color-gray9 cur:pointer\" for=\"{{category.value}}\">{{category.label}}</label>\r\n                              <div class=\"w:5px h:5px bgc:color-gray2 bdrs:50% mr:7px pos:absolute\"></div>\r\n                            </div>\r\n                          {% endfor %}\r\n                        </div>\r\n                      </div>\r\n                    </div>\r\n                  {% endif %}\r\n\r\n                  {% for option in options %}\r\n                    {% if option.title == \"Color\" and option.enabled %}\r\n                      {% assign tag_colors = option.data | split: \",\" %}\r\n                      <div class=\"filter_field filter_by_color\">\r\n                        <h2 class=\"product-box__title fz:20px fw:500 mb:0px ff:font-primary mt:22px\" css=\"{{option.title_design}}\">{{option.title}}</h2>\r\n                        <div class=\"d:flex flw:wrap\">\r\n                          {% for color in tag_colors %}\r\n                            <div class=\"yasmina-circle__active pos:relative d:inline-block w:40px h:40px bdrs:20px m:10px_6px_0px_6px cur:pointer p:4px bgcp:content-box\" style=\"background-color:{{color}}\">\r\n                                <label class=\"w:40px h:40px cur:pointer\">\r\n                                    <input class=\"yasmina-filter-input-color v:hidden\" type=\"checkbox\" name=\"filter.v.option.{{option.filter_name}}\" value=\"{{color | downcase}}\" data-label=\"{{color}}\"/>\r\n                                    <div class=\"w:40px h:40px pos:absolute t:0px l:0px bd:1px_solid_color-gray2 bdrs:20px\"></div>\r\n                                </label>\r\n                            </div>\r\n                          {% endfor %}\r\n                        </div>\r\n                      </div>\r\n                    {% endif %}\r\n                    {% if option.title == \"Size\" and option.enabled %}\r\n                    {% assign tag_sizes = option.data | split: \",\" %}\r\n                      <div class=\"filter_field filter_by_size\">\r\n                        <h2 class=\"product-box__title fz:20px mt:30px fw:500 mb:15px ff:font-primary\" css=\"{{option.design}}\">{{option.title}}</h2>\r\n                        <div class=\"d:flex mb:30px fxw:wrap\">\r\n                          {% for size in tag_sizes %}\r\n                            <div class=\"d:flex pos:relative ai:center jc:center w:40px h:40px mr:5px ta:center cur:pointer ff:font-primary fz:15px\">\r\n                              <label class=\"yasmina-filter-box-size w:40px h:40px cur:pointer cur:pointer bgc:color-gray9|h! c:color-light|h!\">\r\n                                <input class=\"yasmina-filter-input-size pos:absolute v:hidden\" type=\"checkbox\" name=\"filter.v.option.{{option.filter_name}}\" data-label=\"{{ size }}\" value=\"{{ size | downcase}}\"/>\r\n                                <div class=\"pos:absolute w:100% h:100% bd:1px_solid_#DEDEE9 z:-1\"></div>\r\n                                <span class=\"ta:center lh:40px fz:15px fw:400 c:color-gray9\">{{ size }}</span>\r\n                              </label>\r\n                            </div>\r\n                          {% endfor %}\r\n                        </div>\r\n                      </div>\r\n                    {% endif %}\r\n                  {% endfor %}\r\n\r\n                  {% if price.enable %}\r\n                  <div>\r\n                    <shopify>\r\n                      {% assign collection_prs = collection.products %}\r\n                      {%- assign arr_price = collection_prs | map:'price_min' | uniq | sort -%}\r\n                      {%- assign min_price = arr_price | first -%}\r\n                      {%- assign max_price = arr_price | last -%}\r\n                      <div class=\"d:flex jc:space-between ai:center mb:15px\">\r\n                        <h2 class=\"product-box__title fz:20px fw:500 ff:font-primary\" css=\"{{ price.title_design }}\">\r\n                          {{ price.title }}\r\n                        </h2>\r\n                        <div>\r\n                          <span class=\"fz:15px fw:400 c:color-gray4\">Giá: </span>\r\n                          <span class=\"filter-price-view-js fz:15px fw:500 c:color-gray9\">{{ price.price_text }}: {{ min_price | times:100 | money }} - {{ max_price | times:100 | money }}</span>\r\n                        </div>\r\n                          \r\n                      </div>\r\n                      <div>\r\n                        <div class=\"veda-slider petify-price-range\" data-options=\"{ min: {{ min_price }}, max: {{ max_price }} }\">\r\n                          <div class=\"veda-slider__thumb w:10px h:10px bgc:color-gray9\" data-index=\"0\"></div>\r\n                          <div class=\"veda-slider__thumb w:10px h:10px bgc:color-gray9\" data-index=\"1\"></div>\r\n                          <div class=\"veda-slider__track h:5px bgc:#DEDEE9\"></div>\r\n                          <div class=\"veda-slider__tracked h:5px bgc:color-gray9\"></div>\r\n                        </div>\r\n                        <div class=\"d:flex mt:13px fxw:wrap fld:column fld:row@sm\">\r\n                          <div class=\"mr:10px\">                         \r\n                            <input \r\n                              class=\"w:100px! h:30px! lh:30px bd:1px_solid_#DEDEE9! bdrs:0px! fz:13px! fz:13px||placeholder! c:color-gray9! c:color-gray3||placeholder!\" \r\n                              type=\"number\" \r\n                              id=\"gte\" \r\n                              name=\"filter.v.price.gte\" \r\n                              data-label=\"{{ min_price | times:100 | money }}\" \r\n                              value=\"{{ min_price }}\" \r\n                              min=\"{{ min_price }}\" \r\n                              max=\"{{ max_price }}\" data-button=\"disabled\" placeholder=\"{{ price.from_text }}\" >\r\n                          </div>\r\n                          <div class=\"mt:10px mt:0px@sm\">\r\n                            <input class=\"w:100px! h:30px! lh:30px bd:1px_solid_#DEDEE9! bdrs:0px! fz:13px! fz:13px||placeholder! c:color-gray9! c:color-gray3||placeholder!\" type=\"number\" data-button=\"disabled\" data-label=\"{{ max_price | times:100 | money }}\" placeholder=\"{{ price.to_text }}\" name=\"filter.v.price.lte\" value=\"{{ max_price }}\" min=\"{{ min_price }}\" max=\"{{ max_price }}\">\r\n                          </div>\r\n                        </div>\r\n                      </div>\r\n                     </shopify>\r\n                  </div>\r\n                {% endif %}\r\n                {% if brands.enable %}\r\n                  <div class=\"filter_field filter_by_brand\">\r\n                    <h2 class=\"product-box__title fz:20px fw:500 mb:10px ff:font-primary mt:30px\" css=\"{{brands.title_design}}\">{{brands.title}}</h2>\r\n                    <div>\r\n                      <div class=\"d:flex fld:column\">\r\n                        {% for brand in brands_data %}\r\n                          <div class=\"d:flex ai:center mb:10px pos:relative\">\r\n                            <input class=\"yasmina-filter-input-radio v:hidden\" type=\"checkbox\" id=\"{{brand.value}}\" name=\"filter.v.brand\" value=\"{{brand.value}}\" data-label=\"{{brand.label}}\">\r\n                            <label class=\"fz:15px fw:400 c:color-gray9 cur:pointer ml:12px\" for=\"{{brand.value}}\" css=\"{{brand.label_design}}\">{{brand.label}}</label>\r\n                            <div class=\"w:5px h:5px bgc:color-gray2 bdrs:50% mr:7px pos:absolute\"></div>\r\n                          </div>\r\n                        {% endfor %}\r\n                      </div>\r\n                    </div>\r\n                  </div>\r\n                {% endif %}\r\n                {% if availability.enable %}\r\n                  <div class=\"filter_field filter_by_availability\">\r\n                    <h2 class=\"product-box__title fz:20px fw:500 mt:20px mb:10px ff:font-primary\" css=\"{{availability.title_design}}\">{{availability.title}}</h2>\r\n                    <div class=\"d:flex ai:center mb:10px pos:relative\">\r\n                      <input class=\"yasmina-filter-input-radio v:hidden\" type=\"radio\" id=\"in_stock\" name=\"filter.v.availability\" value=\"1\" data-label=\"{{availability.in_stock_text}}\">\r\n                      <label class=\"fz:15px fw:400 c:color-gray9 cur:pointer! ml:12px\" for=\"in_stock\" css=\"{{availability.in_stock_design}}\">{{availability.in_stock_text}}</label>\r\n                      <div class=\"w:5px h:5px bgc:color-gray2 bdrs:50% mr:7px pos:absolute\"></div>\r\n                    </div>\r\n                    <div class=\"d:flex ai:center pos:relative\">\r\n                      <input class=\"yasmina-filter-input-radio v:hidden\" type=\"radio\" id=\"out_stock\" name=\"filter.v.availability\" value=\"0\" data-label=\"{{availability.out_of_stock_text}}\">\r\n                      <label class=\"fz:15px fw:400 c:color-gray9 cur:pointer! ml:12px\" for=\"out_stock\" css=\"{{availability.out_of_stock_design}}\">{{availability.out_of_stock_text}}</label>\r\n                      <div class=\"w:5px h:5px bgc:color-gray2 bdrs:50% mr:7px pos:absolute\"></div>\r\n                    </div>\r\n                  </div>\r\n                {% endif %}\r\n                {% assign collection = collection %}\r\n                <div class=\"filter_field filter_by_tags\">\r\n                  <h2 class=\"product-box__title fz:20px fw:500 mb:10px ff:font-primary mt:30px\">Tags</h2>\r\n                  <div>\r\n                    <div class=\"yasmina-product-box__tags d:flex flw:wrap\">\r\n                      {% for tag in collection.all_tags %}\r\n                        <div class=\"d:flex pos:relative ai:center h:28px jc:center mr:5px ta:center cur:pointer ff:font-primary fz:15px p:8px_10px_8px_10px mb:10px\">\r\n                          <label class=\"w:100% h:28px cur:pointer cur:pointer d:flex jc:center\">\r\n                            <input class=\"yasmina-filter-input-tag pos:absolute v:hidden\" type=\"checkbox\" name=\"filter.v.tag\" value=\"{{tag | downcase}}\" data-label=\"{{tag }}\"/>\r\n                            <div class=\"pos:absolute w:100% h:100% bd:1px_solid_#DEDEE9\"></div>\r\n                            <span class=\"ta:center lh:28px fz:15px fw:400 c:color-gray9\">{{tag}}</span>\r\n                          </label>\r\n                        </div>\r\n                      {% endfor %}\r\n                    </div>\r\n                  </div>\r\n                </div>\r\n              </form>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n","schema":{"settings":[],"blocks":[{"id":"id_626a2607-8325-4671-bc52-e5b0ebce115a","children":[{"children":false,"type":"switch","label":"Background Fixed","summary":"","name":"background_fixed","id":"id_e85f6eca-eea9-439b-a7c5-e120917fe40b","disable":false},{"children":"none","type":"select","label":"Background Type","summary":"","name":"background_type","id":"id_8369f5b9-bfa7-4041-a393-74dfed9ff270","disable":false,"options":[{"label":"Image","value":"image","id":"26f36e5c-8dd7-482d-8fdb-2c4117603be8"},{"label":"Color","value":"color","id":"28e36b55-39bc-4359-85e4-8afc9dd7c9d8"},{"label":"None","value":"none","id":"c7840871-243c-4dd9-bc0e-4bfe1ddb40a1"}]},{"children":"","type":"image","label":"Background Image","summary":"","name":"background_image","id":"id_e5bb63d9-9680-447d-a9fe-e15bda71c44e","disable":false,"deps":"section_settings.background_type === \"image\""},{"children":"#fff","type":"color","label":"Background Color","summary":"","name":"background_color","id":"id_75181973-1de3-4018-96bf-5b74fbdf0d2d","disable":false,"deps":"section_settings.background_type === \"color\""},{"children":"cover","type":"select","label":"Background Size","summary":"","name":"background_size","id":"id_619eb3d2-3834-490b-9526-c67c927c8f24","disable":false,"options":[{"label":"Cover","value":"cover","id":"8d51c160-cddf-41f8-a8dc-4b934801805d"},{"label":"Contain","value":"contain","id":"b06eb4a5-d544-4ae0-9b9d-d9c090372eae"}]},{"children":false,"type":"switch","label":"Background Overlay Enable","summary":"","name":"background_overlay_enable","id":"id_c9d86d7b-4abd-4b22-ad32-043ed3155a89","disable":false},{"children":"#fff","type":"color","label":"Background Overlay Color","summary":"","name":"background_overlay_color","id":"id_c5769de4-eaec-4384-b622-b4b8bcf5ed8e","disable":false},{"children":{"left":0},"type":"space","label":"Padding","summary":"","name":"padding","id":"id_b4b8243c-f171-4595-8f04-174470a87f83","disable":false}],"type":"object","label":"Section Settings","summary":"","name":"section_settings","open":false,"drawer":false,"disable":false},{"id":"id_14ef19b6-ac8c-4d15-865b-801339c10f2e","children":[{"children":true,"type":"switch","label":"Enable","summary":"","name":"enable","id":"id_cc9806b3-bf61-47c8-8317-bba9707c117f","disable":false},{"children":"Price","type":"text","label":"Title","summary":"","name":"title","id":"id_1ab8541b-2213-4529-949c-c90bbf0a0f8f","disable":false},{"children":"","type":"styleBox","label":"Title Design","summary":"","name":"title_design","id":"id_12723285-4d95-488a-b34b-46e4b41b5998","disable":false},{"children":"Price","type":"text","label":"Price Text","summary":"","name":"price_text","id":"id_6421a1ae-7d75-4671-8458-97f03072d26c","disable":false},{"children":"From","type":"text","label":"From Text","summary":"","name":"from_text","id":"id_ddfc777b-4801-4253-8bcc-ae3f668d2f2c","disable":false},{"children":"To","type":"text","label":"To Text","summary":"","name":"to_text","id":"id_bdffb3e4-fc99-44f0-992f-6fa795268d8b","disable":false}],"type":"object","label":"Price","summary":"","name":"price","open":false,"drawer":false,"disable":false},{"id":"id_0d36a27a-c209-4bf7-98e3-aaac53b172c1","children":[{"children":true,"type":"switch","label":"Enable","summary":"","name":"enable","id":"id_f0092a2c-5604-4010-a95c-baf72ffbd450","disable":false},{"children":"Categories","type":"text","label":"Title","summary":"","name":"title","id":"id_42a0ee83-1e29-4948-9283-4b58c4b2dd07","disable":false},{"children":"","type":"styleBox","label":"Title Design","summary":"","name":"title_design","id":"id_0a19a3ab-4687-4cc9-8b65-304e89ed50d5","disable":false}],"type":"object","label":"Categories","summary":"","name":"categories","open":false,"drawer":false,"disable":false},{"id":"id_c5b47a7a-1657-464d-8655-22020b7bf434","children":[{"children":"Activewear","type":"text","label":"Label","summary":"","name":"label","id":"id_b3e7170a-22c9-4f48-bb53-b7fc9c03afd7","disable":false},{"children":"","type":"linkPicker","label":"Value","summary":"","name":"value","id":"id_8b556208-fd11-4c4e-9729-c549353f04bc","disable":false},{"children":"","type":"styleBox","label":"Label Design","summary":"","name":"label_design","id":"id_61db8faf-d30e-4199-b537-d1ab5768fc98","disable":false}],"type":"array","label":"Categories Data","summary":"","name":"categories_data","open":false,"drawer":false,"disable":false},{"id":"id_5fbe047c-d885-4da0-8b7f-04cef66455ec","children":[{"children":true,"type":"switch","label":"Enable","summary":"","name":"enable","id":"id_2fe44c07-760d-4751-8eb7-ff49b0a0a395","disable":false},{"children":"Color","type":"text","label":"Title","summary":"","name":"title","id":"id_633fc8ad-83aa-4f21-9df8-f443ad78ad85","disable":false},{"children":"","type":"styleBox","label":"Title Design","summary":"","name":"title_design","id":"id_06ccf16a-6c0c-42f5-a3cc-ed9df3eeeb2b","disable":false},{"children":"color","type":"text","label":"Filter Name","summary":"","name":"filter_name","id":"id_d7c53231-181b-4c81-8138-edb9a34ca143","disable":false},{"children":"","type":"tags","label":"data","summary":"","name":"data","id":"id_5fb71de8-021b-401e-8d6c-9509a438209a","disable":false}],"type":"array","label":"Options","summary":"","name":"options","open":false,"drawer":false,"disable":false},{"id":"id_64c0b805-636d-48c8-b0a2-56ee88f4d688","children":[{"children":true,"type":"switch","label":"Enable","summary":"","name":"enable","id":"id_22e3de8c-b14f-4f61-952e-3b0418d605e9","disable":false},{"children":"Brand","type":"text","label":"Title","summary":"","name":"title","id":"id_b8d9ee2d-9917-463e-93e1-b91a4a00e68b","disable":false},{"children":"","type":"styleBox","label":"Title Design","summary":"","name":"title_design","id":"id_72c42e30-f279-4534-bf39-029ea0a544f8","disable":false}],"type":"object","label":"Brands","summary":"","name":"brands","open":false,"drawer":false,"disable":false},{"id":"id_29278d3a-51f2-46c3-a86a-947b705aa4c6","children":[{"children":"Gap","type":"text","label":"Label","summary":"","name":"label","id":"id_35c1d272-3798-45aa-bfb3-420b31be36fc","disable":false},{"children":"","type":"styleBox","label":"Label Design","summary":"","name":"label_design","id":"id_d048496a-8429-4dae-8621-a8acbb367fde","disable":false},{"children":"gap","type":"text","label":"Value","summary":"","name":"value","id":"id_f248697e-4a08-48f7-aacd-571ae6299c6d","disable":false}],"type":"array","label":"Brands Data","summary":"","name":"brands_data","open":false,"drawer":false,"disable":false},{"id":"id_518caeea-5ecb-49a3-9e69-0ce35fecf5cc","children":[{"children":true,"type":"switch","label":"Enable","summary":"","name":"enable","id":"id_d735d587-79e7-4545-b92f-1ab624fa58b7","disable":false},{"children":"Availability","type":"text","label":"Title","summary":"","name":"title","id":"id_10218635-0427-4fda-a0b0-d6e144ab4483","disable":false},{"children":"","type":"styleBox","label":"Title Design","summary":"","name":"title_design","id":"id_079648b9-37bb-409a-b9f3-99a448b00ccb","disable":false},{"children":"In Stock","type":"text","label":"In Stock Text","summary":"","name":"in_stock_text","id":"id_f0b1f19e-aa0e-4818-a1af-9f1b3a673334","disable":false},{"children":"","type":"styleBox","label":"In Stock Design","summary":"","name":"in_stock_design","id":"id_8f7c3361-e7d6-480c-a9fb-b03cacfe6cd7","disable":false},{"children":"Out of Stock","type":"text","label":"Out of Stock Text","summary":"","name":"out_of_stock_text","id":"id_a0798267-6252-40fa-a258-6eaaa2d9bd5d","disable":false},{"children":"","type":"styleBox","label":"Out of Stock Design","summary":"","name":"out_of_stock_design","id":"id_108a449f-2d0a-4346-84e6-370338e2aa97","disable":false}],"type":"object","label":"Availability","summary":"","name":"availability","open":false,"drawer":false,"disable":false},{"id":"id_b2544036-b704-48c4-b898-bc3c7b80f630","children":[{"children":true,"type":"switch","label":"Review App","summary":"","name":"review_app","id":"id_4d4319b6-db45-4bd0-8754-863d1c25721e","disable":false},{"children":"rivyo_reviews","type":"select","label":"Review App Html","summary":"","name":"review_app_html","id":"id_c248550b-435d-4e0f-b9e8-77c453f3c4e1","disable":false,"options":[{"label":"Product Reviews","value":"product_reviews","id":"85f0e774-b22d-4900-a6b2-d448ecc28f5a"},{"label":"Rivyo Reviews","value":"rivyo_reviews","id":"84cb3c5b-c4f5-4882-b016-63b5063f6b46"},{"label":"Loox Reviews","value":"loox_reviews","id":"e54761b2-42b2-43c2-9c9d-8afb2972d7f8"},{"label":"Ali Reviews","value":"ali_reviews","id":"92c430a8-7e86-4318-b7a7-4b099d509183"},{"label":"Stamped Reviews","value":"stamped_reviews","id":"9282a6d2-88bf-4982-8f8c-31b090c3cb7b"},{"label":"Judge Me Reviews","value":"judge_me_reviews","id":"708c1935-e8f0-4ce7-b8a4-a3463faafedd"},{"label":"Other","value":"other","id":"fb2f0a80-b411-48c2-98b6-903746f4103c"}]},{"children":true,"type":"switch","label":"Sale Enable","summary":"","name":"sale_enable","id":"id_998d0dcf-4f01-42e3-b954-886a05479733","disable":false},{"children":"Sale","type":"text","label":"Sale Text","summary":"","name":"sale_text","id":"id_b4513494-e6c4-46f9-b98a-399688899d8e","disable":false},{"children":"","type":"styleBox","label":"Sale Design","summary":"","name":"sale_design","id":"id_5f4788b7-057f-4a1c-badd-3f8f10889216","disable":false},{"children":{"lg":3,"md":3,"sm":1,"xs":1},"type":"responsive","label":"Column","summary":"","name":"column","id":"id_3ee00619-2187-47d8-ae79-29c6062b2561","disable":false,"max":12,"min":1},{"children":1,"type":"slider","label":"Aspect Ratio","summary":"","name":"aspect_ratio","id":"id_b323e466-77f8-42c6-980b-6beb4dc04266","disable":false,"max":1,"min":0,"step":0.1}],"type":"object","label":"Product Settings","summary":"","name":"product_settings","open":false,"drawer":false,"disable":false},{"id":"id_cbbe115d-f498-4b84-8fac-5230dfd4cded","children":[{"children":true,"type":"switch","label":"Enabled","summary":"","name":"enabled","id":"id_9c46784d-e705-45e0-98b1-cd3b2dfd6e2c","disable":false},{"children":"Add to cart","type":"text","label":"Text","summary":"","name":"text","id":"id_b501e23a-e352-4640-8fc0-1f7fb28d6553","disable":false},{"children":"Design","type":"text","label":"Design","summary":"","name":"design","id":"id_7c15547a-5f11-4e20-97b8-d0ab4daf086b","disable":false}],"type":"object","label":"Add To Cart Action","summary":"","name":"add_to_cart_action","open":false,"drawer":false,"disable":false},{"id":"id_d16e3342-a3df-4c96-9e22-b4054b228f34","children":[{"children":true,"type":"switch","label":"Enabled","summary":"","name":"enabled","id":"id_7ccdef65-0acf-456b-9015-c0e8cce4821e","disable":false},{"children":"Add to wishlist","type":"text","label":"Text Add","summary":"","name":"text_add","id":"id_b09ca08c-479e-489f-b4b6-2dc7d730871b","disable":false},{"children":"Remove from wishlist","type":"text","label":"Text Remove","summary":"","name":"text_remove","id":"id_3974fe2c-d0a6-4ba1-8021-c5c850eeb201","disable":false},{"children":"<i class=\"far fa-atom\"></i>","type":"icon","label":"Icon","summary":"","name":"icon","id":"id_95c022ab-c371-46b3-8233-31c51cf84db5","disable":false}],"type":"object","label":"Wishlist Action","summary":"","name":"wishlist_action","open":false,"drawer":false,"disable":false},{"id":"id_627ba165-f1fb-49c3-b559-2956c5766bea","children":[{"children":true,"type":"switch","label":"Enabled","summary":"","name":"enabled","id":"id_7ccdef65-0acf-456b-9015-c0e8cce4821e","disable":false},{"children":"Add to compare","type":"text","label":"Text Add","summary":"","name":"text_add","id":"id_b09ca08c-479e-489f-b4b6-2dc7d730871b","disable":false},{"children":"Remove from compare","type":"text","label":"Text Remove","summary":"","name":"text_remove","id":"id_3974fe2c-d0a6-4ba1-8021-c5c850eeb201","disable":false},{"children":"<i class=\"far fa-atom\"></i>","type":"icon","label":"Icon","summary":"","name":"icon","id":"id_95c022ab-c371-46b3-8233-31c51cf84db5","disable":false}],"type":"object","label":"Compare Action","summary":"","name":"compare_action","open":false,"drawer":false,"disable":false},{"id":"id_51d4ec05-6554-4f6d-b5cd-11b722ded1d8","children":[{"children":true,"type":"switch","label":"Enabled","summary":"","name":"enabled","id":"id_7ccdef65-0acf-456b-9015-c0e8cce4821e","disable":false},{"children":"Quick view","type":"text","label":"Text","summary":"","name":"text","id":"id_b09ca08c-479e-489f-b4b6-2dc7d730871b","disable":false},{"children":"<i class=\"far fa-atom\"></i>","type":"icon","label":"Icon","summary":"","name":"icon","id":"id_95c022ab-c371-46b3-8233-31c51cf84db5","disable":false}],"type":"object","label":"Quickview Action","summary":"","name":"quickview_action","open":false,"drawer":false,"disable":false},{"id":"id_6a9c1a8e-b15c-4d63-87f8-e6830ca2eab9","children":[{"children":"layout=grid","type":"select","label":"Layout","summary":"","name":"layout","id":"id_d78fe632-7f61-4e78-97b9-411c8b60f59e","disable":false,"options":[{"label":"Grid","value":"layout=grid","id":"ea583dfe-bbe3-4a7c-a9d6-497b7bf0a36c"},{"label":"List","value":"layout=list","id":"76b6ac63-f62f-4ded-8def-c1e19e8bfb76"}]}],"type":"object","label":"Testing","summary":"","name":"testing","open":false,"drawer":false,"disable":false}]},"scss":".yasmina-filter-input-size:checked ~ div {\r\n  border: 1px solid var(--color-gray9);\r\n  background-color: var(--color-gray9);\r\n}\r\n.yasmina-filter-input-size:checked ~ span {\r\n  color: var(--color-light);\r\n}\r\n.yasmina-filter-box-size:hover span {\r\n  color: var(--color-light);\r\n}\r\n.yasmina-filter-input-tag:checked ~ div {\r\n  border: 1px solid var(--color-gray9);\r\n}\r\n.yasmina-filter-input-color:checked ~ div {\r\n  border: 1px solid var(--color-gray9);\r\n}\r\n.yasmina-filter-input-radio:checked ~ div  {\r\n  background-color: var(--color-primary);\r\n}\r\n.yasmina-filter-input-radio:checked ~ label {\r\n  color: var(--color-primary);\r\n}\r\n.yasmina-product-page-input-size:checked ~ div {\r\n  background-color: var(--color-light);\r\n}\r\n.veda-radio__inner input:checked ~ .veda-radio__track {\r\n  background-color: var(--color-light);\r\n}\r\n.veda-radio__inner input ~ .veda-radio__track {\r\n  background-color: var(--color-gray2);\r\n}\r\n\r\n.layout-active-js {\r\n  border: 1px solid var(--color-gray9);\r\n  color: var(--color-gray9);\r\n}\r\n","settings":[{"id":"id_626a2607-8325-4671-bc52-e5b0ebce115a","children":[{"children":false,"type":"switch","label":"Background Fixed","summary":"","name":"background_fixed","id":"id_e85f6eca-eea9-439b-a7c5-e120917fe40b","disable":false},{"children":"none","type":"select","label":"Background Type","summary":"","name":"background_type","id":"id_8369f5b9-bfa7-4041-a393-74dfed9ff270","disable":false,"options":[{"label":"Image","value":"image","id":"26f36e5c-8dd7-482d-8fdb-2c4117603be8"},{"label":"Color","value":"color","id":"28e36b55-39bc-4359-85e4-8afc9dd7c9d8"},{"label":"None","value":"none","id":"c7840871-243c-4dd9-bc0e-4bfe1ddb40a1"}]},{"children":"","type":"image","label":"Background Image","summary":"","name":"background_image","id":"id_e5bb63d9-9680-447d-a9fe-e15bda71c44e","disable":false,"deps":"section_settings.background_type === \"image\""},{"children":"#fff","type":"color","label":"Background Color","summary":"","name":"background_color","id":"id_75181973-1de3-4018-96bf-5b74fbdf0d2d","disable":false,"deps":"section_settings.background_type === \"color\""},{"children":"cover","type":"select","label":"Background Size","summary":"","name":"background_size","id":"id_619eb3d2-3834-490b-9526-c67c927c8f24","disable":false,"options":[{"label":"Cover","value":"cover","id":"8d51c160-cddf-41f8-a8dc-4b934801805d"},{"label":"Contain","value":"contain","id":"b06eb4a5-d544-4ae0-9b9d-d9c090372eae"}]},{"children":false,"type":"switch","label":"Background Overlay Enable","summary":"","name":"background_overlay_enable","id":"id_c9d86d7b-4abd-4b22-ad32-043ed3155a89","disable":false},{"children":"#fff","type":"color","label":"Background Overlay Color","summary":"","name":"background_overlay_color","id":"id_c5769de4-eaec-4384-b622-b4b8bcf5ed8e","disable":false},{"children":{"left":0,"top":0,"right":0,"bottom":0},"type":"space","label":"Padding","summary":"","name":"padding","id":"id_b4b8243c-f171-4595-8f04-174470a87f83","disable":false}],"type":"object","label":"Section Settings","summary":"","name":"section_settings","open":false,"drawer":false,"disable":false},{"id":"id_14ef19b6-ac8c-4d15-865b-801339c10f2e","children":[{"children":true,"type":"switch","label":"Enable","summary":"","name":"enable","id":"id_cc9806b3-bf61-47c8-8317-bba9707c117f","disable":false},{"children":"Price","type":"text","label":"Title","summary":"","name":"title","id":"id_1ab8541b-2213-4529-949c-c90bbf0a0f8f","disable":false},{"children":"","type":"styleBox","label":"Title Design","summary":"","name":"title_design","id":"id_12723285-4d95-488a-b34b-46e4b41b5998","disable":false},{"children":"Price","type":"text","label":"Price Text","summary":"","name":"price_text","id":"id_6421a1ae-7d75-4671-8458-97f03072d26c","disable":false},{"children":"From","type":"text","label":"From Text","summary":"","name":"from_text","id":"id_ddfc777b-4801-4253-8bcc-ae3f668d2f2c","disable":false},{"children":"To","type":"text","label":"To Text","summary":"","name":"to_text","id":"id_bdffb3e4-fc99-44f0-992f-6fa795268d8b","disable":false}],"type":"object","label":"Price","summary":"","name":"price","open":false,"drawer":false,"disable":false},{"id":"id_0d36a27a-c209-4bf7-98e3-aaac53b172c1","children":[{"children":true,"type":"switch","label":"Enable","summary":"","name":"enable","id":"id_f0092a2c-5604-4010-a95c-baf72ffbd450","disable":false},{"children":"Categories","type":"text","label":"Title","summary":"","name":"title","id":"id_42a0ee83-1e29-4948-9283-4b58c4b2dd07","disable":false},{"children":"","type":"styleBox","label":"Title Design","summary":"","name":"title_design","id":"id_0a19a3ab-4687-4cc9-8b65-304e89ed50d5","disable":false}],"type":"object","label":"Categories","summary":"","name":"categories","open":false,"drawer":false,"disable":false},{"id":"id_c5b47a7a-1657-464d-8655-22020b7bf434","children":[{"id":"04afb51b-6521-4b54-8632-7204f6066e8d","children":[{"children":"Tuong 3","type":"text","label":"Label","summary":"","name":"label","id":"id_b3e7170a-22c9-4f48-bb53-b7fc9c03afd7","disable":false},{"children":"collections/tuong-3","type":"linkPicker","label":"Value","summary":"","name":"value","id":"id_8b556208-fd11-4c4e-9729-c549353f04bc","disable":false},{"children":"==cssStart=={'cssDefault':{'color':'var(--color-tertiary)'},'cssAnimation':{'animate':'','type':'animate__animated-infinite'}}==cssEnd==","type":"styleBox","label":"Label Design","summary":"","name":"label_design","id":"id_61db8faf-d30e-4199-b537-d1ab5768fc98","disable":false}]}],"type":"array","label":"Categories Data","summary":"","name":"categories_data","open":false,"drawer":false,"disable":false},{"id":"id_5fbe047c-d885-4da0-8b7f-04cef66455ec","children":[{"id":"7eab7569-35a9-4333-b2d4-0a88d8f6d53b","children":[{"children":true,"type":"switch","label":"Enable","summary":"","name":"enable","id":"id_2fe44c07-760d-4751-8eb7-ff49b0a0a395","disable":false},{"children":"Color","type":"text","label":"Title","summary":"","name":"title","id":"id_633fc8ad-83aa-4f21-9df8-f443ad78ad85","disable":false},{"children":"","type":"styleBox","label":"Title Design","summary":"","name":"title_design","id":"id_06ccf16a-6c0c-42f5-a3cc-ed9df3eeeb2b","disable":false},{"children":"color","type":"text","label":"Filter Name","summary":"","name":"filter_name","id":"id_d7c53231-181b-4c81-8138-edb9a34ca143","disable":false},{"children":"","type":"tags","label":"data","summary":"","name":"data","id":"id_5fb71de8-021b-401e-8d6c-9509a438209a","disable":false}]}],"type":"array","label":"Options","summary":"","name":"options","open":false,"drawer":false,"disable":false},{"id":"id_64c0b805-636d-48c8-b0a2-56ee88f4d688","children":[{"children":true,"type":"switch","label":"Enable","summary":"","name":"enable","id":"id_22e3de8c-b14f-4f61-952e-3b0418d605e9","disable":false},{"children":"Brand","type":"text","label":"Title","summary":"","name":"title","id":"id_b8d9ee2d-9917-463e-93e1-b91a4a00e68b","disable":false},{"children":"","type":"styleBox","label":"Title Design","summary":"","name":"title_design","id":"id_72c42e30-f279-4534-bf39-029ea0a544f8","disable":false}],"type":"object","label":"Brands","summary":"","name":"brands","open":false,"drawer":false,"disable":false},{"id":"id_29278d3a-51f2-46c3-a86a-947b705aa4c6","children":[{"id":"29b2bfd9-5ac3-4b4b-a64a-1ea4ab9ff481","children":[{"children":"Gap","type":"text","label":"Label","summary":"","name":"label","id":"id_35c1d272-3798-45aa-bfb3-420b31be36fc","disable":false},{"children":"","type":"styleBox","label":"Label Design","summary":"","name":"label_design","id":"id_d048496a-8429-4dae-8621-a8acbb367fde","disable":false},{"children":"gap","type":"text","label":"Value","summary":"","name":"value","id":"id_f248697e-4a08-48f7-aacd-571ae6299c6d","disable":false}]}],"type":"array","label":"Brands Data","summary":"","name":"brands_data","open":false,"drawer":false,"disable":false},{"id":"id_518caeea-5ecb-49a3-9e69-0ce35fecf5cc","children":[{"children":true,"type":"switch","label":"Enable","summary":"","name":"enable","id":"id_d735d587-79e7-4545-b92f-1ab624fa58b7","disable":false},{"children":"Availability","type":"text","label":"Title","summary":"","name":"title","id":"id_10218635-0427-4fda-a0b0-d6e144ab4483","disable":false},{"children":"","type":"styleBox","label":"Title Design","summary":"","name":"title_design","id":"id_079648b9-37bb-409a-b9f3-99a448b00ccb","disable":false},{"children":"In Stock","type":"text","label":"In Stock Text","summary":"","name":"in_stock_text","id":"id_f0b1f19e-aa0e-4818-a1af-9f1b3a673334","disable":false},{"children":"","type":"styleBox","label":"In Stock Design","summary":"","name":"in_stock_design","id":"id_8f7c3361-e7d6-480c-a9fb-b03cacfe6cd7","disable":false},{"children":"Out of Stock","type":"text","label":"Out of Stock Text","summary":"","name":"out_of_stock_text","id":"id_a0798267-6252-40fa-a258-6eaaa2d9bd5d","disable":false},{"children":"","type":"styleBox","label":"Out of Stock Design","summary":"","name":"out_of_stock_design","id":"id_108a449f-2d0a-4346-84e6-370338e2aa97","disable":false}],"type":"object","label":"Availability","summary":"","name":"availability","open":false,"drawer":false,"disable":false},{"id":"id_b2544036-b704-48c4-b898-bc3c7b80f630","children":[{"children":true,"type":"switch","label":"Review App","summary":"","name":"review_app","id":"id_4d4319b6-db45-4bd0-8754-863d1c25721e","disable":false},{"children":"rivyo_reviews","type":"select","label":"Review App Html","summary":"","name":"review_app_html","id":"id_c248550b-435d-4e0f-b9e8-77c453f3c4e1","disable":false,"options":[{"label":"Product Reviews","value":"product_reviews","id":"85f0e774-b22d-4900-a6b2-d448ecc28f5a"},{"label":"Rivyo Reviews","value":"rivyo_reviews","id":"84cb3c5b-c4f5-4882-b016-63b5063f6b46"},{"label":"Loox Reviews","value":"loox_reviews","id":"e54761b2-42b2-43c2-9c9d-8afb2972d7f8"},{"label":"Ali Reviews","value":"ali_reviews","id":"92c430a8-7e86-4318-b7a7-4b099d509183"},{"label":"Stamped Reviews","value":"stamped_reviews","id":"9282a6d2-88bf-4982-8f8c-31b090c3cb7b"},{"label":"Judge Me Reviews","value":"judge_me_reviews","id":"708c1935-e8f0-4ce7-b8a4-a3463faafedd"},{"label":"Other","value":"other","id":"fb2f0a80-b411-48c2-98b6-903746f4103c"}]},{"children":true,"type":"switch","label":"Sale Enable","summary":"","name":"sale_enable","id":"id_998d0dcf-4f01-42e3-b954-886a05479733","disable":false},{"children":"Sale","type":"text","label":"Sale Text","summary":"","name":"sale_text","id":"id_b4513494-e6c4-46f9-b98a-399688899d8e","disable":false},{"children":"","type":"styleBox","label":"Sale Design","summary":"","name":"sale_design","id":"id_5f4788b7-057f-4a1c-badd-3f8f10889216","disable":false},{"children":{"lg":3,"md":3,"sm":1,"xs":1},"type":"responsive","label":"Column","summary":"","name":"column","id":"id_3ee00619-2187-47d8-ae79-29c6062b2561","disable":false,"max":12,"min":1},{"children":1,"type":"slider","label":"Aspect Ratio","summary":"","name":"aspect_ratio","id":"id_b323e466-77f8-42c6-980b-6beb4dc04266","disable":false,"max":1,"min":0,"step":0.1}],"type":"object","label":"Product Settings","summary":"","name":"product_settings","open":false,"drawer":false,"disable":false},{"id":"id_cbbe115d-f498-4b84-8fac-5230dfd4cded","children":[{"children":true,"type":"switch","label":"Enabled","summary":"","name":"enabled","id":"id_9c46784d-e705-45e0-98b1-cd3b2dfd6e2c","disable":false},{"children":"Add to cart","type":"text","label":"Text","summary":"","name":"text","id":"id_b501e23a-e352-4640-8fc0-1f7fb28d6553","disable":false},{"children":"Design","type":"text","label":"Design","summary":"","name":"design","id":"id_7c15547a-5f11-4e20-97b8-d0ab4daf086b","disable":false}],"type":"object","label":"Add To Cart Action","summary":"","name":"add_to_cart_action","open":false,"drawer":false,"disable":false},{"id":"id_d16e3342-a3df-4c96-9e22-b4054b228f34","children":[{"children":true,"type":"switch","label":"Enabled","summary":"","name":"enabled","id":"id_7ccdef65-0acf-456b-9015-c0e8cce4821e","disable":false},{"children":"Add to wishlist","type":"text","label":"Text Add","summary":"","name":"text_add","id":"id_b09ca08c-479e-489f-b4b6-2dc7d730871b","disable":false},{"children":"Remove from wishlist","type":"text","label":"Text Remove","summary":"","name":"text_remove","id":"id_3974fe2c-d0a6-4ba1-8021-c5c850eeb201","disable":false},{"children":"<i class=\"far fa-heart\"></i>","type":"icon","label":"Icon","summary":"","name":"icon","id":"id_95c022ab-c371-46b3-8233-31c51cf84db5","disable":false}],"type":"object","label":"Wishlist Action","summary":"","name":"wishlist_action","open":false,"drawer":false,"disable":false},{"id":"id_627ba165-f1fb-49c3-b559-2956c5766bea","children":[{"children":true,"type":"switch","label":"Enabled","summary":"","name":"enabled","id":"id_7ccdef65-0acf-456b-9015-c0e8cce4821e","disable":false},{"children":"Add to compare","type":"text","label":"Text Add","summary":"","name":"text_add","id":"id_b09ca08c-479e-489f-b4b6-2dc7d730871b","disable":false},{"children":"Remove from compare","type":"text","label":"Text Remove","summary":"","name":"text_remove","id":"id_3974fe2c-d0a6-4ba1-8021-c5c850eeb201","disable":false},{"children":"<i class=\"far fa-shopping-cart\"></i>","type":"icon","label":"Icon","summary":"","name":"icon","id":"id_95c022ab-c371-46b3-8233-31c51cf84db5","disable":false}],"type":"object","label":"Compare Action","summary":"","name":"compare_action","open":false,"drawer":false,"disable":false},{"id":"id_51d4ec05-6554-4f6d-b5cd-11b722ded1d8","children":[{"children":true,"type":"switch","label":"Enabled","summary":"","name":"enabled","id":"id_7ccdef65-0acf-456b-9015-c0e8cce4821e","disable":false},{"children":"Quick view","type":"text","label":"Text","summary":"","name":"text","id":"id_b09ca08c-479e-489f-b4b6-2dc7d730871b","disable":false},{"children":"<i class=\"far fa-eye\"></i>","type":"icon","label":"Icon","summary":"","name":"icon","id":"id_95c022ab-c371-46b3-8233-31c51cf84db5","disable":false}],"type":"object","label":"Quickview Action","summary":"","name":"quickview_action","open":false,"drawer":false,"disable":false},{"id":"id_6a9c1a8e-b15c-4d63-87f8-e6830ca2eab9","children":[{"children":"layout=grid","type":"select","label":"Layout","summary":"","name":"layout","id":"id_d78fe632-7f61-4e78-97b9-411c8b60f59e","disable":false,"options":[{"label":"Grid","value":"layout=grid","id":"ea583dfe-bbe3-4a7c-a9d6-497b7bf0a36c"},{"label":"List","value":"layout=list","id":"76b6ac63-f62f-4ded-8def-c1e19e8bfb76"}]}],"type":"object","label":"Testing","summary":"","name":"testing","open":false,"drawer":false,"disable":false}]},"scope":"publish","pageTypes":["collection"],"type":"default","sample":true,"enable":true,"userId":1,"synced":false,"category":{"commandId":"62987133b57c6c4c83787558","name":"collections"},"modifiedDateTimestamp":1657766996577,"parentCommandId":"","changelog":{"version":"1.1","versionId":"","content":""},"categoryId":"collections"}
+{
+  "id": "id_00e01cd5-5c3b-4e06-a1c2-598b8ef620a9",
+  "commandId": "62cb8c8e0b4692714e96c495",
+  "label": "Collection Content",
+  "image": {
+    "src": "",
+    "width": 0,
+    "height": 0
+  },
+  "addonIds": [],
+  "megaMenuId": "",
+  "currentVersion": "1.0",
+  "versionId": "cf09f504-0f74-4dfe-8e9a-30d1588225ac",
+  "data": {
+    "js": "\r\nconst {\r\n  collectionsFilters,\r\n  message,\r\n  productCompare,\r\n  productWishList,\r\n  productQuickView,\r\n  productColor,\r\n  cart,\r\n} = veda.plugins;\r\nconst { objectParse, queryString } = veda.utils;\r\nconst { html } = veda.utils.csr;\r\nlet unsubscribeCompare = () => { };\r\nlet unsubscribeWishList = () => { };\r\nfunction checkHasItem(productData, storeData) {\r\n  return storeData?.some((item) => item.id === productData.id);\r\n}\r\nfunction changeStatus(el, hasItem) {\r\n  if (hasItem()) {\r\n    el.setAttribute(\"data-tooltip-active\", true);\r\n    el.classList.add(\"toggle-active-js\");\r\n  } else {\r\n    el.setAttribute(\"data-tooltip-active\", false);\r\n    el.classList.remove(\"toggle-active-js\");\r\n  }\r\n  return hasItem;\r\n}\r\nfunction handleCompare() {\r\n  const listCard = container.querySelectorAll(\".product-card-js\");\r\n  listCard.forEach((card) => {\r\n    const compareDataEl = card.querySelector(\".product-card-data-js\");\r\n    const productData = objectParse(compareDataEl.textContent);\r\n    const btnCompareEl = card.querySelector(\".compare-toggle-js\");\r\n    const ratingCustom = card.querySelector(\".compare-rating-js\");\r\n    if (!btnCompareEl) {\r\n      return;\r\n    }\r\n    const hasItem = () => checkHasItem(productData, productCompare.getData());\r\n    changeStatus(btnCompareEl, hasItem);\r\n    btnCompareEl.addEventListener(\"click\", () => {\r\n      productCompare.toggleProduct({\r\n        ...productData,\r\n        rating: ratingCustom?.innerHTML,\r\n      });\r\n      const tooltipText = btnCompareEl.getAttribute(\"data-tooltip-text\");\r\n      const tooltipActiveText = btnCompareEl.getAttribute(\r\n        \"data-tooltip-active-text\"\r\n      );\r\n      changeStatus(btnCompareEl, hasItem);\r\n      if (hasItem()) {\r\n        tooltipText && message.success(tooltipText);\r\n      } else {\r\n        tooltipActiveText && message.error(tooltipActiveText);\r\n      }\r\n    });\r\n  });\r\n  unsubscribeCompare();\r\n  unsubscribeCompare = productCompare.subscribe((state) => {\r\n    const listCard = container.querySelectorAll(\".product-card-js\");\r\n    listCard.forEach((card) => {\r\n      const compareDataEl = card.querySelector(\".product-card-data-js\");\r\n      const productData = objectParse(compareDataEl.textContent);\r\n      const btnCompareEl = card.querySelector(\".compare-toggle-js\");\r\n      const hasItem = () => checkHasItem(productData, state);\r\n      changeStatus(btnCompareEl, hasItem);\r\n    });\r\n  });\r\n}\r\nfunction handleWishList() {\r\n  const listCard = container.querySelectorAll(\".product-card-js\");\r\n  listCard.forEach((card) => {\r\n    const compareDataEl = card.querySelector(\".product-card-data-js\");\r\n    const productData = objectParse(compareDataEl.textContent);\r\n    const btnWishListEl = card.querySelector(\".wishlist-toggle-js\");\r\n    if (!btnWishListEl) {\r\n      return;\r\n    }\r\n    const hasItem = () =>\r\n      checkHasItem(productData, productWishList.getData());\r\n    productQuickView.customQuickView({\r\n      link: productData.url,\r\n    });\r\n    changeStatus(btnWishListEl, hasItem);\r\n    btnWishListEl.addEventListener(\"click\", () => {\r\n      productWishList.toggleWishList(productData);\r\n      const tooltipText = btnWishListEl.getAttribute(\"data-tooltip-text\");\r\n      const tooltipActiveText = btnWishListEl.getAttribute(\r\n        \"data-tooltip-active-text\"\r\n      );\r\n      changeStatus(btnWishListEl, hasItem);\r\n      if (hasItem()) {\r\n        tooltipText && message.success(tooltipText);\r\n      } else {\r\n        tooltipActiveText && message.error(tooltipActiveText);\r\n      }\r\n    });\r\n  });\r\n  unsubscribeWishList();\r\n  unsubscribeWishList = productWishList.subscribe((state) => {\r\n    const listCard = container.querySelectorAll(\".product-card-js\");\r\n    listCard.forEach((card) => {\r\n      const dataEl = card.querySelector(\".product-card-data-js\");\r\n      const productData = objectParse(dataEl.textContent);\r\n      const btnWishList = card.querySelector(\".wishlist-toggle-js\");\r\n      const hasItem = () => checkHasItem(productData, state);\r\n      changeStatus(btnWishList, hasItem);\r\n    });\r\n  });\r\n}\r\nfunction handleCart() {\r\n  if (builderMode) {\r\n    return;\r\n  }\r\n  const listCard = container.querySelectorAll(\".product-card-js\");\r\n  listCard.forEach((card) => {\r\n    const cartDataEl = card.querySelector(\".product-card-data-js\");\r\n    const productData = objectParse(cartDataEl.textContent);\r\n    const btnAddCart = card.querySelector(\".product-card-add-js\");\r\n    if (!btnAddCart) {\r\n      return;\r\n    }\r\n    btnAddCart.addEventListener(\"click\", async (event) => {\r\n      event.preventDefault();\r\n      await cart.addToCart(Number(productData), 1);\r\n      cart.toggleDraw();\r\n    });\r\n  });\r\n}\r\nfunction handleQuickView() {\r\n  const listCard = container.querySelectorAll(\".product-card-js\");\r\n  listCard.forEach((card) => {\r\n    const cartDataEl = card.querySelector(\".product-card-data-js\");\r\n    const productData = objectParse(cartDataEl.textContent);\r\n    const btnQuickView = card.querySelector(\".quickview-toggle-js\");\r\n    if (!btnQuickView) {\r\n      return;\r\n    }\r\n    btnQuickView.addEventListener(\"click\", () => {\r\n      productQuickView.togglePopup(productData);\r\n    });\r\n  });\r\n}\r\nfunction handleColor() {\r\n  const listCard = container.querySelectorAll(\".product-card-js\");\r\n  productColor.init({\r\n    onChange: (color, image, currentEl) => {\r\n      const currentImage = currentEl\r\n        .closest(\".product-card-js\")\r\n        .querySelector(\".product-card-image-js\");\r\n      currentImage.src = image;\r\n    },\r\n  });\r\n  listCard.forEach((card) => {\r\n    const cartDataEl = card.querySelector(\".product-card-data-js\");\r\n    const productData = objectParse(cartDataEl.textContent);\r\n    const colorWrapper = card.querySelector(\".product-card-colors-js\");\r\n    if (!colorWrapper) {\r\n      return;\r\n    }\r\n    productColor.render(colorWrapper, productData);\r\n  });\r\n}\r\nfunction productActions() {\r\n  handleCompare();\r\n  handleWishList();\r\n  handleQuickView();\r\n  handleCart();\r\n  handleColor();\r\n}\r\nproductActions();\r\n\r\n// FILTER\r\nasync function getContentCollections(url) {\r\n  const domParser = new DOMParser();\r\n  const res = await fetch(url);\r\n  const html = await res.text();\r\n  const doc = domParser.parseFromString(html, \"text/html\");\r\n  const contentCollectionsEl = doc.querySelector(\".content-collections-js\");\r\n  if (contentCollectionsEl) {\r\n    const contentCollections = contentCollectionsEl.innerHTML;\r\n    return contentCollections;\r\n  }\r\n  return \"\";\r\n}\r\n\r\ncollectionsFilters(container, {\r\n  formSelector: \".filter-form-js\",\r\n  sortBySelector: \".filter-sort-by-js\",\r\n  refineRootSelector: \".filter-refine-js\",\r\n  clearAllRootSelector: \".filter-clear-all-js\",\r\n  priceStep: 0.01,\r\n  renderRefineItem({ item, onRemove }) {\r\n    return html`\r\n      <div\r\n      key=${item.value}\r\n      class=\"pos:relative d:inline-block bd:1px_solid_color-gray2 w:fit-content p:2px_25px_2px_5px cur:pointer c:color-gray4 ff:font-primary mr:5px mb:5px\"\r\n    >\r\n      <span class=\"c:color-gray4\">${item.label}</span>\r\n      <span\r\n        class=\"cur:pointer\"\r\n      >\r\n        <i class=\"fal fa-times pos:absolute t:55% r:1% trf:translate(-50%,-50%) c:color-gray4 c:color-gray9!|h\" onClick=${onRemove}></i>\r\n      </span>\r\n    </div>\r\n      `;\r\n  },\r\n  renderClearAllButton({ onClear }) {\r\n    const text =\r\n      container\r\n        .querySelector(\".filter-clear-all-js\")\r\n        ?.getAttribute(\"data-text\") ?? \"Clear All\";\r\n    return html`<div\r\n        class=\"c:color-gray9 ff:font-primary bgc:color-light bgc:color-light|h! bd:none! c:color-gray9|h! p:0! c:color-primary|h!\"\r\n        onClick=${onClear}\r\n      >\r\n        ${text}\r\n      </div>`;\r\n  },\r\n  async onChange({ url, urlRequest, category, done }) {\r\n    if (builderMode) {\r\n      return;\r\n    }\r\n    try {\r\n      const sectionId = container\r\n        .querySelector(\"[data-shopify-id]\")\r\n        ?.getAttribute(\"data-shopify-id\");\r\n      if (category) {\r\n        url.pathname = `/${category}`;\r\n        urlRequest.pathname = `/${category}`;\r\n      }\r\n      if (sectionId) {\r\n        urlRequest.search = `${urlRequest.search}&section_id=${sectionId}`;\r\n      }\r\n      const contentCollectionsEl = container.querySelector(\r\n        \".content-collections-js\"\r\n      );\r\n      contentCollectionsEl.style.opacity = 0.6;\r\n      const content = await getContentCollections(urlRequest);\r\n      contentCollectionsEl.style.opacity = 1;\r\n      contentCollectionsEl.innerHTML = content;\r\n      productActions();\r\n      done();\r\n    } catch (err) {\r\n      console.log(err);\r\n    }\r\n  },\r\n  onChangePrice({ min, max }) {\r\n    const priceViewEl = container.querySelector(\".filter-price-view-js\");\r\n    priceViewEl.textContent = `${min} - ${max}`;\r\n  },\r\n  refineListener(items) {\r\n    const refineWrapperEl = container.querySelector(\r\n      \".filter-refine-wrapper-js\"\r\n    );\r\n    if (items.length) {\r\n      refineWrapperEl.classList.add(\"d:block\");\r\n    } else {\r\n      refineWrapperEl.classList.remove(\"d:block\");\r\n    }\r\n  },\r\n});\r\n\r\n// Handle layout grid and list\r\nfunction handleLayout() {\r\n  const layoutEls = container.querySelectorAll(\".product-layout-js\");\r\n  function getCurrentlayout() {\r\n    return queryString.parse(window.location.search, true).layout || \"grid\";\r\n  }\r\n  function changeLayout() {\r\n    const currentLayout = getCurrentlayout();\r\n    layoutEls.forEach((layoutEl) => {\r\n      const activeClasses = layoutEl\r\n        .getAttribute(\"data-active-class\")\r\n        .replace(/\\s+/g, \" \")\r\n        .trim()\r\n        .split(\" \");\r\n      if (currentLayout === layoutEl.getAttribute(\"data-layout\")) {\r\n        layoutEl.classList.add(...activeClasses);\r\n      } else {\r\n        layoutEl.classList.remove(...activeClasses);\r\n      }\r\n    });\r\n  }\r\n  changeLayout();\r\n\r\n  if (builderMode) {\r\n    return;\r\n  }\r\n  layoutEls.forEach((layoutEl) => {\r\n    layoutEl.addEventListener(\"click\", async () => {\r\n      const currentLayout = getCurrentlayout();\r\n      const layout = layoutEl.getAttribute(\"data-layout\");\r\n      if (layout === currentLayout) {\r\n        return;\r\n      }\r\n      const url = new URL(window.location.href);\r\n      const params = queryString.parse(url.search);\r\n      const newParams = [\r\n        ...params.filter((item) => item[0] !== \"layout\"),\r\n        [\"layout\", layout],\r\n      ];\r\n      const search = queryString.stringify(newParams);\r\n      url.search = search;\r\n      window.history.pushState(null, null, url.href);\r\n      const contentCollectionsEl = container.querySelector(\r\n        \".content-collections-js\"\r\n      );\r\n      contentCollectionsEl.style.opacity = 0.6;\r\n      const content = await getContentCollections(url);\r\n      contentCollectionsEl.style.opacity = 1;\r\n      contentCollectionsEl.innerHTML = content;\r\n      changeLayout();\r\n    });\r\n  });\r\n}\r\nhandleLayout();\r\n\r\n",
+    "liquid": "{% liquid\r\n  if section_settings.background_fixed assign backgroundFixed = 'fixed' else assign backgroundFixed = 'scroll' endif\r\n  if section_settings.background_type == 'color' assign backgroundColor = 'background-color: ' | append: section_settings.background_color | append: ';' else assign backgroundColor = '' endif\r\n  if section_settings.background_type == 'image' assign backgroundImage = 'background-image: url(' | append: section_settings.background_image | append:\r\n  ');background-attachment: ' | append: backgroundFixed | append: ';background-size: ' | append: section_settings.background_size | append: ';' else assign backgroundImage = '' endif\r\n  assign sectionPadding = 'padding-top: ' | append: section_settings.padding.top | append: 'px;padding-right: ' | append: section_settings.padding.right | append: 'px;padding-bottom: ' | append: section_settings.padding.bottom | append: 'px;padding-left: ' | append: section_settings.padding.left | append: 'px;'\r\n%}\r\n\r\n<section data-id=\"{{uniqueId}}\" css=\"{{ backgroundColor }}{{ backgroundImage }}{{ sectionPadding }}\">\r\n  {% if section_settings.background_overlay_enable %}\r\n    <div class=\"pos:absolute ins:0 z:-1\" css=\"background-color: {{ section_settings.background_overlay_color }}\"></div>\r\n  {% endif %}\r\n  <shopify>\r\n    <div data-shopify-id=\"{{ section.id }}\"></div>\r\n    {% if builderMode %}\r\n      {% assign searchParams = testing.layout %}\r\n    {% else %}\r\n      {% capture searchParams %}\r\n        {% assign pageUrlWithHost = content_for_header | split:'\"pageurl\":\"' | last | split:'\"' | first |\r\n          replace:'\\/','/' |\r\n          replace:'%20',' ' |\r\n          replace:'\\u0026','&'\r\n        %}\r\n        {{ pageUrlWithHost | split: \"?\" | last }}\r\n      {% endcapture %}\r\n    {% endif %}\r\n  </shopify>\r\n  <div class=\"container pt:35px\">\r\n    <shopify>\r\n      {% unless request.page_type == 'index' or request.page_type == 'list-collections' %}\r\n        <nav role=\"navigation\" aria-label=\"breadcrumbs\">\r\n            <a class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" href=\"{{ routes.root_url }}\" title=\"Home\">Home</a>\r\n            {% if request.page_type contains 'page' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ page.title }}</span>\r\n            {% elsif request.page_type contains 'product' %}\r\n              {% if collection.url %}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n                {{ collection.title | link_to: collection.url }}\r\n              {% endif %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ product.title }}</span>\r\n            {% elsif request.page_type contains 'collection' and collection.handle %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              {% if current_tags %}\r\n                {% capture url %}/collections/{{ collection.handle }}{% endcapture %}\r\n                {{ collection.title | link_to: url }}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ current_tags | join: \" + \" }}</span>\r\n              {% else %}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ collection.title }}</span>\r\n              {% endif %}\r\n            {% elsif request.page_type == 'blog' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              {% if current_tags %}\r\n                {{ blog.title | link_to: blog.url }}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ current_tags | join: \" + \" }}</span>\r\n              {% else %}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ blog.title }}</span>\r\n              {% endif %}\r\n            {% elsif request.page_type == 'article' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              {{ blog.title | link_to: blog.url }}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span>{{ article.title }}</span>\r\n            {% elsif request.page_type == 'cart' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">Cart</span>\r\n            {% else %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ page_title }}</span>\r\n            {% endif %}\r\n        </nav>\r\n      {% endunless %}\r\n    </shopify>\r\n    <div class=\"view-as mb:20px d:flex ai:center jc:space-between mt:30px fz:15px c:color-gray9 flw:wrap w:75% pr:35px@md\">\r\n      <div class=\"d:flex\">\r\n        <span class=\"product-layout-js p:0px_5px_0px_5px ml:10px cur:pointer c:color-gray2 bd:1px_solid_color-gray2\" data-layout=\"grid\" data-active-class=\"c:color-gray9! bd:1px_solid_color-gray9\">\r\n          <i class=\"fas fa-th\"></i>\r\n        </span>\r\n        <span class=\"product-layout-js p:0px_5px_0px_5px ml:10px cur:pointer c:color-gray2 bd:1px_solid_color-gray2\" data-layout=\"list\" data-active-class=\"c:color-gray9! bd:1px_solid_color-gray9\">\r\n          <i class=\"fal fa-list\"></i>\r\n        </span>\r\n      </div>\r\n      <shopify>\r\n        {% assign collection_prs = collection.products %}\r\n        {%- assign arr_price = collection_prs | map:'price_min' | uniq | sort -%}\r\n        {%- assign min_price = arr_price | first -%}\r\n        {%- assign max_price = arr_price | last -%}\r\n\r\n        {% assign my_collection_sort = collection.sort_options %}\r\n        <form id=\"filter-form\" class=\"filter_form\">\r\n          <div class=\"d:flex whs:nowrap ai:center pos:relative mt:10px mt:0px@md filter_field sort_by pos:relative\">\r\n            <p class=\"mr:10px fz:15px fw:500\">Sort</p>\r\n            <div class=\"veda-select filter-sort-by-js\">\r\n              <div class=\"veda-select__view w:pfs(130px,190px) h:43px bd:1px_solid_#DEDEE9 pl:15px cur:pointer d:flex ai:center ff:font-secondary\">\r\n                <div class=\"veda-select__label w:pfs(100px,150px) cur:pointer d:flex ai:center fz:pfs(12px,15px) fw:400 c:color-gray4 ff:font-secondary\"></div>\r\n                <i class=\"fal fa-angle-down\"></i>\r\n              </div>\r\n              <div class=\"veda-select__options select-custom pos:absolute t:50px w:pfs(130px,190px) z:100 bgc:color-light bd:1px_solid_#DEDEE9\">\r\n                {% assign first_sort_option = my_collection_sort | first %}\r\n                {% for option in my_collection_sort %}\r\n                  <div class=\"veda-select__option select-custom__item w:pfs(128px,188px) h:43px fz:pfs(12px,15px) fw:400 pl:15px cur:pointer bgc:#DEDEE9|h! d:flex ai:center bd:none! ff:font-secondary\" value=\"{{ option.value | escape }}\" {% if first_sort_option.value  == option.value %}selected=\"true\"{% endif %} >{{ option.name | escape }}</div>\r\n                {% endfor %}\r\n\r\n              </div>\r\n            </div>\r\n          </div>\r\n        </form>\r\n      </shopify>\r\n    </div>\r\n    <div class=\"row\">\r\n      <shopify>\r\n        <div class=\"col-lg-9 pr:40px@md d:block\">\r\n          {% if searchParams contains \"layout=list\" %}\r\n            {% assign quantity_product_displayed = 4 %}\r\n          {% else %}\r\n            {% assign quantity_product_displayed = 9 %}\r\n          {% endif %}\r\n          <div component=\"content\" class=\"content-collections-js pb:100px\">\r\n            {% paginate collection.products by quantity_product_displayed %}\r\n              {% if searchParams contains \"layout=list\" %}\r\n                {%- comment -%} wrap for list {%- endcomment -%}\r\n                <div>\r\n              {% else %}\r\n                {%- comment -%} wrap for grid {%- endcomment -%}\r\n                <div class=\"row row-cols-lg-{{ product_settings.column.lg }} row-cols-md-{{ product_settings.column.md }} row-cols-sm-{{ product_settings.column.sm }} row-cols-{{ product_settings.column.xs }}\">\r\n              {% endif %}\r\n                {% for product in collection.products %}\r\n                  {% if searchParams contains \"layout=list\" %}\r\n                    {%- comment -%} list item {%- endcomment -%}\r\n                    <div class=\"product-card-js d:flex fld:row ai:center ta:center mb:15px pb:15px fxw:wrap\">\r\n                      <script class=\"product-card-data-js\" type=\"application/json\">\r\n                        {\r\n                          id: {{ product.id | json }},\r\n                          title: {{ product.title | json }},\r\n                          vendor: {{ product.vendor | json }},\r\n                          handle: {{ product.handle | json }},\r\n                          available: {{ product.available | json }},\r\n                          content: {{ product.content | json }},\r\n                          description: {{ product.description | json }},\r\n                          featured_image: {{ product.featured_image | json }},\r\n                          images: {{ product.images | json }},\r\n                          options: {{ product.options | json }},\r\n                          price_max: {{ product.price_max | json }},\r\n                          price_min: {{ product.price_min | json }},\r\n                          type: {{ product.type | json }},\r\n                          tags: {{ product.tags | json }},\r\n                          variants: {{ product.variants | json }},\r\n                          price: {{ product.price | json }},\r\n                          options_with_values: {{ product.options_with_values | json }},\r\n                          url: {{ product.url | json }}\r\n                        }\r\n                      </script>\r\n                      <div class=\"group* w:250px pos:relative ov:hidden mr:0px mr:30px@sm\">\r\n                        <div class=\"ov:hidden w:100%\">\r\n                          <a href=\"{{product.url}}\" class=\"veda-image-cover d:block w:100%\" style=\"--aspect-ratio:{{product_settings.aspect_ratio}}\">\r\n                            <img class=\"product-card-image-js\" src=\"{{ product.featured_image.src | img_url: '250x' }}\" alt=\"{{ product.title }}\">\r\n                          </a>\r\n                        </div>\r\n\r\n                        <div class=\"pos:absolute t:5px l:5px d:flex\">\r\n                          {% if product.compare_at_price > product.price and product_settings.sale_enable %}\r\n                            <div class=\"d:flex jc:center ai:center w:60px h:30px bgc:#219653 mr:5px bdrs:2px\">\r\n                              <p class=\"fz:16px pos:absolute z:10 fw:600 c:color-light-freeze\" css=\"{{ product_settings.sale_design }}\">{{ product_settings.sale_text}}</p>\r\n                            </div>\r\n                          {% endif %}\r\n                        </div>\r\n                        <div class=\"pos:absolute t:10px r:10px w:35px h:127px\">\r\n                          {% if wishlist_action.enabled %}\r\n                              <div class=\"wishlist-toggle-js pos:relative d:flex ai:center jc:center w:36px h:36px bdrs:50% bgc:color-light fz:17px c:color-gray9 mb:10px cur:pointer bgc:color-gray9|h! c:color-light|h!\" data-tooltip=\"{{wishlist_action.text_add}}\" data-tooltip-position=\"left\" data-tooltip-active=\"true\" data-tooltip-text=\"{{wishlist_action.text_add}}\" data-tooltip-active-text=\"{{wishlist_action.text_remove}}\">\r\n                                {{wishlist_action.icon}}\r\n                              </div>\r\n                            {% endif %}\r\n                            {% if quickview_action.enabled %}\r\n                              <div class=\"trf:translateX(0)*group-hover quickview-toggle-js pos:relative d:flex ai:center jc:center w:36px h:36px bdrs:50% bgc:color-light fz:17px c:color-gray9 mb:10px cur:pointer bgc:color-gray9|h! c:color-light|h! trf:translateX(50px) trs:all_0.3s\" data-tooltip=\"{{quickview_action.text}}\" data-tooltip-text=\"{{quickview_action.text}}\" data-tooltip-position=\"left\" data-tooltip-active=\"false\" >\r\n                                {{quickview_action.icon}}\r\n                              </div>\r\n                            {% endif %}\r\n                            {% if compare_action.enabled %}\r\n                              <div class=\"trf:translateX(0)*group-hover compare-toggle-js pos:relative d:flex ai:center jc:center w:36px h:36px bdrs:50% bgc:color-light fz:17px c:color-gray9 mb:10px cur:pointer bgc:color-gray9|h! c:color-light|h! trf:translateX(50px) trs:all_0.3s\" data-tooltip=\"{{compare_action.text_add}}\" data-tooltip-position=\"left\" data-tooltip-active=\"false\" data-tooltip-text=\"{{compare_action.text_add}}\" data-tooltip-active-text=\"{{compare_action.text_remove}}\">\r\n                                {{compare_action.icon}}\r\n                              </div>\r\n                            {% endif %}\r\n                        </div>\r\n                      </div>\r\n                      <div class=\"d:flex fld:column jc:flex-start ai:flex-start h:100%\">\r\n                        <div class=\"c:color-gray5 mt:11px fz:14px\">{{product.vendor}}</div>\r\n                        <a class=\"fz:16px mt:15px c:color-gray9\" href=\"{{product.url}}\">{{product.title}}</a>\r\n                        <div class=\"compare-rating-js\">\r\n                          {% if product_settings.review_app %}\r\n                            {% case product_settings.review_app_html %}\r\n                              {% when 'product_reviews' %}\r\n                                <rivio-review-badge item=\"product\" />\r\n                                <span class=\"shopify-product-reviews-badge\" data-id=\"{{ product.id }}\"></span>\r\n                              {% when 'rivyo_reviews' %}\r\n                                <rivio-review-badge item=\"product\" />\r\n                              {% when 'loox_reviews' %}\r\n                                <loox-review-badge item=\"product\" />\r\n                              {% when 'ali_reviews' %}\r\n                                <ali-review-badge item=\"product\" />\r\n                              {% when 'stamped_reviews' %}\r\n                                <stamped-review-badge item=\"product\" />\r\n                              {% when 'judge_me_reviews' %}\r\n                                <judge-me-review-badge item=\"product\" />\r\n                              {% when 'other' %}\r\n                                {% if builderMode %}\r\n                                  <review-badge item=\"product\" />\r\n                                {% else %}\r\n                                  {{ product_settings.review_app_html }}\r\n                                {% endif %}\r\n                                {% else %}\r\n                            {% endcase %}\r\n                          {% endif %}\r\n                        </div>\r\n                        <a class=\" mt:14px\" href=\"#\">\r\n                          <ins class=\"fw:500 fz:15px c:color-primary td:none\">{{ product.price | money }}</ins>\r\n                          {% if product.compare_at_price > product.price %}\r\n                            <del class=\"fw:500 fz:15px c:#9E9E9E\">{{ product.compare_at_price | money }}</del>\r\n                          {% endif %}\r\n                        </a>\r\n\r\n                        <div class=\"product-card-colors-js d:flex mt:8px\">\r\n                        </div>\r\n                        <div class=\"lines-4 w:100% ff:font-secondary fw:300 fz:13px c:color-gray9 ta:left mt:20px\">\r\n                          {{product.description | strip_html }}\r\n                        </div>\r\n                        {% if add_to_cart_action.enabled %}\r\n                          <div class=\"product-card-add-js d:flex jc:center ai:center w:pfs(140px,244px) bgc:color-gray9 h:50px trs:all_0.3s ta:center lts:0.15px fw:600 fz:17px pos:relative mt:25px cur:pointer fz:17px td:none va:middle lh:50px c:color-light c:color-light|h! whs:nowrap us:none\" css=\"{{ add_to_cart_action.design }}\">\r\n                            {{add_to_cart_action.text}}\r\n                          </div>\r\n                        {% endif %}\r\n                      </div>\r\n                    </div>\r\n                  {% else %}\r\n                    {%- comment -%} grid item {%- endcomment -%}\r\n                    <div class=\"col\">\r\n                      <div class=\"product-card-js d:flex fld:column ai:center ta:center mb:15px pb:35px\">\r\n                        <script class=\"product-card-data-js\" type=\"application/json\">\r\n                          {\r\n                            id: {{ product.id | json }},\r\n                            title: {{ product.title | json }},\r\n                            vendor: {{ product.vendor | json }},\r\n                            handle: {{ product.handle | json }},\r\n                            available: {{ product.available | json }},\r\n                            content: {{ product.content | json }},\r\n                            description: {{ product.description | json }},\r\n                            featured_image: {{ product.featured_image | json }},\r\n                            images: {{ product.images | json }},\r\n                            options: {{ product.options | json }},\r\n                            price_max: {{ product.price_max | json }},\r\n                            price_min: {{ product.price_min | json }},\r\n                            type: {{ product.type | json }},\r\n                            tags: {{ product.tags | json }},\r\n                            variants: {{ product.variants | json }},\r\n                            price: {{ product.price | json }},\r\n                            options_with_values: {{ product.options_with_values | json }},\r\n                            url: {{ product.url | json }}\r\n                          }\r\n                        </script>\r\n                        <div class=\"group* w:100% pos:relative ov:hidden\">\r\n                          <div class=\"ov:hidden\">\r\n                            <a href=\"{{product.url}}\" class=\"veda-image-cover d:block\" style=\"--aspect-ratio:{{product_settings.aspect_ratio}}\" >\r\n                              <img class=\"product-card-image-js\" src=\"{{ product.featured_image.src | img_url: '400x' }}\" alt=\"{{ product.title }}\">\r\n                            </a>\r\n                          </div>\r\n                          {% if add_to_cart_action.enabled %}\r\n                            <div class=\"trf:translateY(0)*group-hover product-card-add-js d:flex jc:center ai:center pos:absolute b:0 l:0 w:100% bgc:color-gray9-freeze h:50px trf:translateY(50px) trs:all_0.3s ta:center lts:0.15px fw:600 fz:17px cur:pointer fz:17px td:none w:100% c:color-light-freeze c:color-light-freeze|h! us:none\" css=\"{{add_to_cart_action.design}}\">\r\n                              {{add_to_cart_action.text}}\r\n                            </div>\r\n                          {% endif %}\r\n                          <div class=\"pos:absolute t:5px l:5px d:flex\">\r\n                            {% if product.compare_at_price > product.price and product_settings.sale_enable %}\r\n                              <div class=\"d:flex jc:center ai:center w:60px h:30px bgc:#219653 mr:5px bdrs:2px\">\r\n                                <p class=\"fz:16px pos:absolute z:10 fw:600 c:color-light-freeze\" css=\"{{product_settings.sale_design}}\">{{ product_settings.sale_text}}</p>\r\n                              </div>\r\n                            {% endif %}\r\n                          </div>\r\n                          <div class=\"pos:absolute t:10px r:10px w:35px h:127px\">\r\n                            {% if wishlist_action.enabled %}\r\n                              <div class=\"wishlist-toggle-js pos:relative d:flex ai:center jc:center w:36px h:36px bdrs:50% bgc:color-light fz:17px c:color-gray9 mb:10px cur:pointer bgc:color-gray9|h! c:color-light|h!\" data-tooltip=\"{{wishlist_action.text_add}}\" data-tooltip-position=\"left\" data-tooltip-active=\"true\" data-tooltip-text=\"{{wishlist_action.text_add}}\" data-tooltip-active-text=\"{{wishlist_action.text_remove}}\">\r\n                                {{wishlist_action.icon}}\r\n                              </div>\r\n                            {% endif %}\r\n                            {% if quickview_action.enabled %}\r\n                              <div class=\"trf:translateX(0)*group-hover quickview-toggle-js pos:relative d:flex ai:center jc:center w:36px h:36px bdrs:50% bgc:color-light fz:17px c:color-gray9 mb:10px cur:pointer bgc:color-gray9|h! c:color-light|h! trf:translateX(50px) trs:all_0.3s\" data-tooltip=\"{{quickview_action.text}}\" data-tooltip-text=\"{{quickview_action.text}}\" data-tooltip-position=\"left\" data-tooltip-active=\"false\" >\r\n                                {{quickview_action.icon}}\r\n                              </div>\r\n                            {% endif %}\r\n                            {% if compare_action.enabled %}\r\n                              <div class=\"trf:translateX(0)*group-hover compare-toggle-js pos:relative d:flex ai:center jc:center w:36px h:36px bdrs:50% bgc:color-light fz:17px c:color-gray9 mb:10px cur:pointer bgc:color-gray9|h! c:color-light|h! trf:translateX(50px) trs:all_0.3s\" data-tooltip=\"{{compare_action.text_add}}\" data-tooltip-position=\"left\" data-tooltip-active=\"false\" data-tooltip-text=\"{{compare_action.text_add}}\" data-tooltip-active-text=\"{{compare_action.text_remove}}\">\r\n                                {{compare_action.icon}}\r\n                              </div>\r\n                            {% endif %}\r\n                          </div>\r\n                        </div>\r\n                        <div class=\"d:flex fld:column jc:center ai:center\">\r\n                          <div class=\"c:color-gray5 mt:11px fz:14px\">{{product.vendor}}</div>\r\n                          <a class=\"fz:16px mt:15px c:color-gray9\" href=\"{{product.url}}\">{{product.title}}</a>\r\n                          <a class=\" mt:14px\" href=\"#\">\r\n                            <ins class=\"fw:500 fz:15px c:color-primary td:none\">{{ product.price | money }}</ins>\r\n                            {% if product.compare_at_price > product.price %}\r\n                              <del class=\"fw:500 fz:15px c:#9E9E9E\">{{ product.compare_at_price | money }}</del>\r\n                            {% endif %}\r\n                          </a>\r\n                          <div class=\"product-card-colors-js d:flex mt:8px\">\r\n                          </div>\r\n                        </div>\r\n                      </div>\r\n                    </div>\r\n                  {% endif %}\r\n                {% endfor %}\r\n              </div>\r\n              {% if paginate.pages > 1 %}\r\n                <nav role=\"navigation\">\r\n                  <ol class=\"d:flex ls:none\">\r\n                    {% if paginate.previous %}\r\n                      <li>\r\n                        <a class=\"d:flex ai:center jc:center w:50px h:50px mr:5px ta:center cur:pointer ff:font-primary fz:15px cur:pointer cur:pointer c:color-gray9 bgc:color-gray9|h! c:color-light|h! bd:1px_solid_color-gray2\" aria-label=\"Previous\" href=\"{{ paginate.previous.url }}\">\r\n                          <i class=\"far fa-arrow-left\"></i>\r\n                        </a>\r\n                      </li>\r\n                    {% endif %}\r\n                    {% for part in paginate.parts %}\r\n                      {% if part.is_link %}\r\n                        <li>\r\n                          <a class=\"d:flex ai:center jc:center w:50px h:50px mr:5px ta:center cur:pointer ff:font-primary fz:15px cur:pointer cur:pointer c:color-gray9 bgc:color-gray9|h! c:color-light|h! bd:1px_solid_color-gray2\" aria-label=\"Page {{ part.title }}\" href=\"{{ part.url }}\">\r\n                            {{ part.title }}\r\n                          </a>\r\n                        </li>\r\n                      {% else %}\r\n                        {% if part.title == paginate.current_page %}\r\n                          <li>\r\n                            <span class=\"d:flex ai:center jc:center w:50px h:50px mr:5px ta:center cur:pointer ff:font-primary fz:15px cur:pointer cur:pointer c:color-light! bgc:color-gray9 bgc:color-gray9|h! c:color-light|h!\" aria-current=\"page\" aria-label=\"Page {{ part.title }}\">\r\n                              {{ part.title }}\r\n                            </span>\r\n                          </li>\r\n                        {% else %}\r\n                          <li>\r\n                            <span class=\"d:flex ai:center jc:center w:50px h:50px mr:5px ta:center cur:pointer ff:font-primary fz:15px cur:pointer cur:pointer c:color-gray9 bgc:color-gray9|h! c:color-light|h! bd:1px_solid_color-gray2\" aria-label=\"Page {{ part.title }}\">\r\n                              {{ part.title }}\r\n                            </span>\r\n                          </li>\r\n                        {% endif %}\r\n                      {% endif %}\r\n                    {% endfor %}\r\n\r\n                    {% if paginate.next %}\r\n                      <li>\r\n                        <a class=\"d:flex ai:center jc:center w:50px h:50px mr:5px ta:center cur:pointer ff:font-primary fz:15px cur:pointer cur:pointer c:color-gray9 bgc:color-gray9|h! c:color-light|h! bd:1px_solid_color-gray2\" aria-label=\"Next\" href=\"{{ paginate.next.url }}\">\r\n                          <i class=\"far fa-arrow-right\"></i>\r\n                        </a>\r\n                      </li>\r\n                    {% endif %}\r\n                  </ol>\r\n                </nav>\r\n              {% endif %}\r\n            {% endpaginate %}\r\n          </div>\r\n        </div>\r\n\r\n      </shopify>\r\n      <div data-id=\"yasmina-filter\" class=\"col-lg-3\">\r\n        <div class=\"row row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 d:flex ai:center jc:center\">\r\n          <div class=\"product-box maw:330px w:100% h:auto bd:1px_solid_#DEDEE9 p:34px_20px_30px_20px mb:10px\">\r\n            <shopify>\r\n              <form action=\"{{ routes.search_url }}\">\r\n                <div class=\"product-box__search mb:30px\">\r\n                  <h2 class=\"product-box__title fz:20px fw:500 mb:15px ff:font-primary\">Search</h2>\r\n                  <div class=\"product-box__box-search d:flex ai:center bd:1px_solid_#DEDEE9\">\r\n                    <button class=\"p:10px bd:1px_solid_color-light bd:1px_solid_color-light|h! bgc:color-light! c:color-gray9! bgc:color-light|h! c:color-gray9|h!\" type=\"submit\"><i class=\"fal fa-search cur:pointer\"></i></button>\r\n                    <input class=\"h:40px! w:90%! bd:none! o:none c:color-gray4 fz:15px c:color-gray4||placeholder pl:0px! fz:15px||placeholder\" type=\"text\"\r\n                    placeholder=\"Search\"\r\n                    name=\"q\"\r\n                    value=\"{{ search.terms | escape }}\"\r\n                    />\r\n                    <input type=\"hidden\" name=\"type\" value=\"product,page\" />\r\n                    <input type=\"hidden\" name=\"options[unavailable_products]\" value=\"hide\" />\r\n                    <input type=\"hidden\" name=\"options[prefix]\" value=\"last\" />\r\n                  </div>\r\n                </div>\r\n\r\n                </form>\r\n              </shopify>\r\n                <form id=\"filter_form\" class=\"filter-form-js\">\r\n                    <div class=\"filter-refine-wrapper-js product-box__refine mb:20px pos:relative\">\r\n                      <div class=\"d:flex jc:space-between mb:15px\">\r\n                        <h2 class=\"product-box__title fz:20px fw:500 ff:font-primary\">Refine By</h2>\r\n                        <div class=\"filter-clear-all-js mt:3px\"></div>\r\n                      </div>\r\n                      <div class=\"filter-refine-js\"></div>\r\n                    </div>\r\n                  {% if categories.enable %}\r\n                    <div class=\"filter_field filter_by_categories\">\r\n                      <h2 class=\"product-box__title fz:20px fw:500 mb:8px ff:font-primary\" css=\"{{ categories.title_design }}\">{{categories.title}}</h2>\r\n                      <div>\r\n                        <div class=\"d:flex fld:column\">\r\n                          {% for category in categories_data %}\r\n                            <div class=\"d:flex ai:center mb:10px pos:relative\">\r\n                              <div class=\"w:5px h:5px bgc:color-gray4 bdrs:50% mr:7px\"></div>\r\n                              <input class=\"yasmina-filter-input-radio v:hidden\" type=\"radio\" id=\"{{category.value}}\" name=\"filter.v.category\" value=\"{{category.value}}\" data-label=\"{{category.label}}\">\r\n                              <label css=\"{{category.label_design}}\" class=\"fz:15px fw:400 c:color-gray9 cur:pointer\" for=\"{{category.value}}\">{{category.label}}</label>\r\n                              <div class=\"w:5px h:5px bgc:color-gray2 bdrs:50% mr:7px pos:absolute\"></div>\r\n                            </div>\r\n                          {% endfor %}\r\n                        </div>\r\n                      </div>\r\n                    </div>\r\n                  {% endif %}\r\n\r\n                  {% for option in options %}\r\n                    {% if option.title == \"Color\" and option.enabled %}\r\n                      {% assign tag_colors = option.data | split: \",\" %}\r\n                      <div class=\"filter_field filter_by_color\">\r\n                        <h2 class=\"product-box__title fz:20px fw:500 mb:0px ff:font-primary mt:22px\" css=\"{{option.title_design}}\">{{option.title}}</h2>\r\n                        <div class=\"d:flex flw:wrap\">\r\n                          {% for color in tag_colors %}\r\n                            <div class=\"yasmina-circle__active pos:relative d:inline-block w:40px h:40px bdrs:20px m:10px_6px_0px_6px cur:pointer p:4px bgcp:content-box\" style=\"background-color:{{color}}\">\r\n                                <label class=\"w:40px h:40px cur:pointer\">\r\n                                    <input class=\"yasmina-filter-input-color v:hidden\" type=\"checkbox\" name=\"filter.v.option.{{option.filter_name}}\" value=\"{{color | downcase}}\" data-label=\"{{color}}\"/>\r\n                                    <div class=\"w:40px h:40px pos:absolute t:0px l:0px bd:1px_solid_color-gray2 bdrs:20px\"></div>\r\n                                </label>\r\n                            </div>\r\n                          {% endfor %}\r\n                        </div>\r\n                      </div>\r\n                    {% endif %}\r\n                    {% if option.title == \"Size\" and option.enabled %}\r\n                    {% assign tag_sizes = option.data | split: \",\" %}\r\n                      <div class=\"filter_field filter_by_size\">\r\n                        <h2 class=\"product-box__title fz:20px mt:30px fw:500 mb:15px ff:font-primary\" css=\"{{option.design}}\">{{option.title}}</h2>\r\n                        <div class=\"d:flex mb:30px fxw:wrap\">\r\n                          {% for size in tag_sizes %}\r\n                            <div class=\"d:flex pos:relative ai:center jc:center w:40px h:40px mr:5px ta:center cur:pointer ff:font-primary fz:15px\">\r\n                              <label class=\"yasmina-filter-box-size w:40px h:40px cur:pointer cur:pointer bgc:color-gray9|h! c:color-light|h!\">\r\n                                <input class=\"yasmina-filter-input-size pos:absolute v:hidden\" type=\"checkbox\" name=\"filter.v.option.{{option.filter_name}}\" data-label=\"{{ size }}\" value=\"{{ size | downcase}}\"/>\r\n                                <div class=\"pos:absolute w:100% h:100% bd:1px_solid_#DEDEE9 z:-1\"></div>\r\n                                <span class=\"ta:center lh:40px fz:15px fw:400 c:color-gray9\">{{ size }}</span>\r\n                              </label>\r\n                            </div>\r\n                          {% endfor %}\r\n                        </div>\r\n                      </div>\r\n                    {% endif %}\r\n                  {% endfor %}\r\n\r\n                  {% if price.enable %}\r\n                  <div>\r\n                    <shopify>\r\n                      {% assign collection_prs = collection.products %}\r\n                      {%- assign arr_price = collection_prs | map:'price_min' | uniq | sort -%}\r\n                      {%- assign min_price = arr_price | first -%}\r\n                      {%- assign max_price = arr_price | last -%}\r\n                      <div class=\"d:flex jc:space-between ai:center mb:15px\">\r\n                        <h2 class=\"product-box__title fz:20px fw:500 ff:font-primary\" css=\"{{ price.title_design }}\">\r\n                          {{ price.title }}\r\n                        </h2>\r\n                        <div>\r\n                          <span class=\"fz:15px fw:400 c:color-gray4\">Giá: </span>\r\n                          <span class=\"filter-price-view-js fz:15px fw:500 c:color-gray9\">{{ price.price_text }}: {{ min_price | times:100 | money }} - {{ max_price | times:100 | money }}</span>\r\n                        </div>\r\n                          \r\n                      </div>\r\n                      <div>\r\n                        <div class=\"veda-slider petify-price-range\" data-options=\"{ min: {{ min_price }}, max: {{ max_price }} }\">\r\n                          <div class=\"veda-slider__thumb w:10px h:10px bgc:color-gray9\" data-index=\"0\"></div>\r\n                          <div class=\"veda-slider__thumb w:10px h:10px bgc:color-gray9\" data-index=\"1\"></div>\r\n                          <div class=\"veda-slider__track h:5px bgc:#DEDEE9\"></div>\r\n                          <div class=\"veda-slider__tracked h:5px bgc:color-gray9\"></div>\r\n                        </div>\r\n                        <div class=\"d:flex mt:13px fxw:wrap fld:column fld:row@sm\">\r\n                          <div class=\"mr:10px\">                         \r\n                            <input \r\n                              class=\"w:100px! h:30px! lh:30px bd:1px_solid_#DEDEE9! bdrs:0px! fz:13px! fz:13px||placeholder! c:color-gray9! c:color-gray3||placeholder!\" \r\n                              type=\"number\" \r\n                              id=\"gte\" \r\n                              name=\"filter.v.price.gte\" \r\n                              data-label=\"{{ min_price | times:100 | money }}\" \r\n                              value=\"{{ min_price }}\" \r\n                              min=\"{{ min_price }}\" \r\n                              max=\"{{ max_price }}\" data-button=\"disabled\" placeholder=\"{{ price.from_text }}\" >\r\n                          </div>\r\n                          <div class=\"mt:10px mt:0px@sm\">\r\n                            <input class=\"w:100px! h:30px! lh:30px bd:1px_solid_#DEDEE9! bdrs:0px! fz:13px! fz:13px||placeholder! c:color-gray9! c:color-gray3||placeholder!\" type=\"number\" data-button=\"disabled\" data-label=\"{{ max_price | times:100 | money }}\" placeholder=\"{{ price.to_text }}\" name=\"filter.v.price.lte\" value=\"{{ max_price }}\" min=\"{{ min_price }}\" max=\"{{ max_price }}\">\r\n                          </div>\r\n                        </div>\r\n                      </div>\r\n                     </shopify>\r\n                  </div>\r\n                {% endif %}\r\n                {% if brands.enable %}\r\n                  <div class=\"filter_field filter_by_brand\">\r\n                    <h2 class=\"product-box__title fz:20px fw:500 mb:10px ff:font-primary mt:30px\" css=\"{{brands.title_design}}\">{{brands.title}}</h2>\r\n                    <div>\r\n                      <div class=\"d:flex fld:column\">\r\n                        {% for brand in brands_data %}\r\n                          <div class=\"d:flex ai:center mb:10px pos:relative\">\r\n                            <input class=\"yasmina-filter-input-radio v:hidden\" type=\"checkbox\" id=\"{{brand.value}}\" name=\"filter.v.brand\" value=\"{{brand.value}}\" data-label=\"{{brand.label}}\">\r\n                            <label class=\"fz:15px fw:400 c:color-gray9 cur:pointer ml:12px\" for=\"{{brand.value}}\" css=\"{{brand.label_design}}\">{{brand.label}}</label>\r\n                            <div class=\"w:5px h:5px bgc:color-gray2 bdrs:50% mr:7px pos:absolute\"></div>\r\n                          </div>\r\n                        {% endfor %}\r\n                      </div>\r\n                    </div>\r\n                  </div>\r\n                {% endif %}\r\n                {% if availability.enable %}\r\n                  <div class=\"filter_field filter_by_availability\">\r\n                    <h2 class=\"product-box__title fz:20px fw:500 mt:20px mb:10px ff:font-primary\" css=\"{{availability.title_design}}\">{{availability.title}}</h2>\r\n                    <div class=\"d:flex ai:center mb:10px pos:relative\">\r\n                      <input class=\"yasmina-filter-input-radio v:hidden\" type=\"radio\" id=\"in_stock\" name=\"filter.v.availability\" value=\"1\" data-label=\"{{availability.in_stock_text}}\">\r\n                      <label class=\"fz:15px fw:400 c:color-gray9 cur:pointer! ml:12px\" for=\"in_stock\" css=\"{{availability.in_stock_design}}\">{{availability.in_stock_text}}</label>\r\n                      <div class=\"w:5px h:5px bgc:color-gray2 bdrs:50% mr:7px pos:absolute\"></div>\r\n                    </div>\r\n                    <div class=\"d:flex ai:center pos:relative\">\r\n                      <input class=\"yasmina-filter-input-radio v:hidden\" type=\"radio\" id=\"out_stock\" name=\"filter.v.availability\" value=\"0\" data-label=\"{{availability.out_of_stock_text}}\">\r\n                      <label class=\"fz:15px fw:400 c:color-gray9 cur:pointer! ml:12px\" for=\"out_stock\" css=\"{{availability.out_of_stock_design}}\">{{availability.out_of_stock_text}}</label>\r\n                      <div class=\"w:5px h:5px bgc:color-gray2 bdrs:50% mr:7px pos:absolute\"></div>\r\n                    </div>\r\n                  </div>\r\n                {% endif %}\r\n                {% assign collection = collection %}\r\n                <div class=\"filter_field filter_by_tags\">\r\n                  <h2 class=\"product-box__title fz:20px fw:500 mb:10px ff:font-primary mt:30px\">Tags</h2>\r\n                  <div>\r\n                    <div class=\"yasmina-product-box__tags d:flex flw:wrap\">\r\n                      {% for tag in collection.all_tags %}\r\n                        <div class=\"d:flex pos:relative ai:center h:28px jc:center mr:5px ta:center cur:pointer ff:font-primary fz:15px p:8px_10px_8px_10px mb:10px\">\r\n                          <label class=\"w:100% h:28px cur:pointer cur:pointer d:flex jc:center\">\r\n                            <input class=\"yasmina-filter-input-tag pos:absolute v:hidden\" type=\"checkbox\" name=\"filter.v.tag\" value=\"{{tag | downcase}}\" data-label=\"{{tag }}\"/>\r\n                            <div class=\"pos:absolute w:100% h:100% bd:1px_solid_#DEDEE9\"></div>\r\n                            <span class=\"ta:center lh:28px fz:15px fw:400 c:color-gray9\">{{tag}}</span>\r\n                          </label>\r\n                        </div>\r\n                      {% endfor %}\r\n                    </div>\r\n                  </div>\r\n                </div>\r\n              </form>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n",
+    "schema": {
+      "settings": [],
+      "blocks": [{
+        "id": "id_626a2607-8325-4671-bc52-e5b0ebce115a",
+        "children": [{
+          "children": false,
+          "type": "switch",
+          "label": "Background Fixed",
+          "summary": "",
+          "name": "background_fixed",
+          "id": "id_e85f6eca-eea9-439b-a7c5-e120917fe40b",
+          "disable": false
+        }, {
+          "children": "none",
+          "type": "select",
+          "label": "Background Type",
+          "summary": "",
+          "name": "background_type",
+          "id": "id_8369f5b9-bfa7-4041-a393-74dfed9ff270",
+          "disable": false,
+          "options": [{
+            "label": "Image",
+            "value": "image",
+            "id": "26f36e5c-8dd7-482d-8fdb-2c4117603be8"
+          }, {
+            "label": "Color",
+            "value": "color",
+            "id": "28e36b55-39bc-4359-85e4-8afc9dd7c9d8"
+          }, {
+            "label": "None",
+            "value": "none",
+            "id": "c7840871-243c-4dd9-bc0e-4bfe1ddb40a1"
+          }]
+        }, {
+          "children": "",
+          "type": "image",
+          "label": "Background Image",
+          "summary": "",
+          "name": "background_image",
+          "id": "id_e5bb63d9-9680-447d-a9fe-e15bda71c44e",
+          "disable": false,
+          "deps": "section_settings.background_type === \"image\""
+        }, {
+          "children": "#fff",
+          "type": "color",
+          "label": "Background Color",
+          "summary": "",
+          "name": "background_color",
+          "id": "id_75181973-1de3-4018-96bf-5b74fbdf0d2d",
+          "disable": false,
+          "deps": "section_settings.background_type === \"color\""
+        }, {
+          "children": "cover",
+          "type": "select",
+          "label": "Background Size",
+          "summary": "",
+          "name": "background_size",
+          "id": "id_619eb3d2-3834-490b-9526-c67c927c8f24",
+          "disable": false,
+          "options": [{
+            "label": "Cover",
+            "value": "cover",
+            "id": "8d51c160-cddf-41f8-a8dc-4b934801805d"
+          }, {
+            "label": "Contain",
+            "value": "contain",
+            "id": "b06eb4a5-d544-4ae0-9b9d-d9c090372eae"
+          }]
+        }, {
+          "children": false,
+          "type": "switch",
+          "label": "Background Overlay Enable",
+          "summary": "",
+          "name": "background_overlay_enable",
+          "id": "id_c9d86d7b-4abd-4b22-ad32-043ed3155a89",
+          "disable": false
+        }, {
+          "children": "#fff",
+          "type": "color",
+          "label": "Background Overlay Color",
+          "summary": "",
+          "name": "background_overlay_color",
+          "id": "id_c5769de4-eaec-4384-b622-b4b8bcf5ed8e",
+          "disable": false
+        }, {
+          "children": {
+            "left": 0
+          },
+          "type": "space",
+          "label": "Padding",
+          "summary": "",
+          "name": "padding",
+          "id": "id_b4b8243c-f171-4595-8f04-174470a87f83",
+          "disable": false
+        }],
+        "type": "object",
+        "label": "Section Settings",
+        "summary": "",
+        "name": "section_settings",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_14ef19b6-ac8c-4d15-865b-801339c10f2e",
+        "children": [{
+          "children": true,
+          "type": "switch",
+          "label": "Enable",
+          "summary": "",
+          "name": "enable",
+          "id": "id_cc9806b3-bf61-47c8-8317-bba9707c117f",
+          "disable": false
+        }, {
+          "children": "Price",
+          "type": "text",
+          "label": "Title",
+          "summary": "",
+          "name": "title",
+          "id": "id_1ab8541b-2213-4529-949c-c90bbf0a0f8f",
+          "disable": false
+        }, {
+          "children": "",
+          "type": "styleBox",
+          "label": "Title Design",
+          "summary": "",
+          "name": "title_design",
+          "id": "id_12723285-4d95-488a-b34b-46e4b41b5998",
+          "disable": false
+        }, {
+          "children": "Price",
+          "type": "text",
+          "label": "Price Text",
+          "summary": "",
+          "name": "price_text",
+          "id": "id_6421a1ae-7d75-4671-8458-97f03072d26c",
+          "disable": false
+        }, {
+          "children": "From",
+          "type": "text",
+          "label": "From Text",
+          "summary": "",
+          "name": "from_text",
+          "id": "id_ddfc777b-4801-4253-8bcc-ae3f668d2f2c",
+          "disable": false
+        }, {
+          "children": "To",
+          "type": "text",
+          "label": "To Text",
+          "summary": "",
+          "name": "to_text",
+          "id": "id_bdffb3e4-fc99-44f0-992f-6fa795268d8b",
+          "disable": false
+        }],
+        "type": "object",
+        "label": "Price",
+        "summary": "",
+        "name": "price",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_0d36a27a-c209-4bf7-98e3-aaac53b172c1",
+        "children": [{
+          "children": true,
+          "type": "switch",
+          "label": "Enable",
+          "summary": "",
+          "name": "enable",
+          "id": "id_f0092a2c-5604-4010-a95c-baf72ffbd450",
+          "disable": false
+        }, {
+          "children": "Categories",
+          "type": "text",
+          "label": "Title",
+          "summary": "",
+          "name": "title",
+          "id": "id_42a0ee83-1e29-4948-9283-4b58c4b2dd07",
+          "disable": false
+        }, {
+          "children": "",
+          "type": "styleBox",
+          "label": "Title Design",
+          "summary": "",
+          "name": "title_design",
+          "id": "id_0a19a3ab-4687-4cc9-8b65-304e89ed50d5",
+          "disable": false
+        }],
+        "type": "object",
+        "label": "Categories",
+        "summary": "",
+        "name": "categories",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_c5b47a7a-1657-464d-8655-22020b7bf434",
+        "children": [{
+          "children": "Activewear",
+          "type": "text",
+          "label": "Label",
+          "summary": "",
+          "name": "label",
+          "id": "id_b3e7170a-22c9-4f48-bb53-b7fc9c03afd7",
+          "disable": false
+        }, {
+          "children": "",
+          "type": "linkPicker",
+          "label": "Value",
+          "summary": "",
+          "name": "value",
+          "id": "id_8b556208-fd11-4c4e-9729-c549353f04bc",
+          "disable": false
+        }, {
+          "children": "",
+          "type": "styleBox",
+          "label": "Label Design",
+          "summary": "",
+          "name": "label_design",
+          "id": "id_61db8faf-d30e-4199-b537-d1ab5768fc98",
+          "disable": false
+        }],
+        "type": "array",
+        "label": "Categories Data",
+        "summary": "",
+        "name": "categories_data",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_5fbe047c-d885-4da0-8b7f-04cef66455ec",
+        "children": [{
+          "children": true,
+          "type": "switch",
+          "label": "Enable",
+          "summary": "",
+          "name": "enable",
+          "id": "id_2fe44c07-760d-4751-8eb7-ff49b0a0a395",
+          "disable": false
+        }, {
+          "children": "Color",
+          "type": "text",
+          "label": "Title",
+          "summary": "",
+          "name": "title",
+          "id": "id_633fc8ad-83aa-4f21-9df8-f443ad78ad85",
+          "disable": false
+        }, {
+          "children": "",
+          "type": "styleBox",
+          "label": "Title Design",
+          "summary": "",
+          "name": "title_design",
+          "id": "id_06ccf16a-6c0c-42f5-a3cc-ed9df3eeeb2b",
+          "disable": false
+        }, {
+          "children": "color",
+          "type": "text",
+          "label": "Filter Name",
+          "summary": "",
+          "name": "filter_name",
+          "id": "id_d7c53231-181b-4c81-8138-edb9a34ca143",
+          "disable": false
+        }, {
+          "children": "",
+          "type": "tags",
+          "label": "data",
+          "summary": "",
+          "name": "data",
+          "id": "id_5fb71de8-021b-401e-8d6c-9509a438209a",
+          "disable": false
+        }],
+        "type": "array",
+        "label": "Options",
+        "summary": "",
+        "name": "options",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_64c0b805-636d-48c8-b0a2-56ee88f4d688",
+        "children": [{
+          "children": true,
+          "type": "switch",
+          "label": "Enable",
+          "summary": "",
+          "name": "enable",
+          "id": "id_22e3de8c-b14f-4f61-952e-3b0418d605e9",
+          "disable": false
+        }, {
+          "children": "Brand",
+          "type": "text",
+          "label": "Title",
+          "summary": "",
+          "name": "title",
+          "id": "id_b8d9ee2d-9917-463e-93e1-b91a4a00e68b",
+          "disable": false
+        }, {
+          "children": "",
+          "type": "styleBox",
+          "label": "Title Design",
+          "summary": "",
+          "name": "title_design",
+          "id": "id_72c42e30-f279-4534-bf39-029ea0a544f8",
+          "disable": false
+        }],
+        "type": "object",
+        "label": "Brands",
+        "summary": "",
+        "name": "brands",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_29278d3a-51f2-46c3-a86a-947b705aa4c6",
+        "children": [{
+          "children": "Gap",
+          "type": "text",
+          "label": "Label",
+          "summary": "",
+          "name": "label",
+          "id": "id_35c1d272-3798-45aa-bfb3-420b31be36fc",
+          "disable": false
+        }, {
+          "children": "",
+          "type": "styleBox",
+          "label": "Label Design",
+          "summary": "",
+          "name": "label_design",
+          "id": "id_d048496a-8429-4dae-8621-a8acbb367fde",
+          "disable": false
+        }, {
+          "children": "gap",
+          "type": "text",
+          "label": "Value",
+          "summary": "",
+          "name": "value",
+          "id": "id_f248697e-4a08-48f7-aacd-571ae6299c6d",
+          "disable": false
+        }],
+        "type": "array",
+        "label": "Brands Data",
+        "summary": "",
+        "name": "brands_data",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_518caeea-5ecb-49a3-9e69-0ce35fecf5cc",
+        "children": [{
+          "children": true,
+          "type": "switch",
+          "label": "Enable",
+          "summary": "",
+          "name": "enable",
+          "id": "id_d735d587-79e7-4545-b92f-1ab624fa58b7",
+          "disable": false
+        }, {
+          "children": "Availability",
+          "type": "text",
+          "label": "Title",
+          "summary": "",
+          "name": "title",
+          "id": "id_10218635-0427-4fda-a0b0-d6e144ab4483",
+          "disable": false
+        }, {
+          "children": "",
+          "type": "styleBox",
+          "label": "Title Design",
+          "summary": "",
+          "name": "title_design",
+          "id": "id_079648b9-37bb-409a-b9f3-99a448b00ccb",
+          "disable": false
+        }, {
+          "children": "In Stock",
+          "type": "text",
+          "label": "In Stock Text",
+          "summary": "",
+          "name": "in_stock_text",
+          "id": "id_f0b1f19e-aa0e-4818-a1af-9f1b3a673334",
+          "disable": false
+        }, {
+          "children": "",
+          "type": "styleBox",
+          "label": "In Stock Design",
+          "summary": "",
+          "name": "in_stock_design",
+          "id": "id_8f7c3361-e7d6-480c-a9fb-b03cacfe6cd7",
+          "disable": false
+        }, {
+          "children": "Out of Stock",
+          "type": "text",
+          "label": "Out of Stock Text",
+          "summary": "",
+          "name": "out_of_stock_text",
+          "id": "id_a0798267-6252-40fa-a258-6eaaa2d9bd5d",
+          "disable": false
+        }, {
+          "children": "",
+          "type": "styleBox",
+          "label": "Out of Stock Design",
+          "summary": "",
+          "name": "out_of_stock_design",
+          "id": "id_108a449f-2d0a-4346-84e6-370338e2aa97",
+          "disable": false
+        }],
+        "type": "object",
+        "label": "Availability",
+        "summary": "",
+        "name": "availability",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_b2544036-b704-48c4-b898-bc3c7b80f630",
+        "children": [{
+          "children": true,
+          "type": "switch",
+          "label": "Review App",
+          "summary": "",
+          "name": "review_app",
+          "id": "id_4d4319b6-db45-4bd0-8754-863d1c25721e",
+          "disable": false
+        }, {
+          "children": "rivyo_reviews",
+          "type": "select",
+          "label": "Review App Html",
+          "summary": "",
+          "name": "review_app_html",
+          "id": "id_c248550b-435d-4e0f-b9e8-77c453f3c4e1",
+          "disable": false,
+          "options": [{
+            "label": "Product Reviews",
+            "value": "product_reviews",
+            "id": "85f0e774-b22d-4900-a6b2-d448ecc28f5a"
+          }, {
+            "label": "Rivyo Reviews",
+            "value": "rivyo_reviews",
+            "id": "84cb3c5b-c4f5-4882-b016-63b5063f6b46"
+          }, {
+            "label": "Loox Reviews",
+            "value": "loox_reviews",
+            "id": "e54761b2-42b2-43c2-9c9d-8afb2972d7f8"
+          }, {
+            "label": "Ali Reviews",
+            "value": "ali_reviews",
+            "id": "92c430a8-7e86-4318-b7a7-4b099d509183"
+          }, {
+            "label": "Stamped Reviews",
+            "value": "stamped_reviews",
+            "id": "9282a6d2-88bf-4982-8f8c-31b090c3cb7b"
+          }, {
+            "label": "Judge Me Reviews",
+            "value": "judge_me_reviews",
+            "id": "708c1935-e8f0-4ce7-b8a4-a3463faafedd"
+          }, {
+            "label": "Other",
+            "value": "other",
+            "id": "fb2f0a80-b411-48c2-98b6-903746f4103c"
+          }]
+        }, {
+          "children": true,
+          "type": "switch",
+          "label": "Sale Enable",
+          "summary": "",
+          "name": "sale_enable",
+          "id": "id_998d0dcf-4f01-42e3-b954-886a05479733",
+          "disable": false
+        }, {
+          "children": "Sale",
+          "type": "text",
+          "label": "Sale Text",
+          "summary": "",
+          "name": "sale_text",
+          "id": "id_b4513494-e6c4-46f9-b98a-399688899d8e",
+          "disable": false
+        }, {
+          "children": "",
+          "type": "styleBox",
+          "label": "Sale Design",
+          "summary": "",
+          "name": "sale_design",
+          "id": "id_5f4788b7-057f-4a1c-badd-3f8f10889216",
+          "disable": false
+        }, {
+          "children": {
+            "lg": 3,
+            "md": 3,
+            "sm": 1,
+            "xs": 1
+          },
+          "type": "responsive",
+          "label": "Column",
+          "summary": "",
+          "name": "column",
+          "id": "id_3ee00619-2187-47d8-ae79-29c6062b2561",
+          "disable": false,
+          "max": 12,
+          "min": 1
+        }, {
+          "children": 1,
+          "type": "slider",
+          "label": "Aspect Ratio",
+          "summary": "",
+          "name": "aspect_ratio",
+          "id": "id_b323e466-77f8-42c6-980b-6beb4dc04266",
+          "disable": false,
+          "max": 1,
+          "min": 0,
+          "step": 0.1
+        }],
+        "type": "object",
+        "label": "Product Settings",
+        "summary": "",
+        "name": "product_settings",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_cbbe115d-f498-4b84-8fac-5230dfd4cded",
+        "children": [{
+          "children": true,
+          "type": "switch",
+          "label": "Enabled",
+          "summary": "",
+          "name": "enabled",
+          "id": "id_9c46784d-e705-45e0-98b1-cd3b2dfd6e2c",
+          "disable": false
+        }, {
+          "children": "Add to cart",
+          "type": "text",
+          "label": "Text",
+          "summary": "",
+          "name": "text",
+          "id": "id_b501e23a-e352-4640-8fc0-1f7fb28d6553",
+          "disable": false
+        }, {
+          "children": "Design",
+          "type": "text",
+          "label": "Design",
+          "summary": "",
+          "name": "design",
+          "id": "id_7c15547a-5f11-4e20-97b8-d0ab4daf086b",
+          "disable": false
+        }],
+        "type": "object",
+        "label": "Add To Cart Action",
+        "summary": "",
+        "name": "add_to_cart_action",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_d16e3342-a3df-4c96-9e22-b4054b228f34",
+        "children": [{
+          "children": true,
+          "type": "switch",
+          "label": "Enabled",
+          "summary": "",
+          "name": "enabled",
+          "id": "id_7ccdef65-0acf-456b-9015-c0e8cce4821e",
+          "disable": false
+        }, {
+          "children": "Add to wishlist",
+          "type": "text",
+          "label": "Text Add",
+          "summary": "",
+          "name": "text_add",
+          "id": "id_b09ca08c-479e-489f-b4b6-2dc7d730871b",
+          "disable": false
+        }, {
+          "children": "Remove from wishlist",
+          "type": "text",
+          "label": "Text Remove",
+          "summary": "",
+          "name": "text_remove",
+          "id": "id_3974fe2c-d0a6-4ba1-8021-c5c850eeb201",
+          "disable": false
+        }, {
+          "children": "<i class=\"far fa-atom\"></i>",
+          "type": "icon",
+          "label": "Icon",
+          "summary": "",
+          "name": "icon",
+          "id": "id_95c022ab-c371-46b3-8233-31c51cf84db5",
+          "disable": false
+        }],
+        "type": "object",
+        "label": "Wishlist Action",
+        "summary": "",
+        "name": "wishlist_action",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_627ba165-f1fb-49c3-b559-2956c5766bea",
+        "children": [{
+          "children": true,
+          "type": "switch",
+          "label": "Enabled",
+          "summary": "",
+          "name": "enabled",
+          "id": "id_7ccdef65-0acf-456b-9015-c0e8cce4821e",
+          "disable": false
+        }, {
+          "children": "Add to compare",
+          "type": "text",
+          "label": "Text Add",
+          "summary": "",
+          "name": "text_add",
+          "id": "id_b09ca08c-479e-489f-b4b6-2dc7d730871b",
+          "disable": false
+        }, {
+          "children": "Remove from compare",
+          "type": "text",
+          "label": "Text Remove",
+          "summary": "",
+          "name": "text_remove",
+          "id": "id_3974fe2c-d0a6-4ba1-8021-c5c850eeb201",
+          "disable": false
+        }, {
+          "children": "<i class=\"far fa-atom\"></i>",
+          "type": "icon",
+          "label": "Icon",
+          "summary": "",
+          "name": "icon",
+          "id": "id_95c022ab-c371-46b3-8233-31c51cf84db5",
+          "disable": false
+        }],
+        "type": "object",
+        "label": "Compare Action",
+        "summary": "",
+        "name": "compare_action",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_51d4ec05-6554-4f6d-b5cd-11b722ded1d8",
+        "children": [{
+          "children": true,
+          "type": "switch",
+          "label": "Enabled",
+          "summary": "",
+          "name": "enabled",
+          "id": "id_7ccdef65-0acf-456b-9015-c0e8cce4821e",
+          "disable": false
+        }, {
+          "children": "Quick view",
+          "type": "text",
+          "label": "Text",
+          "summary": "",
+          "name": "text",
+          "id": "id_b09ca08c-479e-489f-b4b6-2dc7d730871b",
+          "disable": false
+        }, {
+          "children": "<i class=\"far fa-atom\"></i>",
+          "type": "icon",
+          "label": "Icon",
+          "summary": "",
+          "name": "icon",
+          "id": "id_95c022ab-c371-46b3-8233-31c51cf84db5",
+          "disable": false
+        }],
+        "type": "object",
+        "label": "Quickview Action",
+        "summary": "",
+        "name": "quickview_action",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_6a9c1a8e-b15c-4d63-87f8-e6830ca2eab9",
+        "children": [{
+          "children": "layout=grid",
+          "type": "select",
+          "label": "Layout",
+          "summary": "",
+          "name": "layout",
+          "id": "id_d78fe632-7f61-4e78-97b9-411c8b60f59e",
+          "disable": false,
+          "options": [{
+            "label": "Grid",
+            "value": "layout=grid",
+            "id": "ea583dfe-bbe3-4a7c-a9d6-497b7bf0a36c"
+          }, {
+            "label": "List",
+            "value": "layout=list",
+            "id": "76b6ac63-f62f-4ded-8def-c1e19e8bfb76"
+          }]
+        }],
+        "type": "object",
+        "label": "Testing",
+        "summary": "",
+        "name": "testing",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }]
+    },
+    "scss": ".yasmina-filter-input-size:checked ~ div {\r\n  border: 1px solid var(--color-gray9);\r\n  background-color: var(--color-gray9);\r\n}\r\n.yasmina-filter-input-size:checked ~ span {\r\n  color: var(--color-light);\r\n}\r\n.yasmina-filter-box-size:hover span {\r\n  color: var(--color-light);\r\n}\r\n.yasmina-filter-input-tag:checked ~ div {\r\n  border: 1px solid var(--color-gray9);\r\n}\r\n.yasmina-filter-input-color:checked ~ div {\r\n  border: 1px solid var(--color-gray9);\r\n}\r\n.yasmina-filter-input-radio:checked ~ div  {\r\n  background-color: var(--color-primary);\r\n}\r\n.yasmina-filter-input-radio:checked ~ label {\r\n  color: var(--color-primary);\r\n}\r\n.yasmina-product-page-input-size:checked ~ div {\r\n  background-color: var(--color-light);\r\n}\r\n.veda-radio__inner input:checked ~ .veda-radio__track {\r\n  background-color: var(--color-light);\r\n}\r\n.veda-radio__inner input ~ .veda-radio__track {\r\n  background-color: var(--color-gray2);\r\n}\r\n\r\n.layout-active-js {\r\n  border: 1px solid var(--color-gray9);\r\n  color: var(--color-gray9);\r\n}\r\n",
+    "settings": [{
+      "id": "id_626a2607-8325-4671-bc52-e5b0ebce115a",
+      "children": [{
+        "children": false,
+        "type": "switch",
+        "label": "Background Fixed",
+        "summary": "",
+        "name": "background_fixed",
+        "id": "id_e85f6eca-eea9-439b-a7c5-e120917fe40b",
+        "disable": false
+      }, {
+        "children": "none",
+        "type": "select",
+        "label": "Background Type",
+        "summary": "",
+        "name": "background_type",
+        "id": "id_8369f5b9-bfa7-4041-a393-74dfed9ff270",
+        "disable": false,
+        "options": [{
+          "label": "Image",
+          "value": "image",
+          "id": "26f36e5c-8dd7-482d-8fdb-2c4117603be8"
+        }, {
+          "label": "Color",
+          "value": "color",
+          "id": "28e36b55-39bc-4359-85e4-8afc9dd7c9d8"
+        }, {
+          "label": "None",
+          "value": "none",
+          "id": "c7840871-243c-4dd9-bc0e-4bfe1ddb40a1"
+        }]
+      }, {
+        "children": "",
+        "type": "image",
+        "label": "Background Image",
+        "summary": "",
+        "name": "background_image",
+        "id": "id_e5bb63d9-9680-447d-a9fe-e15bda71c44e",
+        "disable": false,
+        "deps": "section_settings.background_type === \"image\""
+      }, {
+        "children": "#fff",
+        "type": "color",
+        "label": "Background Color",
+        "summary": "",
+        "name": "background_color",
+        "id": "id_75181973-1de3-4018-96bf-5b74fbdf0d2d",
+        "disable": false,
+        "deps": "section_settings.background_type === \"color\""
+      }, {
+        "children": "cover",
+        "type": "select",
+        "label": "Background Size",
+        "summary": "",
+        "name": "background_size",
+        "id": "id_619eb3d2-3834-490b-9526-c67c927c8f24",
+        "disable": false,
+        "options": [{
+          "label": "Cover",
+          "value": "cover",
+          "id": "8d51c160-cddf-41f8-a8dc-4b934801805d"
+        }, {
+          "label": "Contain",
+          "value": "contain",
+          "id": "b06eb4a5-d544-4ae0-9b9d-d9c090372eae"
+        }]
+      }, {
+        "children": false,
+        "type": "switch",
+        "label": "Background Overlay Enable",
+        "summary": "",
+        "name": "background_overlay_enable",
+        "id": "id_c9d86d7b-4abd-4b22-ad32-043ed3155a89",
+        "disable": false
+      }, {
+        "children": "#fff",
+        "type": "color",
+        "label": "Background Overlay Color",
+        "summary": "",
+        "name": "background_overlay_color",
+        "id": "id_c5769de4-eaec-4384-b622-b4b8bcf5ed8e",
+        "disable": false
+      }, {
+        "children": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "type": "space",
+        "label": "Padding",
+        "summary": "",
+        "name": "padding",
+        "id": "id_b4b8243c-f171-4595-8f04-174470a87f83",
+        "disable": false
+      }],
+      "type": "object",
+      "label": "Section Settings",
+      "summary": "",
+      "name": "section_settings",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_14ef19b6-ac8c-4d15-865b-801339c10f2e",
+      "children": [{
+        "children": true,
+        "type": "switch",
+        "label": "Enable",
+        "summary": "",
+        "name": "enable",
+        "id": "id_cc9806b3-bf61-47c8-8317-bba9707c117f",
+        "disable": false
+      }, {
+        "children": "Price",
+        "type": "text",
+        "label": "Title",
+        "summary": "",
+        "name": "title",
+        "id": "id_1ab8541b-2213-4529-949c-c90bbf0a0f8f",
+        "disable": false
+      }, {
+        "children": "",
+        "type": "styleBox",
+        "label": "Title Design",
+        "summary": "",
+        "name": "title_design",
+        "id": "id_12723285-4d95-488a-b34b-46e4b41b5998",
+        "disable": false
+      }, {
+        "children": "Price",
+        "type": "text",
+        "label": "Price Text",
+        "summary": "",
+        "name": "price_text",
+        "id": "id_6421a1ae-7d75-4671-8458-97f03072d26c",
+        "disable": false
+      }, {
+        "children": "From",
+        "type": "text",
+        "label": "From Text",
+        "summary": "",
+        "name": "from_text",
+        "id": "id_ddfc777b-4801-4253-8bcc-ae3f668d2f2c",
+        "disable": false
+      }, {
+        "children": "To",
+        "type": "text",
+        "label": "To Text",
+        "summary": "",
+        "name": "to_text",
+        "id": "id_bdffb3e4-fc99-44f0-992f-6fa795268d8b",
+        "disable": false
+      }],
+      "type": "object",
+      "label": "Price",
+      "summary": "",
+      "name": "price",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_0d36a27a-c209-4bf7-98e3-aaac53b172c1",
+      "children": [{
+        "children": true,
+        "type": "switch",
+        "label": "Enable",
+        "summary": "",
+        "name": "enable",
+        "id": "id_f0092a2c-5604-4010-a95c-baf72ffbd450",
+        "disable": false
+      }, {
+        "children": "Categories",
+        "type": "text",
+        "label": "Title",
+        "summary": "",
+        "name": "title",
+        "id": "id_42a0ee83-1e29-4948-9283-4b58c4b2dd07",
+        "disable": false
+      }, {
+        "children": "",
+        "type": "styleBox",
+        "label": "Title Design",
+        "summary": "",
+        "name": "title_design",
+        "id": "id_0a19a3ab-4687-4cc9-8b65-304e89ed50d5",
+        "disable": false
+      }],
+      "type": "object",
+      "label": "Categories",
+      "summary": "",
+      "name": "categories",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_c5b47a7a-1657-464d-8655-22020b7bf434",
+      "children": [{
+        "id": "04afb51b-6521-4b54-8632-7204f6066e8d",
+        "children": [{
+          "children": "Tuong 3",
+          "type": "text",
+          "label": "Label",
+          "summary": "",
+          "name": "label",
+          "id": "id_b3e7170a-22c9-4f48-bb53-b7fc9c03afd7",
+          "disable": false
+        }, {
+          "children": "collections/tuong-3",
+          "type": "linkPicker",
+          "label": "Value",
+          "summary": "",
+          "name": "value",
+          "id": "id_8b556208-fd11-4c4e-9729-c549353f04bc",
+          "disable": false
+        }, {
+          "children": "==cssStart=={'cssDefault':{'color':'var(--color-tertiary)'},'cssAnimation':{'animate':'','type':'animate__animated-infinite'}}==cssEnd==",
+          "type": "styleBox",
+          "label": "Label Design",
+          "summary": "",
+          "name": "label_design",
+          "id": "id_61db8faf-d30e-4199-b537-d1ab5768fc98",
+          "disable": false
+        }]
+      }],
+      "type": "array",
+      "label": "Categories Data",
+      "summary": "",
+      "name": "categories_data",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_5fbe047c-d885-4da0-8b7f-04cef66455ec",
+      "children": [{
+        "id": "7eab7569-35a9-4333-b2d4-0a88d8f6d53b",
+        "children": [{
+          "children": true,
+          "type": "switch",
+          "label": "Enable",
+          "summary": "",
+          "name": "enable",
+          "id": "id_2fe44c07-760d-4751-8eb7-ff49b0a0a395",
+          "disable": false
+        }, {
+          "children": "Color",
+          "type": "text",
+          "label": "Title",
+          "summary": "",
+          "name": "title",
+          "id": "id_633fc8ad-83aa-4f21-9df8-f443ad78ad85",
+          "disable": false
+        }, {
+          "children": "",
+          "type": "styleBox",
+          "label": "Title Design",
+          "summary": "",
+          "name": "title_design",
+          "id": "id_06ccf16a-6c0c-42f5-a3cc-ed9df3eeeb2b",
+          "disable": false
+        }, {
+          "children": "color",
+          "type": "text",
+          "label": "Filter Name",
+          "summary": "",
+          "name": "filter_name",
+          "id": "id_d7c53231-181b-4c81-8138-edb9a34ca143",
+          "disable": false
+        }, {
+          "children": "",
+          "type": "tags",
+          "label": "data",
+          "summary": "",
+          "name": "data",
+          "id": "id_5fb71de8-021b-401e-8d6c-9509a438209a",
+          "disable": false
+        }]
+      }],
+      "type": "array",
+      "label": "Options",
+      "summary": "",
+      "name": "options",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_64c0b805-636d-48c8-b0a2-56ee88f4d688",
+      "children": [{
+        "children": true,
+        "type": "switch",
+        "label": "Enable",
+        "summary": "",
+        "name": "enable",
+        "id": "id_22e3de8c-b14f-4f61-952e-3b0418d605e9",
+        "disable": false
+      }, {
+        "children": "Brand",
+        "type": "text",
+        "label": "Title",
+        "summary": "",
+        "name": "title",
+        "id": "id_b8d9ee2d-9917-463e-93e1-b91a4a00e68b",
+        "disable": false
+      }, {
+        "children": "",
+        "type": "styleBox",
+        "label": "Title Design",
+        "summary": "",
+        "name": "title_design",
+        "id": "id_72c42e30-f279-4534-bf39-029ea0a544f8",
+        "disable": false
+      }],
+      "type": "object",
+      "label": "Brands",
+      "summary": "",
+      "name": "brands",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_29278d3a-51f2-46c3-a86a-947b705aa4c6",
+      "children": [{
+        "id": "29b2bfd9-5ac3-4b4b-a64a-1ea4ab9ff481",
+        "children": [{
+          "children": "Gap",
+          "type": "text",
+          "label": "Label",
+          "summary": "",
+          "name": "label",
+          "id": "id_35c1d272-3798-45aa-bfb3-420b31be36fc",
+          "disable": false
+        }, {
+          "children": "",
+          "type": "styleBox",
+          "label": "Label Design",
+          "summary": "",
+          "name": "label_design",
+          "id": "id_d048496a-8429-4dae-8621-a8acbb367fde",
+          "disable": false
+        }, {
+          "children": "gap",
+          "type": "text",
+          "label": "Value",
+          "summary": "",
+          "name": "value",
+          "id": "id_f248697e-4a08-48f7-aacd-571ae6299c6d",
+          "disable": false
+        }]
+      }],
+      "type": "array",
+      "label": "Brands Data",
+      "summary": "",
+      "name": "brands_data",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_518caeea-5ecb-49a3-9e69-0ce35fecf5cc",
+      "children": [{
+        "children": true,
+        "type": "switch",
+        "label": "Enable",
+        "summary": "",
+        "name": "enable",
+        "id": "id_d735d587-79e7-4545-b92f-1ab624fa58b7",
+        "disable": false
+      }, {
+        "children": "Availability",
+        "type": "text",
+        "label": "Title",
+        "summary": "",
+        "name": "title",
+        "id": "id_10218635-0427-4fda-a0b0-d6e144ab4483",
+        "disable": false
+      }, {
+        "children": "",
+        "type": "styleBox",
+        "label": "Title Design",
+        "summary": "",
+        "name": "title_design",
+        "id": "id_079648b9-37bb-409a-b9f3-99a448b00ccb",
+        "disable": false
+      }, {
+        "children": "In Stock",
+        "type": "text",
+        "label": "In Stock Text",
+        "summary": "",
+        "name": "in_stock_text",
+        "id": "id_f0b1f19e-aa0e-4818-a1af-9f1b3a673334",
+        "disable": false
+      }, {
+        "children": "",
+        "type": "styleBox",
+        "label": "In Stock Design",
+        "summary": "",
+        "name": "in_stock_design",
+        "id": "id_8f7c3361-e7d6-480c-a9fb-b03cacfe6cd7",
+        "disable": false
+      }, {
+        "children": "Out of Stock",
+        "type": "text",
+        "label": "Out of Stock Text",
+        "summary": "",
+        "name": "out_of_stock_text",
+        "id": "id_a0798267-6252-40fa-a258-6eaaa2d9bd5d",
+        "disable": false
+      }, {
+        "children": "",
+        "type": "styleBox",
+        "label": "Out of Stock Design",
+        "summary": "",
+        "name": "out_of_stock_design",
+        "id": "id_108a449f-2d0a-4346-84e6-370338e2aa97",
+        "disable": false
+      }],
+      "type": "object",
+      "label": "Availability",
+      "summary": "",
+      "name": "availability",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_b2544036-b704-48c4-b898-bc3c7b80f630",
+      "children": [{
+        "children": true,
+        "type": "switch",
+        "label": "Review App",
+        "summary": "",
+        "name": "review_app",
+        "id": "id_4d4319b6-db45-4bd0-8754-863d1c25721e",
+        "disable": false
+      }, {
+        "children": "rivyo_reviews",
+        "type": "select",
+        "label": "Review App Html",
+        "summary": "",
+        "name": "review_app_html",
+        "id": "id_c248550b-435d-4e0f-b9e8-77c453f3c4e1",
+        "disable": false,
+        "options": [{
+          "label": "Product Reviews",
+          "value": "product_reviews",
+          "id": "85f0e774-b22d-4900-a6b2-d448ecc28f5a"
+        }, {
+          "label": "Rivyo Reviews",
+          "value": "rivyo_reviews",
+          "id": "84cb3c5b-c4f5-4882-b016-63b5063f6b46"
+        }, {
+          "label": "Loox Reviews",
+          "value": "loox_reviews",
+          "id": "e54761b2-42b2-43c2-9c9d-8afb2972d7f8"
+        }, {
+          "label": "Ali Reviews",
+          "value": "ali_reviews",
+          "id": "92c430a8-7e86-4318-b7a7-4b099d509183"
+        }, {
+          "label": "Stamped Reviews",
+          "value": "stamped_reviews",
+          "id": "9282a6d2-88bf-4982-8f8c-31b090c3cb7b"
+        }, {
+          "label": "Judge Me Reviews",
+          "value": "judge_me_reviews",
+          "id": "708c1935-e8f0-4ce7-b8a4-a3463faafedd"
+        }, {
+          "label": "Other",
+          "value": "other",
+          "id": "fb2f0a80-b411-48c2-98b6-903746f4103c"
+        }]
+      }, {
+        "children": true,
+        "type": "switch",
+        "label": "Sale Enable",
+        "summary": "",
+        "name": "sale_enable",
+        "id": "id_998d0dcf-4f01-42e3-b954-886a05479733",
+        "disable": false
+      }, {
+        "children": "Sale",
+        "type": "text",
+        "label": "Sale Text",
+        "summary": "",
+        "name": "sale_text",
+        "id": "id_b4513494-e6c4-46f9-b98a-399688899d8e",
+        "disable": false
+      }, {
+        "children": "",
+        "type": "styleBox",
+        "label": "Sale Design",
+        "summary": "",
+        "name": "sale_design",
+        "id": "id_5f4788b7-057f-4a1c-badd-3f8f10889216",
+        "disable": false
+      }, {
+        "children": {
+          "lg": 3,
+          "md": 3,
+          "sm": 1,
+          "xs": 1
+        },
+        "type": "responsive",
+        "label": "Column",
+        "summary": "",
+        "name": "column",
+        "id": "id_3ee00619-2187-47d8-ae79-29c6062b2561",
+        "disable": false,
+        "max": 12,
+        "min": 1
+      }, {
+        "children": 1,
+        "type": "slider",
+        "label": "Aspect Ratio",
+        "summary": "",
+        "name": "aspect_ratio",
+        "id": "id_b323e466-77f8-42c6-980b-6beb4dc04266",
+        "disable": false,
+        "max": 1,
+        "min": 0,
+        "step": 0.1
+      }],
+      "type": "object",
+      "label": "Product Settings",
+      "summary": "",
+      "name": "product_settings",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_cbbe115d-f498-4b84-8fac-5230dfd4cded",
+      "children": [{
+        "children": true,
+        "type": "switch",
+        "label": "Enabled",
+        "summary": "",
+        "name": "enabled",
+        "id": "id_9c46784d-e705-45e0-98b1-cd3b2dfd6e2c",
+        "disable": false
+      }, {
+        "children": "Add to cart",
+        "type": "text",
+        "label": "Text",
+        "summary": "",
+        "name": "text",
+        "id": "id_b501e23a-e352-4640-8fc0-1f7fb28d6553",
+        "disable": false
+      }, {
+        "children": "Design",
+        "type": "text",
+        "label": "Design",
+        "summary": "",
+        "name": "design",
+        "id": "id_7c15547a-5f11-4e20-97b8-d0ab4daf086b",
+        "disable": false
+      }],
+      "type": "object",
+      "label": "Add To Cart Action",
+      "summary": "",
+      "name": "add_to_cart_action",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_d16e3342-a3df-4c96-9e22-b4054b228f34",
+      "children": [{
+        "children": true,
+        "type": "switch",
+        "label": "Enabled",
+        "summary": "",
+        "name": "enabled",
+        "id": "id_7ccdef65-0acf-456b-9015-c0e8cce4821e",
+        "disable": false
+      }, {
+        "children": "Add to wishlist",
+        "type": "text",
+        "label": "Text Add",
+        "summary": "",
+        "name": "text_add",
+        "id": "id_b09ca08c-479e-489f-b4b6-2dc7d730871b",
+        "disable": false
+      }, {
+        "children": "Remove from wishlist",
+        "type": "text",
+        "label": "Text Remove",
+        "summary": "",
+        "name": "text_remove",
+        "id": "id_3974fe2c-d0a6-4ba1-8021-c5c850eeb201",
+        "disable": false
+      }, {
+        "children": "<i class=\"far fa-heart\"></i>",
+        "type": "icon",
+        "label": "Icon",
+        "summary": "",
+        "name": "icon",
+        "id": "id_95c022ab-c371-46b3-8233-31c51cf84db5",
+        "disable": false
+      }],
+      "type": "object",
+      "label": "Wishlist Action",
+      "summary": "",
+      "name": "wishlist_action",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_627ba165-f1fb-49c3-b559-2956c5766bea",
+      "children": [{
+        "children": true,
+        "type": "switch",
+        "label": "Enabled",
+        "summary": "",
+        "name": "enabled",
+        "id": "id_7ccdef65-0acf-456b-9015-c0e8cce4821e",
+        "disable": false
+      }, {
+        "children": "Add to compare",
+        "type": "text",
+        "label": "Text Add",
+        "summary": "",
+        "name": "text_add",
+        "id": "id_b09ca08c-479e-489f-b4b6-2dc7d730871b",
+        "disable": false
+      }, {
+        "children": "Remove from compare",
+        "type": "text",
+        "label": "Text Remove",
+        "summary": "",
+        "name": "text_remove",
+        "id": "id_3974fe2c-d0a6-4ba1-8021-c5c850eeb201",
+        "disable": false
+      }, {
+        "children": "<i class=\"far fa-shopping-cart\"></i>",
+        "type": "icon",
+        "label": "Icon",
+        "summary": "",
+        "name": "icon",
+        "id": "id_95c022ab-c371-46b3-8233-31c51cf84db5",
+        "disable": false
+      }],
+      "type": "object",
+      "label": "Compare Action",
+      "summary": "",
+      "name": "compare_action",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_51d4ec05-6554-4f6d-b5cd-11b722ded1d8",
+      "children": [{
+        "children": true,
+        "type": "switch",
+        "label": "Enabled",
+        "summary": "",
+        "name": "enabled",
+        "id": "id_7ccdef65-0acf-456b-9015-c0e8cce4821e",
+        "disable": false
+      }, {
+        "children": "Quick view",
+        "type": "text",
+        "label": "Text",
+        "summary": "",
+        "name": "text",
+        "id": "id_b09ca08c-479e-489f-b4b6-2dc7d730871b",
+        "disable": false
+      }, {
+        "children": "<i class=\"far fa-eye\"></i>",
+        "type": "icon",
+        "label": "Icon",
+        "summary": "",
+        "name": "icon",
+        "id": "id_95c022ab-c371-46b3-8233-31c51cf84db5",
+        "disable": false
+      }],
+      "type": "object",
+      "label": "Quickview Action",
+      "summary": "",
+      "name": "quickview_action",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_6a9c1a8e-b15c-4d63-87f8-e6830ca2eab9",
+      "children": [{
+        "children": "layout=grid",
+        "type": "select",
+        "label": "Layout",
+        "summary": "",
+        "name": "layout",
+        "id": "id_d78fe632-7f61-4e78-97b9-411c8b60f59e",
+        "disable": false,
+        "options": [{
+          "label": "Grid",
+          "value": "layout=grid",
+          "id": "ea583dfe-bbe3-4a7c-a9d6-497b7bf0a36c"
+        }, {
+          "label": "List",
+          "value": "layout=list",
+          "id": "76b6ac63-f62f-4ded-8def-c1e19e8bfb76"
+        }]
+      }],
+      "type": "object",
+      "label": "Testing",
+      "summary": "",
+      "name": "testing",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }]
+  },
+  "scope": "publish",
+  "pageTypes": ["collection"],
+  "type": "default",
+  "sample": true,
+  "enable": true,
+  "userId": 1,
+  "synced": false,
+  "category": {
+    "commandId": "",
+    "name": ""
+  },
+  "modifiedDateTimestamp": 1657766996577,
+  "parentCommandId": "",
+  "changelog": {
+    "version": "",
+    "versionId": "",
+    "content": ""
+  },
+  "categoryId": ""
+}

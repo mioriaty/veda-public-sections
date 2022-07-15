@@ -1,1 +1,241 @@
-{"id":"id_f527d356-9e14-42e6-8079-6e0928cb70cb","commandId":"62c7d8166bec6e2bff841575","label":"Account","image":{"src":"","width":0,"height":0},"addonIds":[],"megaMenuId":"","currentVersion":"","versionId":"0154c259-84f8-48c4-935e-30554104715f","data":{"js":"","liquid":"{% liquid\r\n  if section_settings.background_fixed assign backgroundFixed = 'fixed' else assign backgroundFixed = 'scroll' endif\r\n  if section_settings.background_type == 'color' assign backgroundColor = 'background-color: ' | append: section_settings.background_color | append: ';' else assign backgroundColor = '' endif\r\n  if section_settings.background_type == 'image' assign backgroundImage = 'background-image: url(' | append: section_settings.background_image | append:\r\n  ');background-attachment: ' | append: backgroundFixed | append: ';background-size: ' | append: section_settings.background_size | append: ';' else assign backgroundImage = '' endif\r\n  assign sectionPadding = 'padding-top: ' | append: section_settings.padding.top | append: 'px;padding-right: ' | append: section_settings.padding.right | append: 'px;padding-bottom: ' | append: section_settings.padding.bottom | append: 'px;padding-left: ' | append: section_settings.padding.left | append: 'px;'\r\n%}\r\n\r\n\r\n<section data-id=\"{{uniqueId}}\" css=\"{{ backgroundColor }}{{ backgroundImage }}{{ sectionPadding }}\">\r\n  {% if section_settings.background_overlay_enable %}\r\n    <div class=\"pos:absolute ins:0 z:-1\" css=\"background-color: {{ section_settings.background_overlay_color }}\"></div>\r\n  {% endif %}\r\n  <div class=\"fz:15px c:color-gray4 mb:33px ml:5%\">\r\n    <shopify>\r\n      {% unless request.page_type == 'index' or request.page_type == 'list-collections' %}\r\n        <nav role=\"navigation\" aria-label=\"breadcrumbs\">\r\n            <a class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" href=\"{{ routes.root_url }}\" title=\"Home\">Home</a>\r\n            {% if request.page_type contains 'page' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ page.title }}</span>\r\n            {% elsif request.page_type contains 'product' %}\r\n              {% if collection.url %}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n                {{ collection.title | link_to: collection.url }}\r\n              {% endif %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ product.title }}</span>\r\n            {% elsif request.page_type contains 'collection' and collection.handle %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              {% if current_tags %}\r\n                {% capture url %}/collections/{{ collection.handle }}{% endcapture %}\r\n                {{ collection.title | link_to: url }}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ current_tags | join: \" + \" }}</span>\r\n              {% else %}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ collection.title }}</span>\r\n              {% endif %}\r\n            {% elsif request.page_type == 'blog' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              {% if current_tags %}\r\n                {{ blog.title | link_to: blog.url }}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ current_tags | join: \" + \" }}</span>\r\n              {% else %}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ blog.title }}</span>\r\n              {% endif %}\r\n            {% elsif request.page_type == 'article' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              {{ blog.title | link_to: blog.url }}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span>{{ article.title }}</span>\r\n            {% elsif request.page_type == 'cart' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">Cart</span>\r\n            {% else %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ page_title }}</span>\r\n            {% endif %}\r\n        </nav>\r\n      {% endunless %}\r\n    </shopify>\r\n  </div>\r\n  <div class=\"container\">\r\n    <shopify>\r\n    <h3 class=\"mb:20px fz:35px fw:500 ff:font-primary fw:500\">{{'veda.customer.account.title' | t}}</h3>\r\n    <a href=\"\">\r\n      <span class=\"c:color-gray9 c:color-gray9|h! mr:5px\"><i class=\"fal fa-user\"></i></span>\r\n      <span class=\"c:color-gray9 c:color-gray9|h! td:underline\">{{'veda.customer.log_out' | t}}</span>\r\n    </a>\r\n    <div class=\"row jc:center\">\r\n      <div class=\"col-lg-8\">\r\n          <div class=\"fz:20px fw:500 c:color-gray9 mt:20px mb:20px\">{{'veda.customer.orders.title' | t}}</div>\r\n          <table class=\"table-responsive-700\">\r\n            <thead>\r\n              <tr>\r\n                <td class=\"tt:uppercase\">{{'veda.customer.orders.order_number' | t}}</td>\r\n                <td class=\"tt:uppercase\">{{'veda.customer.orders.date' | t}}</td>\r\n                <td class=\"tt:uppercase\">{{'veda.customer.orders.payment_status' | t}}</td>\r\n                <td class=\"tt:uppercase\">{{'veda.customer.orders.fulfillment_status' | t}}</td>\r\n                <td class=\"tt:uppercase\">{{'veda.customer.orders.total' | t}}</td>\r\n              </tr>\r\n            </thead>\r\n            <tbody>\r\n              {% for order in customer.orders %}\r\n                <tr>\r\n                  <td data-th=\"{{'veda.customer.orders.order_number' | t}}\"><a href=\"/order.html\">{{order.name}}</a></td>\r\n                  <td data-th=\"{{'veda.customer.orders.date' | t}}\">{{order.created_at | date: \"%b %d, %Y\"}}</td>\r\n                  <td data-th=\"{{'veda.customer.orders.payment_status' | t}}\">{{order.financial_status_label}}</td>\r\n                  <td data-th=\"{{'veda.customer.orders.fulfillment_status' | t}}\">{{order.fulfillment_status_label}}</td>\r\n                  <td data-th=\"{{'veda.customer.orders.total' | t}}\">{{order.total_price | money}}</td>\r\n                </tr>\r\n              {% endfor %}\r\n            </tbody>\r\n          </table>\r\n        </div>\r\n        <div class=\"col-lg-4\">\r\n          <div class=\"fz:20px fw:500 c:color-gray9 mt:20px mb:20px\">{{'veda.customer.account.details' | t}}</div>\r\n          <div>{{customer.name}}</div>\r\n          <div>{{customer.default_address.address1}}</div>\r\n          <div>{{customer.default_address.city}} {{customer.default_address.province_code}} {{customer.default_address.zip}}</div>\r\n          <div>{{customer.default_address.country.name}}</div>\r\n          <a href=\"/customerAddress.html\" class=\"fz:15px c:color-gray9 c:color-gray9|h! td:underline td:underline|h!\">{{'veda.customer.account.view_addresses' | t}}</a>\r\n        </div>\r\n      </div>\r\n    </shopify>\r\n  </div>\r\n</section>\r\n","schema":{"blocks":[{"id":"id_6b03acc6-082b-4ae6-8912-b6ea1c5f1013","children":[{"children":false,"type":"switch","label":"Background Fixed","summary":"","name":"background_fixed","id":"id_b5d93ae5-8a34-446b-9c97-65bd6da5da53","disable":false},{"children":"none","type":"select","label":"Background Type","summary":"","name":"background_type","id":"id_6edfa006-4ae7-4edf-beff-f52067079ac9","disable":false,"options":[{"label":"Image","value":"image","id":"22171f14-ed75-4355-9c0d-2ac16e0d4bc2"},{"label":"Color","value":"color","id":"9575e993-ee2a-4393-8948-488c90f551f1"},{"label":"None","value":"none","id":"161270b4-2d46-4096-b8d3-e0382093a1b9"}]},{"children":"","type":"image","label":"Background Image","summary":"","name":"background_image","id":"id_a9830cf2-82e0-4ab3-a2a5-e4dda6717f5e","disable":false,"deps":"section_settings.background_type === \"image\""},{"children":"#fff","type":"color","label":"Background Color","summary":"","name":"background_color","id":"id_b137cc54-0188-436d-adaa-160ff80ae1e4","disable":false,"deps":"section_settings.background_type === \"color\""},{"children":"cover","type":"select","label":"Background Size","summary":"","name":"background_size","id":"id_78dc1f4c-251d-40cb-9623-e35caef8aa9d","disable":false,"options":[{"label":"Cover","value":"cover","id":"7b59ebab-b728-4fb6-a4fe-44cab5236892"},{"label":"Contain","value":"contain","id":"62467fe0-fba2-40ab-9246-29dd60e0ded6"}]},{"children":false,"type":"switch","label":"Background Overlay Enable","summary":"","name":"background_overlay_enable","id":"id_8d81a34a-6ba3-4ff0-ad97-662aa6f2124f","disable":false},{"children":"#fff","type":"color","label":"Background Overlay Color","summary":"","name":"background_overlay_color","id":"id_2ecbe5ea-5d75-4391-95b5-0d8d4343e23f","disable":false},{"children":{"left":0},"type":"space","label":"Padding","summary":"","name":"padding","id":"id_0af91610-5b6b-453f-8241-1b655f28c946","disable":false}],"type":"object","label":"Section Settings","summary":"","name":"section_settings","open":false,"drawer":false,"disable":false}],"settings":[]},"scss":"$container: \"[data-id='#{$uniqueId}']\";","settings":[{"id":"id_6b03acc6-082b-4ae6-8912-b6ea1c5f1013","children":[{"children":false,"type":"switch","label":"Background Fixed","summary":"","name":"background_fixed","id":"id_b5d93ae5-8a34-446b-9c97-65bd6da5da53","disable":false},{"children":"none","type":"select","label":"Background Type","summary":"","name":"background_type","id":"id_6edfa006-4ae7-4edf-beff-f52067079ac9","disable":false,"options":[{"label":"Image","value":"image","id":"22171f14-ed75-4355-9c0d-2ac16e0d4bc2"},{"label":"Color","value":"color","id":"9575e993-ee2a-4393-8948-488c90f551f1"},{"label":"None","value":"none","id":"161270b4-2d46-4096-b8d3-e0382093a1b9"}]},{"children":"","type":"image","label":"Background Image","summary":"","name":"background_image","id":"id_a9830cf2-82e0-4ab3-a2a5-e4dda6717f5e","disable":false,"deps":"section_settings.background_type === \"image\""},{"children":"#fff","type":"color","label":"Background Color","summary":"","name":"background_color","id":"id_b137cc54-0188-436d-adaa-160ff80ae1e4","disable":false,"deps":"section_settings.background_type === \"color\""},{"children":"cover","type":"select","label":"Background Size","summary":"","name":"background_size","id":"id_78dc1f4c-251d-40cb-9623-e35caef8aa9d","disable":false,"options":[{"label":"Cover","value":"cover","id":"7b59ebab-b728-4fb6-a4fe-44cab5236892"},{"label":"Contain","value":"contain","id":"62467fe0-fba2-40ab-9246-29dd60e0ded6"}]},{"children":false,"type":"switch","label":"Background Overlay Enable","summary":"","name":"background_overlay_enable","id":"id_8d81a34a-6ba3-4ff0-ad97-662aa6f2124f","disable":false},{"children":"#fff","type":"color","label":"Background Overlay Color","summary":"","name":"background_overlay_color","id":"id_2ecbe5ea-5d75-4391-95b5-0d8d4343e23f","disable":false},{"children":{"left":0,"bottom":80},"type":"space","label":"Padding","summary":"","name":"padding","id":"id_0af91610-5b6b-453f-8241-1b655f28c946","disable":false}],"type":"object","label":"Section Settings","summary":"","name":"section_settings","open":false,"drawer":false,"disable":false}]},"scope":"private","pageTypes":["page","article","collection","product","home","cart","pagenotfound","password","search","login","resetpassword","activateaccount","register","account","order","addresses","giftcard","collections"],"type":"default","sample":true,"enable":true,"userId":1,"synced":false,"category":{"commandId":"62aab089d316833cf19c25d4","name":"tuong"},"changelog":{"content":"","version":"","versionId":""}}
+{
+  "id": "id_f527d356-9e14-42e6-8079-6e0928cb70cb",
+  "commandId": "62c7d8166bec6e2bff841575",
+  "label": "Account",
+  "image": {
+    "src": "",
+    "width": 0,
+    "height": 0
+  },
+  "addonIds": [],
+  "megaMenuId": "",
+  "currentVersion": "",
+  "versionId": "",
+  "data": {
+    "js": "",
+    "liquid": "{% liquid\r\n  if section_settings.background_fixed assign backgroundFixed = 'fixed' else assign backgroundFixed = 'scroll' endif\r\n  if section_settings.background_type == 'color' assign backgroundColor = 'background-color: ' | append: section_settings.background_color | append: ';' else assign backgroundColor = '' endif\r\n  if section_settings.background_type == 'image' assign backgroundImage = 'background-image: url(' | append: section_settings.background_image | append:\r\n  ');background-attachment: ' | append: backgroundFixed | append: ';background-size: ' | append: section_settings.background_size | append: ';' else assign backgroundImage = '' endif\r\n  assign sectionPadding = 'padding-top: ' | append: section_settings.padding.top | append: 'px;padding-right: ' | append: section_settings.padding.right | append: 'px;padding-bottom: ' | append: section_settings.padding.bottom | append: 'px;padding-left: ' | append: section_settings.padding.left | append: 'px;'\r\n%}\r\n\r\n\r\n<section data-id=\"{{uniqueId}}\" css=\"{{ backgroundColor }}{{ backgroundImage }}{{ sectionPadding }}\">\r\n  {% if section_settings.background_overlay_enable %}\r\n    <div class=\"pos:absolute ins:0 z:-1\" css=\"background-color: {{ section_settings.background_overlay_color }}\"></div>\r\n  {% endif %}\r\n  <div class=\"fz:15px c:color-gray4 mb:33px ml:5%\">\r\n    <shopify>\r\n      {% unless request.page_type == 'index' or request.page_type == 'list-collections' %}\r\n        <nav role=\"navigation\" aria-label=\"breadcrumbs\">\r\n            <a class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" href=\"{{ routes.root_url }}\" title=\"Home\">Home</a>\r\n            {% if request.page_type contains 'page' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ page.title }}</span>\r\n            {% elsif request.page_type contains 'product' %}\r\n              {% if collection.url %}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n                {{ collection.title | link_to: collection.url }}\r\n              {% endif %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ product.title }}</span>\r\n            {% elsif request.page_type contains 'collection' and collection.handle %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              {% if current_tags %}\r\n                {% capture url %}/collections/{{ collection.handle }}{% endcapture %}\r\n                {{ collection.title | link_to: url }}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ current_tags | join: \" + \" }}</span>\r\n              {% else %}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ collection.title }}</span>\r\n              {% endif %}\r\n            {% elsif request.page_type == 'blog' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              {% if current_tags %}\r\n                {{ blog.title | link_to: blog.url }}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ current_tags | join: \" + \" }}</span>\r\n              {% else %}\r\n                <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ blog.title }}</span>\r\n              {% endif %}\r\n            {% elsif request.page_type == 'article' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              {{ blog.title | link_to: blog.url }}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span>{{ article.title }}</span>\r\n            {% elsif request.page_type == 'cart' %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">Cart</span>\r\n            {% else %}\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:#9E9ECC\" aria-hidden=\"true\"></span>\r\n              <span class=\"fz:15px fw:400 ff:font-primary c:color-gray9\">{{ page_title }}</span>\r\n            {% endif %}\r\n        </nav>\r\n      {% endunless %}\r\n    </shopify>\r\n  </div>\r\n  <div class=\"container\">\r\n    <shopify>\r\n    <h3 class=\"mb:20px fz:35px fw:500 ff:font-primary fw:500\">{{'veda.customer.account.title' | t}}</h3>\r\n    <a href=\"\">\r\n      <span class=\"c:color-gray9 c:color-gray9|h! mr:5px\"><i class=\"fal fa-user\"></i></span>\r\n      <span class=\"c:color-gray9 c:color-gray9|h! td:underline\">{{'veda.customer.log_out' | t}}</span>\r\n    </a>\r\n    <div class=\"row jc:center\">\r\n      <div class=\"col-lg-8\">\r\n          <div class=\"fz:20px fw:500 c:color-gray9 mt:20px mb:20px\">{{'veda.customer.orders.title' | t}}</div>\r\n          <table class=\"table-responsive-700\">\r\n            <thead>\r\n              <tr>\r\n                <td class=\"tt:uppercase\">{{'veda.customer.orders.order_number' | t}}</td>\r\n                <td class=\"tt:uppercase\">{{'veda.customer.orders.date' | t}}</td>\r\n                <td class=\"tt:uppercase\">{{'veda.customer.orders.payment_status' | t}}</td>\r\n                <td class=\"tt:uppercase\">{{'veda.customer.orders.fulfillment_status' | t}}</td>\r\n                <td class=\"tt:uppercase\">{{'veda.customer.orders.total' | t}}</td>\r\n              </tr>\r\n            </thead>\r\n            <tbody>\r\n              {% for order in customer.orders %}\r\n                <tr>\r\n                  <td data-th=\"{{'veda.customer.orders.order_number' | t}}\"><a href=\"/order.html\">{{order.name}}</a></td>\r\n                  <td data-th=\"{{'veda.customer.orders.date' | t}}\">{{order.created_at | date: \"%b %d, %Y\"}}</td>\r\n                  <td data-th=\"{{'veda.customer.orders.payment_status' | t}}\">{{order.financial_status_label}}</td>\r\n                  <td data-th=\"{{'veda.customer.orders.fulfillment_status' | t}}\">{{order.fulfillment_status_label}}</td>\r\n                  <td data-th=\"{{'veda.customer.orders.total' | t}}\">{{order.total_price | money}}</td>\r\n                </tr>\r\n              {% endfor %}\r\n            </tbody>\r\n          </table>\r\n        </div>\r\n        <div class=\"col-lg-4\">\r\n          <div class=\"fz:20px fw:500 c:color-gray9 mt:20px mb:20px\">{{'veda.customer.account.details' | t}}</div>\r\n          <div>{{customer.name}}</div>\r\n          <div>{{customer.default_address.address1}}</div>\r\n          <div>{{customer.default_address.city}} {{customer.default_address.province_code}} {{customer.default_address.zip}}</div>\r\n          <div>{{customer.default_address.country.name}}</div>\r\n          <a href=\"/customerAddress.html\" class=\"fz:15px c:color-gray9 c:color-gray9|h! td:underline td:underline|h!\">{{'veda.customer.account.view_addresses' | t}}</a>\r\n        </div>\r\n      </div>\r\n    </shopify>\r\n  </div>\r\n</section>\r\n",
+    "schema": {
+      "blocks": [{
+        "id": "id_6b03acc6-082b-4ae6-8912-b6ea1c5f1013",
+        "children": [{
+          "children": false,
+          "type": "switch",
+          "label": "Background Fixed",
+          "summary": "",
+          "name": "background_fixed",
+          "id": "id_b5d93ae5-8a34-446b-9c97-65bd6da5da53",
+          "disable": false
+        }, {
+          "children": "none",
+          "type": "select",
+          "label": "Background Type",
+          "summary": "",
+          "name": "background_type",
+          "id": "id_6edfa006-4ae7-4edf-beff-f52067079ac9",
+          "disable": false,
+          "options": [{
+            "label": "Image",
+            "value": "image",
+            "id": "22171f14-ed75-4355-9c0d-2ac16e0d4bc2"
+          }, {
+            "label": "Color",
+            "value": "color",
+            "id": "9575e993-ee2a-4393-8948-488c90f551f1"
+          }, {
+            "label": "None",
+            "value": "none",
+            "id": "161270b4-2d46-4096-b8d3-e0382093a1b9"
+          }]
+        }, {
+          "children": "",
+          "type": "image",
+          "label": "Background Image",
+          "summary": "",
+          "name": "background_image",
+          "id": "id_a9830cf2-82e0-4ab3-a2a5-e4dda6717f5e",
+          "disable": false,
+          "deps": "section_settings.background_type === \"image\""
+        }, {
+          "children": "#fff",
+          "type": "color",
+          "label": "Background Color",
+          "summary": "",
+          "name": "background_color",
+          "id": "id_b137cc54-0188-436d-adaa-160ff80ae1e4",
+          "disable": false,
+          "deps": "section_settings.background_type === \"color\""
+        }, {
+          "children": "cover",
+          "type": "select",
+          "label": "Background Size",
+          "summary": "",
+          "name": "background_size",
+          "id": "id_78dc1f4c-251d-40cb-9623-e35caef8aa9d",
+          "disable": false,
+          "options": [{
+            "label": "Cover",
+            "value": "cover",
+            "id": "7b59ebab-b728-4fb6-a4fe-44cab5236892"
+          }, {
+            "label": "Contain",
+            "value": "contain",
+            "id": "62467fe0-fba2-40ab-9246-29dd60e0ded6"
+          }]
+        }, {
+          "children": false,
+          "type": "switch",
+          "label": "Background Overlay Enable",
+          "summary": "",
+          "name": "background_overlay_enable",
+          "id": "id_8d81a34a-6ba3-4ff0-ad97-662aa6f2124f",
+          "disable": false
+        }, {
+          "children": "#fff",
+          "type": "color",
+          "label": "Background Overlay Color",
+          "summary": "",
+          "name": "background_overlay_color",
+          "id": "id_2ecbe5ea-5d75-4391-95b5-0d8d4343e23f",
+          "disable": false
+        }, {
+          "children": {
+            "left": 0
+          },
+          "type": "space",
+          "label": "Padding",
+          "summary": "",
+          "name": "padding",
+          "id": "id_0af91610-5b6b-453f-8241-1b655f28c946",
+          "disable": false
+        }],
+        "type": "object",
+        "label": "Section Settings",
+        "summary": "",
+        "name": "section_settings",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }],
+      "settings": []
+    },
+    "scss": "$container: \"[data-id='#{$uniqueId}']\";",
+    "settings": [{
+      "id": "id_6b03acc6-082b-4ae6-8912-b6ea1c5f1013",
+      "children": [{
+        "children": false,
+        "type": "switch",
+        "label": "Background Fixed",
+        "summary": "",
+        "name": "background_fixed",
+        "id": "id_b5d93ae5-8a34-446b-9c97-65bd6da5da53",
+        "disable": false
+      }, {
+        "children": "none",
+        "type": "select",
+        "label": "Background Type",
+        "summary": "",
+        "name": "background_type",
+        "id": "id_6edfa006-4ae7-4edf-beff-f52067079ac9",
+        "disable": false,
+        "options": [{
+          "label": "Image",
+          "value": "image",
+          "id": "22171f14-ed75-4355-9c0d-2ac16e0d4bc2"
+        }, {
+          "label": "Color",
+          "value": "color",
+          "id": "9575e993-ee2a-4393-8948-488c90f551f1"
+        }, {
+          "label": "None",
+          "value": "none",
+          "id": "161270b4-2d46-4096-b8d3-e0382093a1b9"
+        }]
+      }, {
+        "children": "",
+        "type": "image",
+        "label": "Background Image",
+        "summary": "",
+        "name": "background_image",
+        "id": "id_a9830cf2-82e0-4ab3-a2a5-e4dda6717f5e",
+        "disable": false,
+        "deps": "section_settings.background_type === \"image\""
+      }, {
+        "children": "#fff",
+        "type": "color",
+        "label": "Background Color",
+        "summary": "",
+        "name": "background_color",
+        "id": "id_b137cc54-0188-436d-adaa-160ff80ae1e4",
+        "disable": false,
+        "deps": "section_settings.background_type === \"color\""
+      }, {
+        "children": "cover",
+        "type": "select",
+        "label": "Background Size",
+        "summary": "",
+        "name": "background_size",
+        "id": "id_78dc1f4c-251d-40cb-9623-e35caef8aa9d",
+        "disable": false,
+        "options": [{
+          "label": "Cover",
+          "value": "cover",
+          "id": "7b59ebab-b728-4fb6-a4fe-44cab5236892"
+        }, {
+          "label": "Contain",
+          "value": "contain",
+          "id": "62467fe0-fba2-40ab-9246-29dd60e0ded6"
+        }]
+      }, {
+        "children": false,
+        "type": "switch",
+        "label": "Background Overlay Enable",
+        "summary": "",
+        "name": "background_overlay_enable",
+        "id": "id_8d81a34a-6ba3-4ff0-ad97-662aa6f2124f",
+        "disable": false
+      }, {
+        "children": "#fff",
+        "type": "color",
+        "label": "Background Overlay Color",
+        "summary": "",
+        "name": "background_overlay_color",
+        "id": "id_2ecbe5ea-5d75-4391-95b5-0d8d4343e23f",
+        "disable": false
+      }, {
+        "children": {
+          "left": 0,
+          "bottom": 80
+        },
+        "type": "space",
+        "label": "Padding",
+        "summary": "",
+        "name": "padding",
+        "id": "id_0af91610-5b6b-453f-8241-1b655f28c946",
+        "disable": false
+      }],
+      "type": "object",
+      "label": "Section Settings",
+      "summary": "",
+      "name": "section_settings",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }]
+  },
+  "scope": "private",
+  "pageTypes": ["page", "article", "collection", "product", "home", "cart", "pageNotFound", "password", "search", "login", "resetPassword", "activateAccount", "register", "account", "order", "addresses", "giftCard", "collections"],
+  "type": "default",
+  "sample": true,
+  "enable": true,
+  "userId": 1,
+  "synced": false,
+  "category": {
+    "commandId": "",
+    "name": ""
+  },
+  "changelog": {
+    "content": "",
+    "version": "",
+    "versionId": ""
+  }
+}

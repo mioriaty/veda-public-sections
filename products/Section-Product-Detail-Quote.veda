@@ -1,1 +1,324 @@
-{"id":"id_9736bdaf-df0d-44a9-b1c6-633a48e3af70","commandId":"62aa9463d316833cf19c25c4","label":"Product Detail Quote","image":{"src":"","width":0,"height":0},"addonIds":[],"currentVersion":"1","versionId":"ee18413b-073e-4b48-84cc-10e8988eb08e","data":{"js":"","liquid":"{% liquid\r\n  if section_settings.background_fixed assign backgroundFixed = 'fixed' else assign backgroundFixed = 'scroll' endif\r\n  if section_settings.background_type == 'color' assign backgroundColor = 'background-color: ' | append: section_settings.background_color | append: ';' else assign backgroundColor = '' endif\r\n  if section_settings.background_type == 'image' assign backgroundImage = 'background-image: url(' | append: section_settings.background_image | append:\r\n  ');background-attachment: ' | append: backgroundFixed | append: ';background-size: ' | append: section_settings.background_size | append: ';' else assign backgroundImage = '' endif\r\n  assign sectionPadding = 'padding-top: ' | append: section_settings.padding.top | append: 'px;padding-right: ' | append: section_settings.padding.right | append: 'px;padding-bottom: ' | append: section_settings.padding.bottom | append: 'px;padding-left: ' | append: section_settings.padding.left | append: 'px;'\r\n%}\r\n\r\n\r\n<section data-id=\"{{uniqueId}}\" css=\"{{ backgroundColor }}{{ backgroundImage }}{{ sectionPadding }}\">\r\n  {% if section_settings.background_overlay_enable %}\r\n    <div class=\"pos:absolute ins:0 z:-1\" css=\"background-color: {{ section_settings.background_overlay_color }}\"></div>\r\n  {% endif %}\r\n  <div class=\"container\">\r\n    <div class=\"row jc:center pt:90px\">\r\n      <div class=\"col-lg-10 ta:center bgc:color-dark pt:50px pb:50px\">\r\n        <h3 class=\"c:color-light fz:20px fw:700 mb:24px\">{{content.sample_quote_title}}</h3>\r\n        <p class=\"c:color-light fz:15px fw:400 ff:font-secondary\">{{content.sample_quote_description}}</p>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n","schema":{"blocks":[{"id":"id_0510ea34-1d9a-4837-b8e5-fba0317f828e","children":[{"children":false,"type":"switch","label":"Background Fixed","summary":"","name":"background_fixed","id":"id_4a0a0da8-05ce-4f26-b208-ed83eaab6451","disable":false},{"children":"none","type":"select","label":"Background Type","summary":"","name":"background_type","id":"id_12349aba-56e9-4083-b632-cf4ea5d22ede","disable":false,"options":[{"label":"Image","value":"image","id":"2c584218-cacd-4a96-b8ec-eb3e920256a5"},{"label":"Color","value":"color","id":"078b2b8a-acb8-4e5d-98e4-9744b0d9fc8a"},{"label":"None","value":"none","id":"64d465da-c775-489f-9fdf-b871d78e4131"}]},{"children":"","type":"image","label":"Background Image","summary":"","name":"background_image","id":"id_1b185b51-ebc1-4706-b9d7-410ba589b011","disable":false,"deps":"section_settings.background_type === \"image\""},{"children":"#fff","type":"color","label":"Background Color","summary":"","name":"background_color","id":"id_b67ce832-e2d3-4f06-bbe0-523473151d84","disable":false,"deps":"section_settings.background_type === \"color\""},{"children":"cover","type":"select","label":"Background Size","summary":"","name":"background_size","id":"id_7e92389f-6e4b-432e-abdb-687baf98173e","disable":false,"options":[{"label":"Cover","value":"cover","id":"88fd6ced-8ce7-4f38-a58d-d507fa45900b"},{"label":"Contain","value":"contain","id":"f7e5d909-a6b1-4309-9a30-904b5426c5fb"}]},{"children":false,"type":"switch","label":"Background Overlay Enable","summary":"","name":"background_overlay_enable","id":"id_5b36a8ec-7814-45a0-a72a-7d62e8390842","disable":false},{"children":"#fff","type":"color","label":"Background Overlay Color","summary":"","name":"background_overlay_color","id":"id_8932101e-45a3-4538-bb28-5ac9e4da2732","disable":false},{"children":{"left":0},"type":"space","label":"Padding","summary":"","name":"padding","id":"id_b5f789d7-ee91-4c27-b0f5-e310f6b56f19","disable":false}],"type":"object","label":"Section Settings","summary":"","name":"section_settings","open":false,"drawer":false,"disable":false},{"id":"id_b245c419-2e08-402a-9bd6-aa3090483d36","children":[{"children":"Sample Quote","type":"text","label":"Sample Quote Title","summary":"","name":"sample_quote_title","id":"id_f3011aa2-e993-410c-bb67-2793edb72899","disable":false},{"children":"At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores <br/>et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est <br/>laborum et dolorum fuga.","type":"textarea","label":"Sample Quote Description","summary":"","name":"sample_quote_description","id":"id_a7e2e907-05a0-4a35-bd7f-f28a21b255e8","disable":false},{"children":{"lg":2,"md":2,"sm":1,"xs":1},"type":"responsive","label":"Column","summary":"","name":"column","id":"id_b69a8971-d787-4735-a9c8-4b89da9f6f60","disable":false,"max":12,"min":1}],"type":"object","label":"Content","summary":"","name":"content","open":false,"drawer":false,"disable":false}],"settings":[]},"scss":"$container: \"[data-id='#{$uniqueId}']\";","settings":[{"id":"id_0510ea34-1d9a-4837-b8e5-fba0317f828e","children":[{"children":false,"type":"switch","label":"Background Fixed","summary":"","name":"background_fixed","id":"id_4a0a0da8-05ce-4f26-b208-ed83eaab6451","disable":false},{"children":"none","type":"select","label":"Background Type","summary":"","name":"background_type","id":"id_12349aba-56e9-4083-b632-cf4ea5d22ede","disable":false,"options":[{"label":"Image","value":"image","id":"2c584218-cacd-4a96-b8ec-eb3e920256a5"},{"label":"Color","value":"color","id":"078b2b8a-acb8-4e5d-98e4-9744b0d9fc8a"},{"label":"None","value":"none","id":"64d465da-c775-489f-9fdf-b871d78e4131"}]},{"children":"","type":"image","label":"Background Image","summary":"","name":"background_image","id":"id_1b185b51-ebc1-4706-b9d7-410ba589b011","disable":false,"deps":"section_settings.background_type === \"image\""},{"children":"#fff","type":"color","label":"Background Color","summary":"","name":"background_color","id":"id_b67ce832-e2d3-4f06-bbe0-523473151d84","disable":false,"deps":"section_settings.background_type === \"color\""},{"children":"cover","type":"select","label":"Background Size","summary":"","name":"background_size","id":"id_7e92389f-6e4b-432e-abdb-687baf98173e","disable":false,"options":[{"label":"Cover","value":"cover","id":"88fd6ced-8ce7-4f38-a58d-d507fa45900b"},{"label":"Contain","value":"contain","id":"f7e5d909-a6b1-4309-9a30-904b5426c5fb"}]},{"children":false,"type":"switch","label":"Background Overlay Enable","summary":"","name":"background_overlay_enable","id":"id_5b36a8ec-7814-45a0-a72a-7d62e8390842","disable":false},{"children":"#fff","type":"color","label":"Background Overlay Color","summary":"","name":"background_overlay_color","id":"id_8932101e-45a3-4538-bb28-5ac9e4da2732","disable":false},{"children":{"left":0},"type":"space","label":"Padding","summary":"","name":"padding","id":"id_b5f789d7-ee91-4c27-b0f5-e310f6b56f19","disable":false}],"type":"object","label":"Section Settings","summary":"","name":"section_settings","open":false,"drawer":false,"disable":false},{"id":"id_b245c419-2e08-402a-9bd6-aa3090483d36","children":[{"children":"Sample Quote","type":"text","label":"Sample Quote Title","summary":"","name":"sample_quote_title","id":"id_f3011aa2-e993-410c-bb67-2793edb72899","disable":false},{"children":"At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores <br/>et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est <br/>laborum et dolorum fuga.","type":"textarea","label":"Sample Quote Description","summary":"","name":"sample_quote_description","id":"id_a7e2e907-05a0-4a35-bd7f-f28a21b255e8","disable":false},{"children":{"lg":2,"md":2,"sm":1,"xs":1},"type":"responsive","label":"Column","summary":"","name":"column","id":"id_b69a8971-d787-4735-a9c8-4b89da9f6f60","disable":false,"max":12,"min":1}],"type":"object","label":"Content","summary":"","name":"content","open":false,"drawer":false,"disable":false}]},"scope":"private","pageTypes":["product"],"sample":true,"enable":true,"userId":1,"synced":false,"category":{"commandId":"629879c0b57c6c4c8378755a","name":"products"},"createdDateTimestamp":1655346275658,"modifiedDateTimestamp":1655346275658,"parentCommandId":"62aa9463d316833cf19c25c4","changelog":{"version":"1","versionId":"8c8704ab-d682-41a6-9a70-06039577a5d7","content":""},"categoryId":"products"}
+{
+  "id": "id_9736bdaf-df0d-44a9-b1c6-633a48e3af70",
+  "commandId": "62aa9463d316833cf19c25c4",
+  "label": "Product Detail Quote",
+  "image": {
+    "src": "",
+    "width": 0,
+    "height": 0
+  },
+  "addonIds": [],
+  "currentVersion": "",
+  "versionId": "",
+  "data": {
+    "js": "",
+    "liquid": "{% liquid\r\n  if section_settings.background_fixed assign backgroundFixed = 'fixed' else assign backgroundFixed = 'scroll' endif\r\n  if section_settings.background_type == 'color' assign backgroundColor = 'background-color: ' | append: section_settings.background_color | append: ';' else assign backgroundColor = '' endif\r\n  if section_settings.background_type == 'image' assign backgroundImage = 'background-image: url(' | append: section_settings.background_image | append:\r\n  ');background-attachment: ' | append: backgroundFixed | append: ';background-size: ' | append: section_settings.background_size | append: ';' else assign backgroundImage = '' endif\r\n  assign sectionPadding = 'padding-top: ' | append: section_settings.padding.top | append: 'px;padding-right: ' | append: section_settings.padding.right | append: 'px;padding-bottom: ' | append: section_settings.padding.bottom | append: 'px;padding-left: ' | append: section_settings.padding.left | append: 'px;'\r\n%}\r\n\r\n\r\n<section data-id=\"{{uniqueId}}\" css=\"{{ backgroundColor }}{{ backgroundImage }}{{ sectionPadding }}\">\r\n  {% if section_settings.background_overlay_enable %}\r\n    <div class=\"pos:absolute ins:0 z:-1\" css=\"background-color: {{ section_settings.background_overlay_color }}\"></div>\r\n  {% endif %}\r\n  <div class=\"container\">\r\n    <div class=\"row jc:center pt:90px\">\r\n      <div class=\"col-lg-10 ta:center bgc:color-dark pt:50px pb:50px\">\r\n        <h3 class=\"c:color-light fz:20px fw:700 mb:24px\">{{content.sample_quote_title}}</h3>\r\n        <p class=\"c:color-light fz:15px fw:400 ff:font-secondary\">{{content.sample_quote_description}}</p>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n",
+    "schema": {
+      "blocks": [{
+        "id": "id_0510ea34-1d9a-4837-b8e5-fba0317f828e",
+        "children": [{
+          "children": false,
+          "type": "switch",
+          "label": "Background Fixed",
+          "summary": "",
+          "name": "background_fixed",
+          "id": "id_4a0a0da8-05ce-4f26-b208-ed83eaab6451",
+          "disable": false
+        }, {
+          "children": "none",
+          "type": "select",
+          "label": "Background Type",
+          "summary": "",
+          "name": "background_type",
+          "id": "id_12349aba-56e9-4083-b632-cf4ea5d22ede",
+          "disable": false,
+          "options": [{
+            "label": "Image",
+            "value": "image",
+            "id": "2c584218-cacd-4a96-b8ec-eb3e920256a5"
+          }, {
+            "label": "Color",
+            "value": "color",
+            "id": "078b2b8a-acb8-4e5d-98e4-9744b0d9fc8a"
+          }, {
+            "label": "None",
+            "value": "none",
+            "id": "64d465da-c775-489f-9fdf-b871d78e4131"
+          }]
+        }, {
+          "children": "",
+          "type": "image",
+          "label": "Background Image",
+          "summary": "",
+          "name": "background_image",
+          "id": "id_1b185b51-ebc1-4706-b9d7-410ba589b011",
+          "disable": false,
+          "deps": "section_settings.background_type === \"image\""
+        }, {
+          "children": "#fff",
+          "type": "color",
+          "label": "Background Color",
+          "summary": "",
+          "name": "background_color",
+          "id": "id_b67ce832-e2d3-4f06-bbe0-523473151d84",
+          "disable": false,
+          "deps": "section_settings.background_type === \"color\""
+        }, {
+          "children": "cover",
+          "type": "select",
+          "label": "Background Size",
+          "summary": "",
+          "name": "background_size",
+          "id": "id_7e92389f-6e4b-432e-abdb-687baf98173e",
+          "disable": false,
+          "options": [{
+            "label": "Cover",
+            "value": "cover",
+            "id": "88fd6ced-8ce7-4f38-a58d-d507fa45900b"
+          }, {
+            "label": "Contain",
+            "value": "contain",
+            "id": "f7e5d909-a6b1-4309-9a30-904b5426c5fb"
+          }]
+        }, {
+          "children": false,
+          "type": "switch",
+          "label": "Background Overlay Enable",
+          "summary": "",
+          "name": "background_overlay_enable",
+          "id": "id_5b36a8ec-7814-45a0-a72a-7d62e8390842",
+          "disable": false
+        }, {
+          "children": "#fff",
+          "type": "color",
+          "label": "Background Overlay Color",
+          "summary": "",
+          "name": "background_overlay_color",
+          "id": "id_8932101e-45a3-4538-bb28-5ac9e4da2732",
+          "disable": false
+        }, {
+          "children": {
+            "left": 0
+          },
+          "type": "space",
+          "label": "Padding",
+          "summary": "",
+          "name": "padding",
+          "id": "id_b5f789d7-ee91-4c27-b0f5-e310f6b56f19",
+          "disable": false
+        }],
+        "type": "object",
+        "label": "Section Settings",
+        "summary": "",
+        "name": "section_settings",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_b245c419-2e08-402a-9bd6-aa3090483d36",
+        "children": [{
+          "children": "Sample Quote",
+          "type": "text",
+          "label": "Sample Quote Title",
+          "summary": "",
+          "name": "sample_quote_title",
+          "id": "id_f3011aa2-e993-410c-bb67-2793edb72899",
+          "disable": false
+        }, {
+          "children": "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores <br/>et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est <br/>laborum et dolorum fuga.",
+          "type": "textarea",
+          "label": "Sample Quote Description",
+          "summary": "",
+          "name": "sample_quote_description",
+          "id": "id_a7e2e907-05a0-4a35-bd7f-f28a21b255e8",
+          "disable": false
+        }, {
+          "children": {
+            "lg": 2,
+            "md": 2,
+            "sm": 1,
+            "xs": 1
+          },
+          "type": "responsive",
+          "label": "Column",
+          "summary": "",
+          "name": "column",
+          "id": "id_b69a8971-d787-4735-a9c8-4b89da9f6f60",
+          "disable": false,
+          "max": 12,
+          "min": 1
+        }],
+        "type": "object",
+        "label": "Content",
+        "summary": "",
+        "name": "content",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }],
+      "settings": []
+    },
+    "scss": "$container: \"[data-id='#{$uniqueId}']\";",
+    "settings": [{
+      "id": "id_0510ea34-1d9a-4837-b8e5-fba0317f828e",
+      "children": [{
+        "children": false,
+        "type": "switch",
+        "label": "Background Fixed",
+        "summary": "",
+        "name": "background_fixed",
+        "id": "id_4a0a0da8-05ce-4f26-b208-ed83eaab6451",
+        "disable": false
+      }, {
+        "children": "none",
+        "type": "select",
+        "label": "Background Type",
+        "summary": "",
+        "name": "background_type",
+        "id": "id_12349aba-56e9-4083-b632-cf4ea5d22ede",
+        "disable": false,
+        "options": [{
+          "label": "Image",
+          "value": "image",
+          "id": "2c584218-cacd-4a96-b8ec-eb3e920256a5"
+        }, {
+          "label": "Color",
+          "value": "color",
+          "id": "078b2b8a-acb8-4e5d-98e4-9744b0d9fc8a"
+        }, {
+          "label": "None",
+          "value": "none",
+          "id": "64d465da-c775-489f-9fdf-b871d78e4131"
+        }]
+      }, {
+        "children": "",
+        "type": "image",
+        "label": "Background Image",
+        "summary": "",
+        "name": "background_image",
+        "id": "id_1b185b51-ebc1-4706-b9d7-410ba589b011",
+        "disable": false,
+        "deps": "section_settings.background_type === \"image\""
+      }, {
+        "children": "#fff",
+        "type": "color",
+        "label": "Background Color",
+        "summary": "",
+        "name": "background_color",
+        "id": "id_b67ce832-e2d3-4f06-bbe0-523473151d84",
+        "disable": false,
+        "deps": "section_settings.background_type === \"color\""
+      }, {
+        "children": "cover",
+        "type": "select",
+        "label": "Background Size",
+        "summary": "",
+        "name": "background_size",
+        "id": "id_7e92389f-6e4b-432e-abdb-687baf98173e",
+        "disable": false,
+        "options": [{
+          "label": "Cover",
+          "value": "cover",
+          "id": "88fd6ced-8ce7-4f38-a58d-d507fa45900b"
+        }, {
+          "label": "Contain",
+          "value": "contain",
+          "id": "f7e5d909-a6b1-4309-9a30-904b5426c5fb"
+        }]
+      }, {
+        "children": false,
+        "type": "switch",
+        "label": "Background Overlay Enable",
+        "summary": "",
+        "name": "background_overlay_enable",
+        "id": "id_5b36a8ec-7814-45a0-a72a-7d62e8390842",
+        "disable": false
+      }, {
+        "children": "#fff",
+        "type": "color",
+        "label": "Background Overlay Color",
+        "summary": "",
+        "name": "background_overlay_color",
+        "id": "id_8932101e-45a3-4538-bb28-5ac9e4da2732",
+        "disable": false
+      }, {
+        "children": {
+          "left": 0
+        },
+        "type": "space",
+        "label": "Padding",
+        "summary": "",
+        "name": "padding",
+        "id": "id_b5f789d7-ee91-4c27-b0f5-e310f6b56f19",
+        "disable": false
+      }],
+      "type": "object",
+      "label": "Section Settings",
+      "summary": "",
+      "name": "section_settings",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_b245c419-2e08-402a-9bd6-aa3090483d36",
+      "children": [{
+        "children": "Sample Quote",
+        "type": "text",
+        "label": "Sample Quote Title",
+        "summary": "",
+        "name": "sample_quote_title",
+        "id": "id_f3011aa2-e993-410c-bb67-2793edb72899",
+        "disable": false
+      }, {
+        "children": "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores <br/>et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est <br/>laborum et dolorum fuga.",
+        "type": "textarea",
+        "label": "Sample Quote Description",
+        "summary": "",
+        "name": "sample_quote_description",
+        "id": "id_a7e2e907-05a0-4a35-bd7f-f28a21b255e8",
+        "disable": false
+      }, {
+        "children": {
+          "lg": 2,
+          "md": 2,
+          "sm": 1,
+          "xs": 1
+        },
+        "type": "responsive",
+        "label": "Column",
+        "summary": "",
+        "name": "column",
+        "id": "id_b69a8971-d787-4735-a9c8-4b89da9f6f60",
+        "disable": false,
+        "max": 12,
+        "min": 1
+      }],
+      "type": "object",
+      "label": "Content",
+      "summary": "",
+      "name": "content",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }]
+  },
+  "scope": "private",
+  "pageTypes": ["product"],
+  "sample": true,
+  "enable": true,
+  "userId": 1,
+  "synced": false,
+  "category": {
+    "commandId": "",
+    "name": ""
+  },
+  "createdDateTimestamp": 1655346275658,
+  "modifiedDateTimestamp": 1655346275658,
+  "parentCommandId": "",
+  "changelog": {
+    "version": "",
+    "versionId": "",
+    "content": ""
+  },
+  "categoryId": ""
+}

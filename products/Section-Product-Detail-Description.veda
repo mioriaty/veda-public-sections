@@ -1,1 +1,338 @@
-{"id":"id_70646a46-a4bb-486d-ae6a-9152dcd23d5f","commandId":"62aa93a4d316833cf19c25c2","label":"Product Detail Description","image":{"src":"","width":0,"height":0},"addonIds":[],"megaMenuId":"","currentVersion":"1.0","versionId":"c50c52b2-0a23-477c-9802-20b060d8091d","data":{"js":"","liquid":"{% liquid\r\n  if section_settings.background_fixed assign backgroundFixed = 'fixed' else assign backgroundFixed = 'scroll' endif\r\n  if section_settings.background_type == 'color' assign backgroundColor = 'background-color: ' | append: section_settings.background_color | append: ';' else assign backgroundColor = '' endif\r\n  if section_settings.background_type == 'image' assign backgroundImage = 'background-image: url(' | append: section_settings.background_image | append:\r\n  ');background-attachment: ' | append: backgroundFixed | append: ';background-size: ' | append: section_settings.background_size | append: ';' else assign backgroundImage = '' endif\r\n  assign sectionPadding = 'padding-top: ' | append: section_settings.padding.top | append: 'px;padding-right: ' | append: section_settings.padding.right | append: 'px;padding-bottom: ' | append: section_settings.padding.bottom | append: 'px;padding-left: ' | append: section_settings.padding.left | append: 'px;'\r\n%}\r\n<section data-id=\"{{uniqueId}}\" css=\"{{ backgroundColor }}{{ backgroundImage }}{{ sectionPadding }}\">\r\n  {% if section_settings.background_overlay_enable %}\r\n    <div class=\"pos:absolute ins:0 z:-1\" css=\"background-color: {{ section_settings.background_overlay_color }}\"></div>\r\n  {% endif %}\r\n  \r\n  <shopify>    \r\n    <div class=\"container\">\r\n      <div class=\"row\">\r\n        <div class=\"d:flex fld:column ai:center\">\r\n          <h2 class=\"ta:center mt:85px fz:35px mb:17px ff:font-primary c:color-dark fw:600\">{{content.description_text}}</h2>\r\n          <p class=\"lines-3 w:100% w:700px@sm ta:center fz:15px mb:30px ff:font-secondary c:color-dark fw:400\">\r\n            {{product.description | strip_html}}\r\n          </p>\r\n        </div>\r\n        \r\n        <div class=\"row row-cols-lg-{{ content.column.lg }} row-cols-md-{{ content.column.md }} row-cols-sm-{{ content.column.sm }} row-cols-{{ content.column.xs }}\">\r\n          <div class=\"col d:flex fxw:wrap\">\r\n            <div class=\"w:100% w:50%@sm ta:center d:flex jc:center\">\r\n              <div class=\"w:500px ar:6/5\">\r\n                <img src=\"{{ image_left }}\" alt=\"\">\r\n              </div>\r\n            </div>\r\n            <div class=\"d:flex fld:column jc:center ai:center w:100% w:50%@sm ta:center mt:10px mt:0px@sm\">\r\n              <h5 class=\"fz:pfs(13px,15px) ff:font-primary c:color-dark fw:600 mb:15px\">{{product.title | upcase}}</h5>\r\n              <h2 class=\"fz:pfs(30px,45px) ff:font-primary c:color-dark fw:500 mb:10px\">100% Hand-made</h2>\r\n              <p class=\"lines-3 w:85% fz:pfs(13px,15px) ff:font-secondary c:color-dark fw:400\">{{product.content | strip_html}}</p>\r\n            </div>\r\n          </div>\r\n          <div class=\"col d:flex mt:30px fxw:wrap\">\r\n            <div class=\"d:flex fld:column jc:center ai:center w:100% w:50%@sm ta:center mb:10px mb:0px@sm\">\r\n              <h5 class=\"fz:pfs(13px,15px) ff:font-primary c:color-dark fw:600 mb:15px\">{{product.title | upcase}}</h5>\r\n              <h2 class=\"fz:pfs(30px,45px) ff:font-primary c:color-dark fw:500 mb:10px tt:capitalize\">{{product.vendor }}</h2>\r\n              <p class=\"lines-3 w:85% fz:pfs(13px,15px) ff:font-secondary c:color-dark fw:400 ta:center\">{{product.content | strip_html}}</p>\r\n            </div>\r\n            <div class=\"w:100% w:50%@sm ta:center d:flex jc:center\">\r\n              <div class=\"w:500px ar:6/5\">\r\n                <img src=\"{{image_right}}\" alt=\"\">\r\n              </div>\r\n            </div>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </shopify>\r\n</section>\r\n","schema":{"blocks":[{"id":"id_b342e742-69ff-4184-9e68-90d0347b0add","children":[{"children":false,"type":"switch","label":"Background Fixed","summary":"","name":"background_fixed","id":"id_85d0437e-df03-42c1-a797-8e79e7946f92","disable":false},{"children":"none","type":"select","label":"Background Type","summary":"","name":"background_type","id":"id_ab88080b-27bb-4780-a6d4-9d3597195eb9","disable":false,"options":[{"label":"Image","value":"image","id":"54c1e59e-df5b-45ee-921e-563855166a52"},{"label":"Color","value":"color","id":"429556ca-ddcc-4b76-8118-f1b4f1159f05"},{"label":"None","value":"none","id":"752c1f5a-4539-4983-900e-0ff661b4ca79"}]},{"children":"","type":"image","label":"Background Image","summary":"","name":"background_image","id":"id_cdec0926-1bbb-4ca1-a97e-60b3d349f30a","disable":false,"deps":"section_settings.background_type === \"image\""},{"children":"#fff","type":"color","label":"Background Color","summary":"","name":"background_color","id":"id_73b5b01d-9c5e-4ef4-8465-ee82d252e264","disable":false,"deps":"section_settings.background_type === \"color\""},{"children":"cover","type":"select","label":"Background Size","summary":"","name":"background_size","id":"id_132e16b2-05ab-4ebb-b574-ae3b606a34bd","disable":false,"options":[{"label":"Cover","value":"cover","id":"57f8e46c-f3ba-4388-99ee-09f789de755a"},{"label":"Contain","value":"contain","id":"9abd41fe-17f7-4cc7-8f90-44e58323777c"}]},{"children":false,"type":"switch","label":"Background Overlay Enable","summary":"","name":"background_overlay_enable","id":"id_7be64eae-08e8-4135-827e-8ac8067c794f","disable":false},{"children":"#fff","type":"color","label":"Background Overlay Color","summary":"","name":"background_overlay_color","id":"id_ee4faf20-71c9-4ffa-b61d-42a5dee3804f","disable":false},{"children":{"left":0},"type":"space","label":"Padding","summary":"","name":"padding","id":"id_5b4e8404-c7ef-4ca0-ac14-1404d8bcd0dd","disable":false}],"type":"object","label":"Section Settings","summary":"","name":"section_settings","open":false,"drawer":false,"disable":false},{"id":"id_edba20ae-c4a3-41a6-ac87-10d173e48050","children":[{"children":"Description","type":"text","label":"Description Text","summary":"","name":"description_text","id":"id_bb572a89-d466-4ee3-8b9c-9696b4a7b6c4","disable":false},{"children":{"lg":1,"md":1,"sm":1,"xs":1},"type":"responsive","label":"Column","summary":"","name":"column","id":"id_0345c314-08b4-41ef-9217-c1bcafa0edfd","disable":false,"max":12,"min":1}],"type":"object","label":"Content","summary":"","name":"content","open":false,"drawer":false,"disable":false}],"settings":[{"id":"id_6d1e201a-a899-46a5-96ad-6d1e641b5643","type":"image","children":"","label":"Image Left","summary":"","name":"image_left","disable":false},{"id":"id_8e983c22-abcd-4ef3-8429-9c4a00d498de","type":"image","children":"","label":"Image Right","summary":"","name":"image_right","disable":false}]},"scss":"$container: \"[data-id='#{$uniqueId}']\";","settings":[{"id":"id_b342e742-69ff-4184-9e68-90d0347b0add","children":[{"children":false,"type":"switch","label":"Background Fixed","summary":"","name":"background_fixed","id":"id_85d0437e-df03-42c1-a797-8e79e7946f92","disable":false},{"children":"none","type":"select","label":"Background Type","summary":"","name":"background_type","id":"id_ab88080b-27bb-4780-a6d4-9d3597195eb9","disable":false,"options":[{"label":"Image","value":"image","id":"54c1e59e-df5b-45ee-921e-563855166a52"},{"label":"Color","value":"color","id":"429556ca-ddcc-4b76-8118-f1b4f1159f05"},{"label":"None","value":"none","id":"752c1f5a-4539-4983-900e-0ff661b4ca79"}]},{"children":"","type":"image","label":"Background Image","summary":"","name":"background_image","id":"id_cdec0926-1bbb-4ca1-a97e-60b3d349f30a","disable":false,"deps":"section_settings.background_type === \"image\""},{"children":"#fff","type":"color","label":"Background Color","summary":"","name":"background_color","id":"id_73b5b01d-9c5e-4ef4-8465-ee82d252e264","disable":false,"deps":"section_settings.background_type === \"color\""},{"children":"cover","type":"select","label":"Background Size","summary":"","name":"background_size","id":"id_132e16b2-05ab-4ebb-b574-ae3b606a34bd","disable":false,"options":[{"label":"Cover","value":"cover","id":"57f8e46c-f3ba-4388-99ee-09f789de755a"},{"label":"Contain","value":"contain","id":"9abd41fe-17f7-4cc7-8f90-44e58323777c"}]},{"children":false,"type":"switch","label":"Background Overlay Enable","summary":"","name":"background_overlay_enable","id":"id_7be64eae-08e8-4135-827e-8ac8067c794f","disable":false},{"children":"#fff","type":"color","label":"Background Overlay Color","summary":"","name":"background_overlay_color","id":"id_ee4faf20-71c9-4ffa-b61d-42a5dee3804f","disable":false},{"children":{"left":0},"type":"space","label":"Padding","summary":"","name":"padding","id":"id_5b4e8404-c7ef-4ca0-ac14-1404d8bcd0dd","disable":false}],"type":"object","label":"Section Settings","summary":"","name":"section_settings","open":false,"drawer":false,"disable":false},{"id":"id_edba20ae-c4a3-41a6-ac87-10d173e48050","children":[{"children":"Description","type":"text","label":"Description Text","summary":"","name":"description_text","id":"id_bb572a89-d466-4ee3-8b9c-9696b4a7b6c4","disable":false},{"children":{"lg":1,"md":1,"sm":1,"xs":1},"type":"responsive","label":"Column","summary":"","name":"column","id":"id_0345c314-08b4-41ef-9217-c1bcafa0edfd","disable":false,"max":12,"min":1}],"type":"object","label":"Content","summary":"","name":"content","open":false,"drawer":false,"disable":false},{"id":"id_6d1e201a-a899-46a5-96ad-6d1e641b5643","type":"image","children":"https://images.pexels.com/photos/2766335/pexels-photo-2766335.jpeg?auto=compress&cs=tinysrgb&w=1600","label":"Image Left","summary":"","name":"image_left","disable":false},{"id":"id_8e983c22-abcd-4ef3-8429-9c4a00d498de","type":"image","children":"https://shopify-theme-yasmina.netlify.app/img/pageproduct2.png","label":"Image Right","summary":"","name":"image_right","disable":false}]},"scope":"publish","pageTypes":["product"],"sample":true,"enable":true,"userId":1,"synced":false,"category":{"commandId":"629879c0b57c6c4c8378755a","name":"products"},"modifiedDateTimestamp":1655547547759,"changelog":{"content":"","version":"1.0","versionId":""}}
+{
+  "id": "id_70646a46-a4bb-486d-ae6a-9152dcd23d5f",
+  "commandId": "62aa93a4d316833cf19c25c2",
+  "label": "Product Detail Description",
+  "image": {
+    "src": "",
+    "width": 0,
+    "height": 0
+  },
+  "addonIds": [],
+  "megaMenuId": "",
+  "currentVersion": "",
+  "versionId": "",
+  "data": {
+    "js": "",
+    "liquid": "{% liquid\r\n  if section_settings.background_fixed assign backgroundFixed = 'fixed' else assign backgroundFixed = 'scroll' endif\r\n  if section_settings.background_type == 'color' assign backgroundColor = 'background-color: ' | append: section_settings.background_color | append: ';' else assign backgroundColor = '' endif\r\n  if section_settings.background_type == 'image' assign backgroundImage = 'background-image: url(' | append: section_settings.background_image | append:\r\n  ');background-attachment: ' | append: backgroundFixed | append: ';background-size: ' | append: section_settings.background_size | append: ';' else assign backgroundImage = '' endif\r\n  assign sectionPadding = 'padding-top: ' | append: section_settings.padding.top | append: 'px;padding-right: ' | append: section_settings.padding.right | append: 'px;padding-bottom: ' | append: section_settings.padding.bottom | append: 'px;padding-left: ' | append: section_settings.padding.left | append: 'px;'\r\n%}\r\n<section data-id=\"{{uniqueId}}\" css=\"{{ backgroundColor }}{{ backgroundImage }}{{ sectionPadding }}\">\r\n  {% if section_settings.background_overlay_enable %}\r\n    <div class=\"pos:absolute ins:0 z:-1\" css=\"background-color: {{ section_settings.background_overlay_color }}\"></div>\r\n  {% endif %}\r\n  \r\n  <shopify>    \r\n    <div class=\"container\">\r\n      <div class=\"row\">\r\n        <div class=\"d:flex fld:column ai:center\">\r\n          <h2 class=\"ta:center mt:85px fz:35px mb:17px ff:font-primary c:color-dark fw:600\">{{content.description_text}}</h2>\r\n          <p class=\"lines-3 w:100% w:700px@sm ta:center fz:15px mb:30px ff:font-secondary c:color-dark fw:400\">\r\n            {{product.description | strip_html}}\r\n          </p>\r\n        </div>\r\n        \r\n        <div class=\"row row-cols-lg-{{ content.column.lg }} row-cols-md-{{ content.column.md }} row-cols-sm-{{ content.column.sm }} row-cols-{{ content.column.xs }}\">\r\n          <div class=\"col d:flex fxw:wrap\">\r\n            <div class=\"w:100% w:50%@sm ta:center d:flex jc:center\">\r\n              <div class=\"w:500px ar:6/5\">\r\n                <img src=\"{{ image_left }}\" alt=\"\">\r\n              </div>\r\n            </div>\r\n            <div class=\"d:flex fld:column jc:center ai:center w:100% w:50%@sm ta:center mt:10px mt:0px@sm\">\r\n              <h5 class=\"fz:pfs(13px,15px) ff:font-primary c:color-dark fw:600 mb:15px\">{{product.title | upcase}}</h5>\r\n              <h2 class=\"fz:pfs(30px,45px) ff:font-primary c:color-dark fw:500 mb:10px\">100% Hand-made</h2>\r\n              <p class=\"lines-3 w:85% fz:pfs(13px,15px) ff:font-secondary c:color-dark fw:400\">{{product.content | strip_html}}</p>\r\n            </div>\r\n          </div>\r\n          <div class=\"col d:flex mt:30px fxw:wrap\">\r\n            <div class=\"d:flex fld:column jc:center ai:center w:100% w:50%@sm ta:center mb:10px mb:0px@sm\">\r\n              <h5 class=\"fz:pfs(13px,15px) ff:font-primary c:color-dark fw:600 mb:15px\">{{product.title | upcase}}</h5>\r\n              <h2 class=\"fz:pfs(30px,45px) ff:font-primary c:color-dark fw:500 mb:10px tt:capitalize\">{{product.vendor }}</h2>\r\n              <p class=\"lines-3 w:85% fz:pfs(13px,15px) ff:font-secondary c:color-dark fw:400 ta:center\">{{product.content | strip_html}}</p>\r\n            </div>\r\n            <div class=\"w:100% w:50%@sm ta:center d:flex jc:center\">\r\n              <div class=\"w:500px ar:6/5\">\r\n                <img src=\"{{image_right}}\" alt=\"\">\r\n              </div>\r\n            </div>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </shopify>\r\n</section>\r\n",
+    "schema": {
+      "blocks": [{
+        "id": "id_b342e742-69ff-4184-9e68-90d0347b0add",
+        "children": [{
+          "children": false,
+          "type": "switch",
+          "label": "Background Fixed",
+          "summary": "",
+          "name": "background_fixed",
+          "id": "id_85d0437e-df03-42c1-a797-8e79e7946f92",
+          "disable": false
+        }, {
+          "children": "none",
+          "type": "select",
+          "label": "Background Type",
+          "summary": "",
+          "name": "background_type",
+          "id": "id_ab88080b-27bb-4780-a6d4-9d3597195eb9",
+          "disable": false,
+          "options": [{
+            "label": "Image",
+            "value": "image",
+            "id": "54c1e59e-df5b-45ee-921e-563855166a52"
+          }, {
+            "label": "Color",
+            "value": "color",
+            "id": "429556ca-ddcc-4b76-8118-f1b4f1159f05"
+          }, {
+            "label": "None",
+            "value": "none",
+            "id": "752c1f5a-4539-4983-900e-0ff661b4ca79"
+          }]
+        }, {
+          "children": "",
+          "type": "image",
+          "label": "Background Image",
+          "summary": "",
+          "name": "background_image",
+          "id": "id_cdec0926-1bbb-4ca1-a97e-60b3d349f30a",
+          "disable": false,
+          "deps": "section_settings.background_type === \"image\""
+        }, {
+          "children": "#fff",
+          "type": "color",
+          "label": "Background Color",
+          "summary": "",
+          "name": "background_color",
+          "id": "id_73b5b01d-9c5e-4ef4-8465-ee82d252e264",
+          "disable": false,
+          "deps": "section_settings.background_type === \"color\""
+        }, {
+          "children": "cover",
+          "type": "select",
+          "label": "Background Size",
+          "summary": "",
+          "name": "background_size",
+          "id": "id_132e16b2-05ab-4ebb-b574-ae3b606a34bd",
+          "disable": false,
+          "options": [{
+            "label": "Cover",
+            "value": "cover",
+            "id": "57f8e46c-f3ba-4388-99ee-09f789de755a"
+          }, {
+            "label": "Contain",
+            "value": "contain",
+            "id": "9abd41fe-17f7-4cc7-8f90-44e58323777c"
+          }]
+        }, {
+          "children": false,
+          "type": "switch",
+          "label": "Background Overlay Enable",
+          "summary": "",
+          "name": "background_overlay_enable",
+          "id": "id_7be64eae-08e8-4135-827e-8ac8067c794f",
+          "disable": false
+        }, {
+          "children": "#fff",
+          "type": "color",
+          "label": "Background Overlay Color",
+          "summary": "",
+          "name": "background_overlay_color",
+          "id": "id_ee4faf20-71c9-4ffa-b61d-42a5dee3804f",
+          "disable": false
+        }, {
+          "children": {
+            "left": 0
+          },
+          "type": "space",
+          "label": "Padding",
+          "summary": "",
+          "name": "padding",
+          "id": "id_5b4e8404-c7ef-4ca0-ac14-1404d8bcd0dd",
+          "disable": false
+        }],
+        "type": "object",
+        "label": "Section Settings",
+        "summary": "",
+        "name": "section_settings",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_edba20ae-c4a3-41a6-ac87-10d173e48050",
+        "children": [{
+          "children": "Description",
+          "type": "text",
+          "label": "Description Text",
+          "summary": "",
+          "name": "description_text",
+          "id": "id_bb572a89-d466-4ee3-8b9c-9696b4a7b6c4",
+          "disable": false
+        }, {
+          "children": {
+            "lg": 1,
+            "md": 1,
+            "sm": 1,
+            "xs": 1
+          },
+          "type": "responsive",
+          "label": "Column",
+          "summary": "",
+          "name": "column",
+          "id": "id_0345c314-08b4-41ef-9217-c1bcafa0edfd",
+          "disable": false,
+          "max": 12,
+          "min": 1
+        }],
+        "type": "object",
+        "label": "Content",
+        "summary": "",
+        "name": "content",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }],
+      "settings": [{
+        "id": "id_6d1e201a-a899-46a5-96ad-6d1e641b5643",
+        "type": "image",
+        "children": "",
+        "label": "Image Left",
+        "summary": "",
+        "name": "image_left",
+        "disable": false
+      }, {
+        "id": "id_8e983c22-abcd-4ef3-8429-9c4a00d498de",
+        "type": "image",
+        "children": "",
+        "label": "Image Right",
+        "summary": "",
+        "name": "image_right",
+        "disable": false
+      }]
+    },
+    "scss": "$container: \"[data-id='#{$uniqueId}']\";",
+    "settings": [{
+      "id": "id_b342e742-69ff-4184-9e68-90d0347b0add",
+      "children": [{
+        "children": false,
+        "type": "switch",
+        "label": "Background Fixed",
+        "summary": "",
+        "name": "background_fixed",
+        "id": "id_85d0437e-df03-42c1-a797-8e79e7946f92",
+        "disable": false
+      }, {
+        "children": "none",
+        "type": "select",
+        "label": "Background Type",
+        "summary": "",
+        "name": "background_type",
+        "id": "id_ab88080b-27bb-4780-a6d4-9d3597195eb9",
+        "disable": false,
+        "options": [{
+          "label": "Image",
+          "value": "image",
+          "id": "54c1e59e-df5b-45ee-921e-563855166a52"
+        }, {
+          "label": "Color",
+          "value": "color",
+          "id": "429556ca-ddcc-4b76-8118-f1b4f1159f05"
+        }, {
+          "label": "None",
+          "value": "none",
+          "id": "752c1f5a-4539-4983-900e-0ff661b4ca79"
+        }]
+      }, {
+        "children": "",
+        "type": "image",
+        "label": "Background Image",
+        "summary": "",
+        "name": "background_image",
+        "id": "id_cdec0926-1bbb-4ca1-a97e-60b3d349f30a",
+        "disable": false,
+        "deps": "section_settings.background_type === \"image\""
+      }, {
+        "children": "#fff",
+        "type": "color",
+        "label": "Background Color",
+        "summary": "",
+        "name": "background_color",
+        "id": "id_73b5b01d-9c5e-4ef4-8465-ee82d252e264",
+        "disable": false,
+        "deps": "section_settings.background_type === \"color\""
+      }, {
+        "children": "cover",
+        "type": "select",
+        "label": "Background Size",
+        "summary": "",
+        "name": "background_size",
+        "id": "id_132e16b2-05ab-4ebb-b574-ae3b606a34bd",
+        "disable": false,
+        "options": [{
+          "label": "Cover",
+          "value": "cover",
+          "id": "57f8e46c-f3ba-4388-99ee-09f789de755a"
+        }, {
+          "label": "Contain",
+          "value": "contain",
+          "id": "9abd41fe-17f7-4cc7-8f90-44e58323777c"
+        }]
+      }, {
+        "children": false,
+        "type": "switch",
+        "label": "Background Overlay Enable",
+        "summary": "",
+        "name": "background_overlay_enable",
+        "id": "id_7be64eae-08e8-4135-827e-8ac8067c794f",
+        "disable": false
+      }, {
+        "children": "#fff",
+        "type": "color",
+        "label": "Background Overlay Color",
+        "summary": "",
+        "name": "background_overlay_color",
+        "id": "id_ee4faf20-71c9-4ffa-b61d-42a5dee3804f",
+        "disable": false
+      }, {
+        "children": {
+          "left": 0
+        },
+        "type": "space",
+        "label": "Padding",
+        "summary": "",
+        "name": "padding",
+        "id": "id_5b4e8404-c7ef-4ca0-ac14-1404d8bcd0dd",
+        "disable": false
+      }],
+      "type": "object",
+      "label": "Section Settings",
+      "summary": "",
+      "name": "section_settings",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_edba20ae-c4a3-41a6-ac87-10d173e48050",
+      "children": [{
+        "children": "Description",
+        "type": "text",
+        "label": "Description Text",
+        "summary": "",
+        "name": "description_text",
+        "id": "id_bb572a89-d466-4ee3-8b9c-9696b4a7b6c4",
+        "disable": false
+      }, {
+        "children": {
+          "lg": 1,
+          "md": 1,
+          "sm": 1,
+          "xs": 1
+        },
+        "type": "responsive",
+        "label": "Column",
+        "summary": "",
+        "name": "column",
+        "id": "id_0345c314-08b4-41ef-9217-c1bcafa0edfd",
+        "disable": false,
+        "max": 12,
+        "min": 1
+      }],
+      "type": "object",
+      "label": "Content",
+      "summary": "",
+      "name": "content",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_6d1e201a-a899-46a5-96ad-6d1e641b5643",
+      "type": "image",
+      "children": "https://images.pexels.com/photos/2766335/pexels-photo-2766335.jpeg?auto=compress&cs=tinysrgb&w=1600",
+      "label": "Image Left",
+      "summary": "",
+      "name": "image_left",
+      "disable": false
+    }, {
+      "id": "id_8e983c22-abcd-4ef3-8429-9c4a00d498de",
+      "type": "image",
+      "children": "https://shopify-theme-yasmina.netlify.app/img/pageproduct2.png",
+      "label": "Image Right",
+      "summary": "",
+      "name": "image_right",
+      "disable": false
+    }]
+  },
+  "scope": "publish",
+  "pageTypes": ["product"],
+  "sample": true,
+  "enable": true,
+  "userId": 1,
+  "synced": false,
+  "category": {
+    "commandId": "",
+    "name": ""
+  },
+  "modifiedDateTimestamp": 1655547547759,
+  "changelog": {
+    "content": "",
+    "version": "",
+    "versionId": ""
+  }
+}

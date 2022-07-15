@@ -1,1 +1,468 @@
-{"id":"id_5858b8d8-9f40-418e-8676-d82d5072ee55","commandId":"62aa9f62d316833cf19c25c6","label":"Product Detail Review","image":{"src":"","width":0,"height":0},"addonIds":[],"currentVersion":"1","versionId":"d618f3b5-4541-4869-ad9f-ec4b8fbebd37","data":{"js":"","liquid":"{% liquid\r\n  if section_settings.background_fixed assign backgroundFixed = 'fixed' else assign backgroundFixed = 'scroll' endif\r\n  if section_settings.background_type == 'color' assign backgroundColor = 'background-color: ' | append: section_settings.background_color | append: ';' else assign backgroundColor = '' endif\r\n  if section_settings.background_type == 'image' assign backgroundImage = 'background-image: url(' | append: section_settings.background_image | append:\r\n  ');background-attachment: ' | append: backgroundFixed | append: ';background-size: ' | append: section_settings.background_size | append: ';' else assign backgroundImage = '' endif\r\n  assign sectionPadding = 'padding-top: ' | append: section_settings.padding.top | append: 'px;padding-right: ' | append: section_settings.padding.right | append: 'px;padding-bottom: ' | append: section_settings.padding.bottom | append: 'px;padding-left: ' | append: section_settings.padding.left | append: 'px;'\r\n%}\r\n\r\n\r\n<section data-id=\"{{uniqueId}}\" css=\"{{ backgroundColor }}{{ backgroundImage }}{{ sectionPadding }}\">\r\n  {% if section_settings.background_overlay_enable %}\r\n    <div class=\"pos:absolute ins:0 z:-1\" css=\"background-color: {{ section_settings.background_overlay_color }}\"></div>\r\n  {% endif %}\r\n  <div class=\"container\">\r\n    {% assign comment = blogs[content.collection] %}\r\n    <div class=\"row\">\r\n      <h2 class=\"ta:center fz:35px mt:90px fw:600 c:color-dark\">Review({{comment.articles[0].comments.length}})</h2>\r\n      <div class=\"row row-cols-lg-{{ content.column.lg }} row-cols-md-{{ content.column.md }} row-cols-sm-{{ content.column.sm }} row-cols-{{ content.column.xs }}\">\r\n        <shopify>\r\n          <div class=\"col pr:0px pr:100px@sm\">\r\n            <h4 class=\"fz:20px fw:500 c:color-dark\">{{comment.articles[0].comments.length}} REVIEW FOR TRAIL RUNNING SHOE</h4>\r\n            {% paginate comment.articles[0].comments by 3 %}\r\n              {% for item in comment.articles[0].comments %}\r\n                <div class=\"d:flex mt:20px mb:5px\">\r\n                  addons review để hiển thị ảnh\r\n                  <img class=\"w:60px h:60px bdrs:30px\" src=\"{{product.featured_image.src}}\" alt=\"\">\r\n                  <div class=\"ml:10px w:87%\">\r\n                    <h5 class=\"fz:15px fw:500 c:color-dark\"><a class=\"fz:15px fw:500 c:color-dark c:color-gray9|h!\" href=\"#\">{{item.author}}</a><span class=\"fz:12px c:color-gray3 fw:400\"> - {{item.updated_at | date: \"%b %d, %Y\"}}</span></h5>\r\n                    <p class=\"fz:14px c:color-gray5 ff:font-secondary fw:400\">{{item.content}}</p>\r\n                    <div class=\"mt:3px\">\r\n                      {% if content.review_comment_rating_enable %}\r\n                        {% case content.review_comment_rating_type %}\r\n                          {% when 'product_reviews' %}\r\n                            <rivio-review-badge item=\"product\" />\r\n                            <span class=\"shopify-product-reviews-badge\" data-id=\"{{ product.id }}\"></span>\r\n                          {% when 'rivyo_reviews' %}\r\n                            <rivio-review-badge item=\"product\" />\r\n                          {% when 'loox_reviews' %}\r\n                            <loox-review-badge item=\"product\" />\r\n                          {% when 'ali_reviews' %}\r\n                            <ali-review-badge item=\"product\" />\r\n                          {% when 'stamped_reviews' %}\r\n                            <stamped-review-badge item=\"product\" />\r\n                          {% when 'judge_me_reviews' %}\r\n                            <judge-me-review-badge item=\"product\" />\r\n                          {% when 'other' %}\r\n                            {% if builderMode %}\r\n                              <review-badge item=\"product\" />\r\n                            {% else %}\r\n                              {{ content.review_app_html }}\r\n                            {% endif %}\r\n                            {% else %}\r\n                        {% endcase %}\r\n                      {% endif %}\r\n                    </div>\r\n                  </div>\r\n                </div>\r\n              {% endfor %}\r\n              {% if paginate.pages > 1 %}\r\n                <nav role=\"navigation\">\r\n                  <ol class=\"d:flex ls:none\">\r\n                    {% if paginate.previous %}\r\n                      <li>\r\n                        <a class=\"d:flex ai:center jc:center w:50px h:50px mr:5px ta:center cur:pointer ff:font-primary fz:15px cur:pointer cur:pointer c:color-gray9 bgc:color-gray9|h! c:color-light|h! bd:1px_solid_color-gray2\" aria-label=\"Previous\" href=\"{{ paginate.previous.url }}\">\r\n                          <i class=\"far fa-arrow-left\"></i>\r\n                        </a>\r\n                      </li>\r\n                    {% endif %}\r\n                    {% for part in paginate.parts %}\r\n                      {% if part.is_link %}\r\n                        <li>\r\n                          <a class=\"d:flex ai:center jc:center w:50px h:50px mr:5px ta:center cur:pointer ff:font-primary fz:15px cur:pointer cur:pointer c:color-gray9 bgc:color-gray9|h! c:color-light|h! bd:1px_solid_color-gray2\" aria-label=\"Page {{ part.title }}\" href=\"{{ part.url }}\">\r\n                            {{ part.title }}\r\n                          </a>\r\n                        </li>\r\n                      {% else %}\r\n                        {% if part.title == paginate.current_page %}\r\n                          <li>\r\n                            <span class=\"d:flex ai:center jc:center w:50px h:50px mr:5px ta:center cur:pointer ff:font-primary fz:15px cur:pointer cur:pointer c:color-light! bgc:color-gray9 bgc:color-gray9|h! c:color-light|h!\" aria-current=\"page\" aria-label=\"Page {{ part.title }}\">\r\n                              {{ part.title }}\r\n                            </span>\r\n                          </li>\r\n                        {% else %}\r\n                          <li>\r\n                            <span class=\"d:flex ai:center jc:center w:50px h:50px mr:5px ta:center cur:pointer ff:font-primary fz:15px cur:pointer cur:pointer c:color-gray9 bgc:color-gray9|h! c:color-light|h! bd:1px_solid_color-gray2\" aria-label=\"Page {{ part.title }}\">\r\n                              {{ part.title }}\r\n                            </span>\r\n                          </li>\r\n                        {% endif %}\r\n                      {% endif %}\r\n                    {% endfor %}\r\n\r\n                    {% if paginate.next %}\r\n                      <li>\r\n                        <a class=\"d:flex ai:center jc:center w:50px h:50px mr:5px ta:center cur:pointer ff:font-primary fz:15px cur:pointer cur:pointer c:color-gray9 bgc:color-gray9|h! c:color-light|h! bd:1px_solid_color-gray2\" aria-label=\"Next\" href=\"{{ paginate.next.url }}\">\r\n                          <i class=\"far fa-arrow-right\"></i>\r\n                        </a>\r\n                      </li>\r\n                    {% endif %}\r\n                  </ol>\r\n                </nav>\r\n              {% endif %}\r\n            {% endpaginate %}\r\n\r\n          </div>\r\n        </shopify>\r\n        <div class=\"col\">\r\n          <h3 class=\"fz:20px fw:500\">{{content.review_title_text}}</h2>\r\n          <shopify>\r\n            <form action=\"\">\r\n              <h3 class=\"fz:15px! mt:20px fw:500 c:color-dark ff:font-primary\">{{content.review_name_text}}</h2>\r\n              <input class=\"bgc:#F2F2F7! c:color-gray4 bd:none! w:641px h:50px bdrs:0px! fz:14px fw:400 fz:14px||placeholder fw:400||placeholder c:color-gray4||placeholder ff:font-primary||placeholder\" type=\"text\" name=\"review_name\" placeholder=\"Enter your name\">\r\n              <h2 class=\"fz:15px! mt:20px fw:500 c:color-dark ff:font-primary\">{{content.review_email_text}}</h2>\r\n              <input class=\"bgc:#F2F2F7! c:#929292 bd:none! w:641px h:50px bdrs:0px! fz:14px fz:14px||placeholder fw:400||placeholder c:color-gray4||placeholder ff:font-primary||placeholder\" type=\"text\" name=\"review_email\" placeholder=\"wiloke@example.com\">\r\n              <h2 class=\"fz:15px! mt:20px fw:500 c:color-dark ff:font-primary\">{{content.review_rating_text}}</h2>\r\n              <div class=\"mt:3px\">\r\n                <i class=\"fas fa-star c:#C4C4C4\"></i>\r\n                <i class=\"fas fa-star c:#C4C4C4\"></i>\r\n                <i class=\"fas fa-star c:#C4C4C4\"></i>\r\n                <i class=\"fas fa-star c:#C4C4C4\"></i>\r\n                <i class=\"fas fa-star c:#C4C4C4\"></i>\r\n              </div>\r\n              <h2 class=\"fz:15px! mt:20px fw:500 c:color-dark ff:font-primary\">{{content.review_body_text}}</h2>\r\n              <textarea class=\"bgc:#F2F2F7! c:#929292 bd:none! w:100% h:119px bdrs:0px! ff:font-primary fz:14px fz:14px||placeholder fw:400||placeholder c:color-gray4||placeholder ff:font-primary||placeholder\" name=\"review_body\" id=\"review_body\" placeholder=\"Write your comments here\"></textarea>\r\n              <button type=\"submit\" class=\"maw:236px h:52px mt:30px ml:0px bdrs:0px! fw:500 fz:15px c:color-light! bgc:color-dark! bd:1px_solid_color-dark ff:font-primary c:color-light|h! bgc:color-dark|h! bd:1px_solid_color-dark|h\">{{content.button_review_submit_text}}</button><br/>\r\n              <input class=\"fl:left mt:10px ff:font-primary bd:1px_solid_color-gray4\" type=\"checkbox\"> <p class=\"fz:11px fl:left ml:5px mt:10px ff:font-primary fw:400 c:color-gray4\">{{content.review_check_text}}</p>\r\n            </form>\r\n          </shopify>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n","schema":{"blocks":[{"id":"id_1546e148-35c9-4bcb-991b-7d4935287033","children":[{"children":false,"type":"switch","label":"Background Fixed","summary":"","name":"background_fixed","id":"id_2c21f039-c203-4e75-b81a-d1a26753116d","disable":false},{"children":"none","type":"select","label":"Background Type","summary":"","name":"background_type","id":"id_27b5dc69-5be6-42c3-8ee2-92270b085c0e","disable":false,"options":[{"label":"Image","value":"image","id":"3930effc-5279-4f70-ad10-f0f40dded4e1"},{"label":"Color","value":"color","id":"5a04f05c-1b12-47a6-b192-36fd40b2f243"},{"label":"None","value":"none","id":"293dea1d-a52d-46be-9cf4-8b22ec479fbe"}]},{"children":"","type":"image","label":"Background Image","summary":"","name":"background_image","id":"id_1e312378-c4d8-490a-8daa-9bc80dab112d","disable":false,"deps":"section_settings.background_type === \"image\""},{"children":"#fff","type":"color","label":"Background Color","summary":"","name":"background_color","id":"id_be5465ea-ae32-402b-b868-71525cfc1165","disable":false,"deps":"section_settings.background_type === \"color\""},{"children":"cover","type":"select","label":"Background Size","summary":"","name":"background_size","id":"id_e3b3fcaa-5c26-448c-98e6-bf8d789ec6bb","disable":false,"options":[{"label":"Cover","value":"cover","id":"1df34a9c-1eba-4deb-a169-0bc7f8ee3f51"},{"label":"Contain","value":"contain","id":"b5e93ef1-6378-42df-a8b5-c9d27d4b9b83"}]},{"children":false,"type":"switch","label":"Background Overlay Enable","summary":"","name":"background_overlay_enable","id":"id_f57b0ea5-a489-42ac-8bb7-95fb060dc459","disable":false},{"children":"#fff","type":"color","label":"Background Overlay Color","summary":"","name":"background_overlay_color","id":"id_1974f5f7-ef5c-471c-9549-f1d9125e18ae","disable":false},{"children":{"left":0},"type":"space","label":"Padding","summary":"","name":"padding","id":"id_3edbaf26-ede9-46cd-b0ca-69297f655be6","disable":false}],"type":"object","label":"Section Settings","summary":"","name":"section_settings","open":false,"drawer":false,"disable":false},{"id":"id_88177590-f9af-4644-95ae-a2fec2402447","children":[{"children":"Collection","type":"text","label":"Collection","summary":"","name":"collection","id":"id_365e4d6a-33eb-41fd-9da6-984708518973","disable":false},{"children":"WRITE REVIEW","type":"text","label":"Review Title Text","summary":"","name":"review_title_text","id":"id_971dfdbf-9162-4e11-8d09-7817102b23b8","disable":false},{"children":"NAME","type":"text","label":"Review Name Text","summary":"","name":"review_name_text","id":"id_9da73b97-1932-4a92-8a4b-44cd3487314b","disable":false},{"children":"EMAIL","type":"text","label":"Review Email Text","summary":"","name":"review_email_text","id":"id_deef1b3d-be3f-44f8-a21b-08ccebd51c5d","disable":false},{"children":"RATING","type":"text","label":"Review Rating Text","summary":"","name":"review_rating_text","id":"id_f9aaa212-64f3-45fb-a705-decd07a6c8c6","disable":false},{"children":"BODY REVIEW(1500)","type":"text","label":"Review Body Text","summary":"","name":"review_body_text","id":"id_ab886f94-9bf4-4c78-ab25-581a968fbf62","disable":false},{"children":"Write your comments here","type":"text","label":"Review Check Text","summary":"","name":"review_check_text","id":"id_d41b7ba5-e538-45cc-9d50-116a5bf9f40f","disable":false},{"children":"SUBMIT REVIEW","type":"text","label":"Button Review Submit Text","summary":"","name":"button_review_submit_text","id":"id_368090c2-ca2b-42f8-bcf1-ab09f1b25143","disable":false},{"children":"Sample Quote","type":"text","label":"Sample Quote Title","summary":"","name":"sample_quote_title","id":"id_6baf1143-5bcb-4df3-a61c-0c7b4f66344c","disable":false},{"children":"At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores <br/>et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est <br/>laborum et dolorum fuga.","type":"textarea","label":"Sample Quote Description","summary":"","name":"sample_quote_description","id":"id_f4f51230-cfc0-4fb8-bf9d-639c5d74efaa","disable":false},{"children":{"lg":2,"md":2,"sm":1,"xs":1},"type":"responsive","label":"Column","summary":"","name":"column","id":"id_a6060dda-716a-4996-806a-c7a9a8cf4196","disable":false,"max":12,"min":1}],"type":"object","label":"Content","summary":"","name":"content","open":false,"drawer":false,"disable":false}],"settings":[{"id":"id_4551e80d-b57c-482e-a963-c8fbc4d98dd4","type":"image","children":"","label":"Image Form","summary":"","name":"image_form","disable":false}]},"scss":"$container: \"[data-id='#{$uniqueId}']\";","settings":[{"id":"id_1546e148-35c9-4bcb-991b-7d4935287033","children":[{"children":false,"type":"switch","label":"Background Fixed","summary":"","name":"background_fixed","id":"id_2c21f039-c203-4e75-b81a-d1a26753116d","disable":false},{"children":"none","type":"select","label":"Background Type","summary":"","name":"background_type","id":"id_27b5dc69-5be6-42c3-8ee2-92270b085c0e","disable":false,"options":[{"label":"Image","value":"image","id":"3930effc-5279-4f70-ad10-f0f40dded4e1"},{"label":"Color","value":"color","id":"5a04f05c-1b12-47a6-b192-36fd40b2f243"},{"label":"None","value":"none","id":"293dea1d-a52d-46be-9cf4-8b22ec479fbe"}]},{"children":"","type":"image","label":"Background Image","summary":"","name":"background_image","id":"id_1e312378-c4d8-490a-8daa-9bc80dab112d","disable":false,"deps":"section_settings.background_type === \"image\""},{"children":"#fff","type":"color","label":"Background Color","summary":"","name":"background_color","id":"id_be5465ea-ae32-402b-b868-71525cfc1165","disable":false,"deps":"section_settings.background_type === \"color\""},{"children":"cover","type":"select","label":"Background Size","summary":"","name":"background_size","id":"id_e3b3fcaa-5c26-448c-98e6-bf8d789ec6bb","disable":false,"options":[{"label":"Cover","value":"cover","id":"1df34a9c-1eba-4deb-a169-0bc7f8ee3f51"},{"label":"Contain","value":"contain","id":"b5e93ef1-6378-42df-a8b5-c9d27d4b9b83"}]},{"children":false,"type":"switch","label":"Background Overlay Enable","summary":"","name":"background_overlay_enable","id":"id_f57b0ea5-a489-42ac-8bb7-95fb060dc459","disable":false},{"children":"#fff","type":"color","label":"Background Overlay Color","summary":"","name":"background_overlay_color","id":"id_1974f5f7-ef5c-471c-9549-f1d9125e18ae","disable":false},{"children":{"left":0},"type":"space","label":"Padding","summary":"","name":"padding","id":"id_3edbaf26-ede9-46cd-b0ca-69297f655be6","disable":false}],"type":"object","label":"Section Settings","summary":"","name":"section_settings","open":false,"drawer":false,"disable":false},{"id":"id_88177590-f9af-4644-95ae-a2fec2402447","children":[{"children":"Collection","type":"text","label":"Collection","summary":"","name":"collection","id":"id_365e4d6a-33eb-41fd-9da6-984708518973","disable":false},{"children":"WRITE REVIEW","type":"text","label":"Review Title Text","summary":"","name":"review_title_text","id":"id_971dfdbf-9162-4e11-8d09-7817102b23b8","disable":false},{"children":"NAME","type":"text","label":"Review Name Text","summary":"","name":"review_name_text","id":"id_9da73b97-1932-4a92-8a4b-44cd3487314b","disable":false},{"children":"EMAIL","type":"text","label":"Review Email Text","summary":"","name":"review_email_text","id":"id_deef1b3d-be3f-44f8-a21b-08ccebd51c5d","disable":false},{"children":"RATING","type":"text","label":"Review Rating Text","summary":"","name":"review_rating_text","id":"id_f9aaa212-64f3-45fb-a705-decd07a6c8c6","disable":false},{"children":"BODY REVIEW(1500)","type":"text","label":"Review Body Text","summary":"","name":"review_body_text","id":"id_ab886f94-9bf4-4c78-ab25-581a968fbf62","disable":false},{"children":"Write your comments here","type":"text","label":"Review Check Text","summary":"","name":"review_check_text","id":"id_d41b7ba5-e538-45cc-9d50-116a5bf9f40f","disable":false},{"children":"SUBMIT REVIEW","type":"text","label":"Button Review Submit Text","summary":"","name":"button_review_submit_text","id":"id_368090c2-ca2b-42f8-bcf1-ab09f1b25143","disable":false},{"children":"Sample Quote","type":"text","label":"Sample Quote Title","summary":"","name":"sample_quote_title","id":"id_6baf1143-5bcb-4df3-a61c-0c7b4f66344c","disable":false},{"children":"At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores <br/>et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est <br/>laborum et dolorum fuga.","type":"textarea","label":"Sample Quote Description","summary":"","name":"sample_quote_description","id":"id_f4f51230-cfc0-4fb8-bf9d-639c5d74efaa","disable":false},{"children":{"lg":2,"md":2,"sm":1,"xs":1},"type":"responsive","label":"Column","summary":"","name":"column","id":"id_a6060dda-716a-4996-806a-c7a9a8cf4196","disable":false,"max":12,"min":1}],"type":"object","label":"Content","summary":"","name":"content","open":false,"drawer":false,"disable":false},{"id":"id_4551e80d-b57c-482e-a963-c8fbc4d98dd4","type":"image","children":"https://app.vedabuilder.com/api/v1/command/medias/files/2022/06/hzwkxfijnb.webp","label":"Image Form","summary":"","name":"image_form","disable":false}]},"scope":"private","pageTypes":["product"],"sample":true,"enable":true,"userId":1,"synced":false,"category":{"commandId":"629879c0b57c6c4c8378755a","name":"products"},"createdDateTimestamp":1655349090036,"modifiedDateTimestamp":1655349090036,"parentCommandId":"62aa9f62d316833cf19c25c6","changelog":{"version":"1","versionId":"6910cf7c-fa92-4bf2-b8f4-7fcc9c30dbc1","content":""},"categoryId":"products"}
+{
+  "id": "id_5858b8d8-9f40-418e-8676-d82d5072ee55",
+  "commandId": "62aa9f62d316833cf19c25c6",
+  "label": "Product Detail Review",
+  "image": {
+    "src": "",
+    "width": 0,
+    "height": 0
+  },
+  "addonIds": [],
+  "currentVersion": "",
+  "versionId": "",
+  "data": {
+    "js": "",
+    "liquid": "{% liquid\r\n  if section_settings.background_fixed assign backgroundFixed = 'fixed' else assign backgroundFixed = 'scroll' endif\r\n  if section_settings.background_type == 'color' assign backgroundColor = 'background-color: ' | append: section_settings.background_color | append: ';' else assign backgroundColor = '' endif\r\n  if section_settings.background_type == 'image' assign backgroundImage = 'background-image: url(' | append: section_settings.background_image | append:\r\n  ');background-attachment: ' | append: backgroundFixed | append: ';background-size: ' | append: section_settings.background_size | append: ';' else assign backgroundImage = '' endif\r\n  assign sectionPadding = 'padding-top: ' | append: section_settings.padding.top | append: 'px;padding-right: ' | append: section_settings.padding.right | append: 'px;padding-bottom: ' | append: section_settings.padding.bottom | append: 'px;padding-left: ' | append: section_settings.padding.left | append: 'px;'\r\n%}\r\n\r\n\r\n<section data-id=\"{{uniqueId}}\" css=\"{{ backgroundColor }}{{ backgroundImage }}{{ sectionPadding }}\">\r\n  {% if section_settings.background_overlay_enable %}\r\n    <div class=\"pos:absolute ins:0 z:-1\" css=\"background-color: {{ section_settings.background_overlay_color }}\"></div>\r\n  {% endif %}\r\n  <div class=\"container\">\r\n    {% assign comment = blogs[content.collection] %}\r\n    <div class=\"row\">\r\n      <h2 class=\"ta:center fz:35px mt:90px fw:600 c:color-dark\">Review({{comment.articles[0].comments.length}})</h2>\r\n      <div class=\"row row-cols-lg-{{ content.column.lg }} row-cols-md-{{ content.column.md }} row-cols-sm-{{ content.column.sm }} row-cols-{{ content.column.xs }}\">\r\n        <shopify>\r\n          <div class=\"col pr:0px pr:100px@sm\">\r\n            <h4 class=\"fz:20px fw:500 c:color-dark\">{{comment.articles[0].comments.length}} REVIEW FOR TRAIL RUNNING SHOE</h4>\r\n            {% paginate comment.articles[0].comments by 3 %}\r\n              {% for item in comment.articles[0].comments %}\r\n                <div class=\"d:flex mt:20px mb:5px\">\r\n                  addons review để hiển thị ảnh\r\n                  <img class=\"w:60px h:60px bdrs:30px\" src=\"{{product.featured_image.src}}\" alt=\"\">\r\n                  <div class=\"ml:10px w:87%\">\r\n                    <h5 class=\"fz:15px fw:500 c:color-dark\"><a class=\"fz:15px fw:500 c:color-dark c:color-gray9|h!\" href=\"#\">{{item.author}}</a><span class=\"fz:12px c:color-gray3 fw:400\"> - {{item.updated_at | date: \"%b %d, %Y\"}}</span></h5>\r\n                    <p class=\"fz:14px c:color-gray5 ff:font-secondary fw:400\">{{item.content}}</p>\r\n                    <div class=\"mt:3px\">\r\n                      {% if content.review_comment_rating_enable %}\r\n                        {% case content.review_comment_rating_type %}\r\n                          {% when 'product_reviews' %}\r\n                            <rivio-review-badge item=\"product\" />\r\n                            <span class=\"shopify-product-reviews-badge\" data-id=\"{{ product.id }}\"></span>\r\n                          {% when 'rivyo_reviews' %}\r\n                            <rivio-review-badge item=\"product\" />\r\n                          {% when 'loox_reviews' %}\r\n                            <loox-review-badge item=\"product\" />\r\n                          {% when 'ali_reviews' %}\r\n                            <ali-review-badge item=\"product\" />\r\n                          {% when 'stamped_reviews' %}\r\n                            <stamped-review-badge item=\"product\" />\r\n                          {% when 'judge_me_reviews' %}\r\n                            <judge-me-review-badge item=\"product\" />\r\n                          {% when 'other' %}\r\n                            {% if builderMode %}\r\n                              <review-badge item=\"product\" />\r\n                            {% else %}\r\n                              {{ content.review_app_html }}\r\n                            {% endif %}\r\n                            {% else %}\r\n                        {% endcase %}\r\n                      {% endif %}\r\n                    </div>\r\n                  </div>\r\n                </div>\r\n              {% endfor %}\r\n              {% if paginate.pages > 1 %}\r\n                <nav role=\"navigation\">\r\n                  <ol class=\"d:flex ls:none\">\r\n                    {% if paginate.previous %}\r\n                      <li>\r\n                        <a class=\"d:flex ai:center jc:center w:50px h:50px mr:5px ta:center cur:pointer ff:font-primary fz:15px cur:pointer cur:pointer c:color-gray9 bgc:color-gray9|h! c:color-light|h! bd:1px_solid_color-gray2\" aria-label=\"Previous\" href=\"{{ paginate.previous.url }}\">\r\n                          <i class=\"far fa-arrow-left\"></i>\r\n                        </a>\r\n                      </li>\r\n                    {% endif %}\r\n                    {% for part in paginate.parts %}\r\n                      {% if part.is_link %}\r\n                        <li>\r\n                          <a class=\"d:flex ai:center jc:center w:50px h:50px mr:5px ta:center cur:pointer ff:font-primary fz:15px cur:pointer cur:pointer c:color-gray9 bgc:color-gray9|h! c:color-light|h! bd:1px_solid_color-gray2\" aria-label=\"Page {{ part.title }}\" href=\"{{ part.url }}\">\r\n                            {{ part.title }}\r\n                          </a>\r\n                        </li>\r\n                      {% else %}\r\n                        {% if part.title == paginate.current_page %}\r\n                          <li>\r\n                            <span class=\"d:flex ai:center jc:center w:50px h:50px mr:5px ta:center cur:pointer ff:font-primary fz:15px cur:pointer cur:pointer c:color-light! bgc:color-gray9 bgc:color-gray9|h! c:color-light|h!\" aria-current=\"page\" aria-label=\"Page {{ part.title }}\">\r\n                              {{ part.title }}\r\n                            </span>\r\n                          </li>\r\n                        {% else %}\r\n                          <li>\r\n                            <span class=\"d:flex ai:center jc:center w:50px h:50px mr:5px ta:center cur:pointer ff:font-primary fz:15px cur:pointer cur:pointer c:color-gray9 bgc:color-gray9|h! c:color-light|h! bd:1px_solid_color-gray2\" aria-label=\"Page {{ part.title }}\">\r\n                              {{ part.title }}\r\n                            </span>\r\n                          </li>\r\n                        {% endif %}\r\n                      {% endif %}\r\n                    {% endfor %}\r\n\r\n                    {% if paginate.next %}\r\n                      <li>\r\n                        <a class=\"d:flex ai:center jc:center w:50px h:50px mr:5px ta:center cur:pointer ff:font-primary fz:15px cur:pointer cur:pointer c:color-gray9 bgc:color-gray9|h! c:color-light|h! bd:1px_solid_color-gray2\" aria-label=\"Next\" href=\"{{ paginate.next.url }}\">\r\n                          <i class=\"far fa-arrow-right\"></i>\r\n                        </a>\r\n                      </li>\r\n                    {% endif %}\r\n                  </ol>\r\n                </nav>\r\n              {% endif %}\r\n            {% endpaginate %}\r\n\r\n          </div>\r\n        </shopify>\r\n        <div class=\"col\">\r\n          <h3 class=\"fz:20px fw:500\">{{content.review_title_text}}</h2>\r\n          <shopify>\r\n            <form action=\"\">\r\n              <h3 class=\"fz:15px! mt:20px fw:500 c:color-dark ff:font-primary\">{{content.review_name_text}}</h2>\r\n              <input class=\"bgc:#F2F2F7! c:color-gray4 bd:none! w:641px h:50px bdrs:0px! fz:14px fw:400 fz:14px||placeholder fw:400||placeholder c:color-gray4||placeholder ff:font-primary||placeholder\" type=\"text\" name=\"review_name\" placeholder=\"Enter your name\">\r\n              <h2 class=\"fz:15px! mt:20px fw:500 c:color-dark ff:font-primary\">{{content.review_email_text}}</h2>\r\n              <input class=\"bgc:#F2F2F7! c:#929292 bd:none! w:641px h:50px bdrs:0px! fz:14px fz:14px||placeholder fw:400||placeholder c:color-gray4||placeholder ff:font-primary||placeholder\" type=\"text\" name=\"review_email\" placeholder=\"wiloke@example.com\">\r\n              <h2 class=\"fz:15px! mt:20px fw:500 c:color-dark ff:font-primary\">{{content.review_rating_text}}</h2>\r\n              <div class=\"mt:3px\">\r\n                <i class=\"fas fa-star c:#C4C4C4\"></i>\r\n                <i class=\"fas fa-star c:#C4C4C4\"></i>\r\n                <i class=\"fas fa-star c:#C4C4C4\"></i>\r\n                <i class=\"fas fa-star c:#C4C4C4\"></i>\r\n                <i class=\"fas fa-star c:#C4C4C4\"></i>\r\n              </div>\r\n              <h2 class=\"fz:15px! mt:20px fw:500 c:color-dark ff:font-primary\">{{content.review_body_text}}</h2>\r\n              <textarea class=\"bgc:#F2F2F7! c:#929292 bd:none! w:100% h:119px bdrs:0px! ff:font-primary fz:14px fz:14px||placeholder fw:400||placeholder c:color-gray4||placeholder ff:font-primary||placeholder\" name=\"review_body\" id=\"review_body\" placeholder=\"Write your comments here\"></textarea>\r\n              <button type=\"submit\" class=\"maw:236px h:52px mt:30px ml:0px bdrs:0px! fw:500 fz:15px c:color-light! bgc:color-dark! bd:1px_solid_color-dark ff:font-primary c:color-light|h! bgc:color-dark|h! bd:1px_solid_color-dark|h\">{{content.button_review_submit_text}}</button><br/>\r\n              <input class=\"fl:left mt:10px ff:font-primary bd:1px_solid_color-gray4\" type=\"checkbox\"> <p class=\"fz:11px fl:left ml:5px mt:10px ff:font-primary fw:400 c:color-gray4\">{{content.review_check_text}}</p>\r\n            </form>\r\n          </shopify>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n",
+    "schema": {
+      "blocks": [{
+        "id": "id_1546e148-35c9-4bcb-991b-7d4935287033",
+        "children": [{
+          "children": false,
+          "type": "switch",
+          "label": "Background Fixed",
+          "summary": "",
+          "name": "background_fixed",
+          "id": "id_2c21f039-c203-4e75-b81a-d1a26753116d",
+          "disable": false
+        }, {
+          "children": "none",
+          "type": "select",
+          "label": "Background Type",
+          "summary": "",
+          "name": "background_type",
+          "id": "id_27b5dc69-5be6-42c3-8ee2-92270b085c0e",
+          "disable": false,
+          "options": [{
+            "label": "Image",
+            "value": "image",
+            "id": "3930effc-5279-4f70-ad10-f0f40dded4e1"
+          }, {
+            "label": "Color",
+            "value": "color",
+            "id": "5a04f05c-1b12-47a6-b192-36fd40b2f243"
+          }, {
+            "label": "None",
+            "value": "none",
+            "id": "293dea1d-a52d-46be-9cf4-8b22ec479fbe"
+          }]
+        }, {
+          "children": "",
+          "type": "image",
+          "label": "Background Image",
+          "summary": "",
+          "name": "background_image",
+          "id": "id_1e312378-c4d8-490a-8daa-9bc80dab112d",
+          "disable": false,
+          "deps": "section_settings.background_type === \"image\""
+        }, {
+          "children": "#fff",
+          "type": "color",
+          "label": "Background Color",
+          "summary": "",
+          "name": "background_color",
+          "id": "id_be5465ea-ae32-402b-b868-71525cfc1165",
+          "disable": false,
+          "deps": "section_settings.background_type === \"color\""
+        }, {
+          "children": "cover",
+          "type": "select",
+          "label": "Background Size",
+          "summary": "",
+          "name": "background_size",
+          "id": "id_e3b3fcaa-5c26-448c-98e6-bf8d789ec6bb",
+          "disable": false,
+          "options": [{
+            "label": "Cover",
+            "value": "cover",
+            "id": "1df34a9c-1eba-4deb-a169-0bc7f8ee3f51"
+          }, {
+            "label": "Contain",
+            "value": "contain",
+            "id": "b5e93ef1-6378-42df-a8b5-c9d27d4b9b83"
+          }]
+        }, {
+          "children": false,
+          "type": "switch",
+          "label": "Background Overlay Enable",
+          "summary": "",
+          "name": "background_overlay_enable",
+          "id": "id_f57b0ea5-a489-42ac-8bb7-95fb060dc459",
+          "disable": false
+        }, {
+          "children": "#fff",
+          "type": "color",
+          "label": "Background Overlay Color",
+          "summary": "",
+          "name": "background_overlay_color",
+          "id": "id_1974f5f7-ef5c-471c-9549-f1d9125e18ae",
+          "disable": false
+        }, {
+          "children": {
+            "left": 0
+          },
+          "type": "space",
+          "label": "Padding",
+          "summary": "",
+          "name": "padding",
+          "id": "id_3edbaf26-ede9-46cd-b0ca-69297f655be6",
+          "disable": false
+        }],
+        "type": "object",
+        "label": "Section Settings",
+        "summary": "",
+        "name": "section_settings",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_88177590-f9af-4644-95ae-a2fec2402447",
+        "children": [{
+          "children": "Collection",
+          "type": "text",
+          "label": "Collection",
+          "summary": "",
+          "name": "collection",
+          "id": "id_365e4d6a-33eb-41fd-9da6-984708518973",
+          "disable": false
+        }, {
+          "children": "WRITE REVIEW",
+          "type": "text",
+          "label": "Review Title Text",
+          "summary": "",
+          "name": "review_title_text",
+          "id": "id_971dfdbf-9162-4e11-8d09-7817102b23b8",
+          "disable": false
+        }, {
+          "children": "NAME",
+          "type": "text",
+          "label": "Review Name Text",
+          "summary": "",
+          "name": "review_name_text",
+          "id": "id_9da73b97-1932-4a92-8a4b-44cd3487314b",
+          "disable": false
+        }, {
+          "children": "EMAIL",
+          "type": "text",
+          "label": "Review Email Text",
+          "summary": "",
+          "name": "review_email_text",
+          "id": "id_deef1b3d-be3f-44f8-a21b-08ccebd51c5d",
+          "disable": false
+        }, {
+          "children": "RATING",
+          "type": "text",
+          "label": "Review Rating Text",
+          "summary": "",
+          "name": "review_rating_text",
+          "id": "id_f9aaa212-64f3-45fb-a705-decd07a6c8c6",
+          "disable": false
+        }, {
+          "children": "BODY REVIEW(1500)",
+          "type": "text",
+          "label": "Review Body Text",
+          "summary": "",
+          "name": "review_body_text",
+          "id": "id_ab886f94-9bf4-4c78-ab25-581a968fbf62",
+          "disable": false
+        }, {
+          "children": "Write your comments here",
+          "type": "text",
+          "label": "Review Check Text",
+          "summary": "",
+          "name": "review_check_text",
+          "id": "id_d41b7ba5-e538-45cc-9d50-116a5bf9f40f",
+          "disable": false
+        }, {
+          "children": "SUBMIT REVIEW",
+          "type": "text",
+          "label": "Button Review Submit Text",
+          "summary": "",
+          "name": "button_review_submit_text",
+          "id": "id_368090c2-ca2b-42f8-bcf1-ab09f1b25143",
+          "disable": false
+        }, {
+          "children": "Sample Quote",
+          "type": "text",
+          "label": "Sample Quote Title",
+          "summary": "",
+          "name": "sample_quote_title",
+          "id": "id_6baf1143-5bcb-4df3-a61c-0c7b4f66344c",
+          "disable": false
+        }, {
+          "children": "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores <br/>et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est <br/>laborum et dolorum fuga.",
+          "type": "textarea",
+          "label": "Sample Quote Description",
+          "summary": "",
+          "name": "sample_quote_description",
+          "id": "id_f4f51230-cfc0-4fb8-bf9d-639c5d74efaa",
+          "disable": false
+        }, {
+          "children": {
+            "lg": 2,
+            "md": 2,
+            "sm": 1,
+            "xs": 1
+          },
+          "type": "responsive",
+          "label": "Column",
+          "summary": "",
+          "name": "column",
+          "id": "id_a6060dda-716a-4996-806a-c7a9a8cf4196",
+          "disable": false,
+          "max": 12,
+          "min": 1
+        }],
+        "type": "object",
+        "label": "Content",
+        "summary": "",
+        "name": "content",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }],
+      "settings": [{
+        "id": "id_4551e80d-b57c-482e-a963-c8fbc4d98dd4",
+        "type": "image",
+        "children": "",
+        "label": "Image Form",
+        "summary": "",
+        "name": "image_form",
+        "disable": false
+      }]
+    },
+    "scss": "$container: \"[data-id='#{$uniqueId}']\";",
+    "settings": [{
+      "id": "id_1546e148-35c9-4bcb-991b-7d4935287033",
+      "children": [{
+        "children": false,
+        "type": "switch",
+        "label": "Background Fixed",
+        "summary": "",
+        "name": "background_fixed",
+        "id": "id_2c21f039-c203-4e75-b81a-d1a26753116d",
+        "disable": false
+      }, {
+        "children": "none",
+        "type": "select",
+        "label": "Background Type",
+        "summary": "",
+        "name": "background_type",
+        "id": "id_27b5dc69-5be6-42c3-8ee2-92270b085c0e",
+        "disable": false,
+        "options": [{
+          "label": "Image",
+          "value": "image",
+          "id": "3930effc-5279-4f70-ad10-f0f40dded4e1"
+        }, {
+          "label": "Color",
+          "value": "color",
+          "id": "5a04f05c-1b12-47a6-b192-36fd40b2f243"
+        }, {
+          "label": "None",
+          "value": "none",
+          "id": "293dea1d-a52d-46be-9cf4-8b22ec479fbe"
+        }]
+      }, {
+        "children": "",
+        "type": "image",
+        "label": "Background Image",
+        "summary": "",
+        "name": "background_image",
+        "id": "id_1e312378-c4d8-490a-8daa-9bc80dab112d",
+        "disable": false,
+        "deps": "section_settings.background_type === \"image\""
+      }, {
+        "children": "#fff",
+        "type": "color",
+        "label": "Background Color",
+        "summary": "",
+        "name": "background_color",
+        "id": "id_be5465ea-ae32-402b-b868-71525cfc1165",
+        "disable": false,
+        "deps": "section_settings.background_type === \"color\""
+      }, {
+        "children": "cover",
+        "type": "select",
+        "label": "Background Size",
+        "summary": "",
+        "name": "background_size",
+        "id": "id_e3b3fcaa-5c26-448c-98e6-bf8d789ec6bb",
+        "disable": false,
+        "options": [{
+          "label": "Cover",
+          "value": "cover",
+          "id": "1df34a9c-1eba-4deb-a169-0bc7f8ee3f51"
+        }, {
+          "label": "Contain",
+          "value": "contain",
+          "id": "b5e93ef1-6378-42df-a8b5-c9d27d4b9b83"
+        }]
+      }, {
+        "children": false,
+        "type": "switch",
+        "label": "Background Overlay Enable",
+        "summary": "",
+        "name": "background_overlay_enable",
+        "id": "id_f57b0ea5-a489-42ac-8bb7-95fb060dc459",
+        "disable": false
+      }, {
+        "children": "#fff",
+        "type": "color",
+        "label": "Background Overlay Color",
+        "summary": "",
+        "name": "background_overlay_color",
+        "id": "id_1974f5f7-ef5c-471c-9549-f1d9125e18ae",
+        "disable": false
+      }, {
+        "children": {
+          "left": 0
+        },
+        "type": "space",
+        "label": "Padding",
+        "summary": "",
+        "name": "padding",
+        "id": "id_3edbaf26-ede9-46cd-b0ca-69297f655be6",
+        "disable": false
+      }],
+      "type": "object",
+      "label": "Section Settings",
+      "summary": "",
+      "name": "section_settings",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_88177590-f9af-4644-95ae-a2fec2402447",
+      "children": [{
+        "children": "Collection",
+        "type": "text",
+        "label": "Collection",
+        "summary": "",
+        "name": "collection",
+        "id": "id_365e4d6a-33eb-41fd-9da6-984708518973",
+        "disable": false
+      }, {
+        "children": "WRITE REVIEW",
+        "type": "text",
+        "label": "Review Title Text",
+        "summary": "",
+        "name": "review_title_text",
+        "id": "id_971dfdbf-9162-4e11-8d09-7817102b23b8",
+        "disable": false
+      }, {
+        "children": "NAME",
+        "type": "text",
+        "label": "Review Name Text",
+        "summary": "",
+        "name": "review_name_text",
+        "id": "id_9da73b97-1932-4a92-8a4b-44cd3487314b",
+        "disable": false
+      }, {
+        "children": "EMAIL",
+        "type": "text",
+        "label": "Review Email Text",
+        "summary": "",
+        "name": "review_email_text",
+        "id": "id_deef1b3d-be3f-44f8-a21b-08ccebd51c5d",
+        "disable": false
+      }, {
+        "children": "RATING",
+        "type": "text",
+        "label": "Review Rating Text",
+        "summary": "",
+        "name": "review_rating_text",
+        "id": "id_f9aaa212-64f3-45fb-a705-decd07a6c8c6",
+        "disable": false
+      }, {
+        "children": "BODY REVIEW(1500)",
+        "type": "text",
+        "label": "Review Body Text",
+        "summary": "",
+        "name": "review_body_text",
+        "id": "id_ab886f94-9bf4-4c78-ab25-581a968fbf62",
+        "disable": false
+      }, {
+        "children": "Write your comments here",
+        "type": "text",
+        "label": "Review Check Text",
+        "summary": "",
+        "name": "review_check_text",
+        "id": "id_d41b7ba5-e538-45cc-9d50-116a5bf9f40f",
+        "disable": false
+      }, {
+        "children": "SUBMIT REVIEW",
+        "type": "text",
+        "label": "Button Review Submit Text",
+        "summary": "",
+        "name": "button_review_submit_text",
+        "id": "id_368090c2-ca2b-42f8-bcf1-ab09f1b25143",
+        "disable": false
+      }, {
+        "children": "Sample Quote",
+        "type": "text",
+        "label": "Sample Quote Title",
+        "summary": "",
+        "name": "sample_quote_title",
+        "id": "id_6baf1143-5bcb-4df3-a61c-0c7b4f66344c",
+        "disable": false
+      }, {
+        "children": "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores <br/>et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est <br/>laborum et dolorum fuga.",
+        "type": "textarea",
+        "label": "Sample Quote Description",
+        "summary": "",
+        "name": "sample_quote_description",
+        "id": "id_f4f51230-cfc0-4fb8-bf9d-639c5d74efaa",
+        "disable": false
+      }, {
+        "children": {
+          "lg": 2,
+          "md": 2,
+          "sm": 1,
+          "xs": 1
+        },
+        "type": "responsive",
+        "label": "Column",
+        "summary": "",
+        "name": "column",
+        "id": "id_a6060dda-716a-4996-806a-c7a9a8cf4196",
+        "disable": false,
+        "max": 12,
+        "min": 1
+      }],
+      "type": "object",
+      "label": "Content",
+      "summary": "",
+      "name": "content",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_4551e80d-b57c-482e-a963-c8fbc4d98dd4",
+      "type": "image",
+      "children": "https://app.vedabuilder.com/api/v1/command/medias/files/2022/06/hzwkxfijnb.webp",
+      "label": "Image Form",
+      "summary": "",
+      "name": "image_form",
+      "disable": false
+    }]
+  },
+  "scope": "private",
+  "pageTypes": ["product"],
+  "sample": true,
+  "enable": true,
+  "userId": 1,
+  "synced": false,
+  "category": {
+    "commandId": "",
+    "name": ""
+  },
+  "createdDateTimestamp": 1655349090036,
+  "modifiedDateTimestamp": 1655349090036,
+  "parentCommandId": "",
+  "changelog": {
+    "version": "",
+    "versionId": "",
+    "content": ""
+  },
+  "categoryId": ""
+}

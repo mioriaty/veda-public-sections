@@ -1,1 +1,329 @@
-{"id":"id_521c9f8a-d89d-403f-b55f-5fc62ab5444f","commandId":"62aafa71d316833cf19c2608","label":"Blog Signup","image":{"src":"","width":0,"height":0},"addonIds":[],"currentVersion":"1","versionId":"f1821de7-ed16-479d-90a1-58b85d183352","data":{"js":"","liquid":"{% liquid\r\n  if section_settings.background_fixed assign backgroundFixed = 'fixed' else assign backgroundFixed = 'scroll' endif\r\n  if section_settings.background_type == 'color' assign backgroundColor = 'background-color: ' | append: section_settings.background_color | append: ';' else assign backgroundColor = '' endif\r\n  if section_settings.background_type == 'image' assign backgroundImage = 'background-image: url(' | append: section_settings.background_image | append:\r\n  ');background-attachment: ' | append: backgroundFixed | append: ';background-size: ' | append: section_settings.background_size | append: ';' else assign backgroundImage = '' endif\r\n  assign sectionPadding = 'padding-top: ' | append: section_settings.padding.top | append: 'px;padding-right: ' | append: section_settings.padding.right | append: 'px;padding-bottom: ' | append: section_settings.padding.bottom | append: 'px;padding-left: ' | append: section_settings.padding.left | append: 'px;'\r\n%}\r\n\r\n<section data-id=\"{{uniqueId}}\" css=\"{{ backgroundColor }}{{ backgroundImage }}{{ sectionPadding }}\" class=\"h:320px h:300px@sm d:flex fld:column ai:center jc:center ta:center\">\r\n  {% if section_settings.background_overlay_enable %}\r\n    <div class=\"pos:absolute ins:0 z:-1\" css=\"background-color: {{ section_settings.background_overlay_color }}\"></div>\r\n  {% endif %}\r\n  <div class=\"container\">\r\n    <div class=\"row\">\r\n      <div class=\"col-lg-12 d:flex fld:column ai:center jc:center ta:center\">\r\n        <h2 class=\"fz:35px mb:25px fw:500 c:color-dark-freeze ff:font-primary\">{{content.sign_up_title}}</h2>\r\n        <p class=\"fz:15px mb:20px fw:400 c:color-dark-freeze ff:font-secondary\">{{content.sign_up_description}}</p>\r\n        <div class=\"d:flex fxw:wrap ai:center jc:center ta:center\">\r\n          <input class=\"h:40px w:100% w:283px@sm! bd:none! bgc:color-light-freeze! fw:400 fz:9px! ff:font-quinary c:color-gray4! bdrs:0px! bgc:color-light-freeze|h! fw:400||placeholder fz:9px||placeholder! c:color-gray4!||placeholder ff:font-quinary!\" type=\"text\" placeholder=\"{{content.sign_up_placeholder}}\">\r\n          <button class=\"h:40px fz:12px p:10px_20px_10px_20px ml:15px c:color-light-freeze! bgc:color-dark-freeze bdrs:0px! bgc:color-dark-freeze|h bd:1px_solid_color-dark-freeze bd:1px_solid_color-dark-freeze|h! ff:font-primary tt:uppercase fw:700\">{{content.button_subscribe_text}}</button>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n","schema":{"blocks":[{"id":"id_e7fec6fd-288a-4753-9625-dfab390a3c42","children":[{"children":false,"type":"switch","label":"Background Fixed","summary":"","name":"background_fixed","id":"id_8daf282c-b72d-453c-815b-c1c1fd98f47a","disable":false},{"children":"none","type":"select","label":"Background Type","summary":"","name":"background_type","id":"id_66941ced-e961-4429-b4bf-2b80e26e6c39","disable":false,"options":[{"label":"Image","value":"image","id":"1145c5ff-bf01-4467-9f70-aea964d96552"},{"label":"Color","value":"color","id":"67db8422-dd36-4c85-9de0-6d7273b1edef"},{"label":"None","value":"none","id":"e13b1674-0313-4207-809c-9f2fae179900"}]},{"children":"","type":"image","label":"Background Image","summary":"","name":"background_image","id":"id_8cd80c9f-faf9-4d80-a3f8-8eeb30e29ae0","disable":false,"deps":"section_settings.background_type === \"image\""},{"children":"#fff","type":"color","label":"Background Color","summary":"","name":"background_color","id":"id_c7bec7dd-a45a-4dfc-9444-8f20062a270d","disable":false,"deps":"section_settings.background_type === \"color\""},{"children":"cover","type":"select","label":"Background Size","summary":"","name":"background_size","id":"id_e1c7af49-d83d-4fcf-ab22-8eac00efbb54","disable":false,"options":[{"label":"Cover","value":"cover","id":"433c2068-3242-487d-a5b1-0a43d33a5212"},{"label":"Contain","value":"contain","id":"4275865c-d9a8-438e-a942-e82129b81edf"}]},{"children":false,"type":"switch","label":"Background Overlay Enable","summary":"","name":"background_overlay_enable","id":"id_16bb2dbc-b6e4-4770-b93c-c8accb882f76","disable":false},{"children":"#fff","type":"color","label":"Background Overlay Color","summary":"","name":"background_overlay_color","id":"id_26a49a6a-efb1-49f3-b724-9ba1361d2f46","disable":false},{"children":{"left":0},"type":"space","label":"Padding","summary":"","name":"padding","id":"id_2d15089b-4202-416e-843d-5d892185c384","disable":false}],"type":"object","label":"Section Settings","summary":"","name":"section_settings","open":false,"drawer":false,"disable":false},{"id":"id_b6fa9bb3-0d48-48b3-a80d-22eb958f17b8","children":[{"children":"Sign-up for Logo News","type":"text","label":"Sign Up Title","summary":"","name":"sign_up_title","id":"id_accfb4bb-30fd-486f-9c17-c461c11cb2ec","disable":false},{"children":"Stay informed about the latest style advice and product launches.<br/> Learn more about our emails and our Privacy Policy.","type":"textarea","label":"Sign Up Description","summary":"","name":"sign_up_description","id":"id_713b3ce3-ed3e-470b-84fc-e952b5427eb6","disable":false},{"children":"Email address","type":"text","label":"Sign Up Placeholder","summary":"","name":"sign_up_placeholder","id":"id_90d6b0fe-f5a1-47cf-8ce0-ab1bca150d44","disable":false},{"children":"Subscribe","type":"text","label":"Button Subscribe Text","summary":"","name":"button_subscribe_text","id":"id_45a3304c-104d-46d3-b25b-4a3310d8a7ed","disable":false}],"type":"object","label":"Content","summary":"","name":"content","open":false,"drawer":false,"disable":false}],"settings":[]},"scss":"$container: \"[data-id='#{$uniqueId}']\";","settings":[{"id":"id_e7fec6fd-288a-4753-9625-dfab390a3c42","children":[{"children":false,"type":"switch","label":"Background Fixed","summary":"","name":"background_fixed","id":"id_8daf282c-b72d-453c-815b-c1c1fd98f47a","disable":false},{"children":"color","type":"select","label":"Background Type","summary":"","name":"background_type","id":"id_66941ced-e961-4429-b4bf-2b80e26e6c39","disable":false,"options":[{"label":"Image","value":"image","id":"1145c5ff-bf01-4467-9f70-aea964d96552"},{"label":"Color","value":"color","id":"67db8422-dd36-4c85-9de0-6d7273b1edef"},{"label":"None","value":"none","id":"e13b1674-0313-4207-809c-9f2fae179900"}]},{"children":"","type":"image","label":"Background Image","summary":"","name":"background_image","id":"id_8cd80c9f-faf9-4d80-a3f8-8eeb30e29ae0","disable":false,"deps":"section_settings.background_type === \"image\""},{"children":"var(--color-gray2)","type":"color","label":"Background Color","summary":"","name":"background_color","id":"id_c7bec7dd-a45a-4dfc-9444-8f20062a270d","disable":false,"deps":"section_settings.background_type === \"color\""},{"children":"cover","type":"select","label":"Background Size","summary":"","name":"background_size","id":"id_e1c7af49-d83d-4fcf-ab22-8eac00efbb54","disable":false,"options":[{"label":"Cover","value":"cover","id":"433c2068-3242-487d-a5b1-0a43d33a5212"},{"label":"Contain","value":"contain","id":"4275865c-d9a8-438e-a942-e82129b81edf"}]},{"children":false,"type":"switch","label":"Background Overlay Enable","summary":"","name":"background_overlay_enable","id":"id_16bb2dbc-b6e4-4770-b93c-c8accb882f76","disable":false},{"children":"#fff","type":"color","label":"Background Overlay Color","summary":"","name":"background_overlay_color","id":"id_26a49a6a-efb1-49f3-b724-9ba1361d2f46","disable":false},{"children":{"left":0,"top":0,"right":0,"bottom":0},"type":"space","label":"Padding","summary":"","name":"padding","id":"id_2d15089b-4202-416e-843d-5d892185c384","disable":false}],"type":"object","label":"Section Settings","summary":"","name":"section_settings","open":false,"drawer":false,"disable":false},{"id":"id_b6fa9bb3-0d48-48b3-a80d-22eb958f17b8","children":[{"children":"Sign-up for Logo News","type":"text","label":"Sign Up Title","summary":"","name":"sign_up_title","id":"id_accfb4bb-30fd-486f-9c17-c461c11cb2ec","disable":false},{"children":"Stay informed about the latest style advice and product launches.<br/> Learn more about our emails and our Privacy Policy.","type":"textarea","label":"Sign Up Description","summary":"","name":"sign_up_description","id":"id_713b3ce3-ed3e-470b-84fc-e952b5427eb6","disable":false},{"children":"Email address","type":"text","label":"Sign Up Placeholder","summary":"","name":"sign_up_placeholder","id":"id_90d6b0fe-f5a1-47cf-8ce0-ab1bca150d44","disable":false},{"children":"Subscribe","type":"text","label":"Button Subscribe Text","summary":"","name":"button_subscribe_text","id":"id_45a3304c-104d-46d3-b25b-4a3310d8a7ed","disable":false}],"type":"object","label":"Content","summary":"","name":"content","open":false,"drawer":false,"disable":false}]},"scope":"private","pageTypes":["article"],"sample":true,"enable":true,"userId":1,"synced":false,"category":{"commandId":"62aafa64d316833cf19c2606","name":"blog/article"},"createdDateTimestamp":1655372401895,"modifiedDateTimestamp":1655372401895,"parentCommandId":"62aafa71d316833cf19c2608","changelog":{"version":"1","versionId":"666fdd04-fb39-4adc-958e-8f7dda7c4606","content":""},"categoryId":"blog/article"}
+{
+  "id": "id_521c9f8a-d89d-403f-b55f-5fc62ab5444f",
+  "commandId": "62aafa71d316833cf19c2608",
+  "label": "Blog Signup",
+  "image": {
+    "src": "",
+    "width": 0,
+    "height": 0
+  },
+  "addonIds": [],
+  "currentVersion": "1",
+  "versionId": "f1821de7-ed16-479d-90a1-58b85d183352",
+  "data": {
+    "js": "",
+    "liquid": "{% liquid\r\n  if section_settings.background_fixed assign backgroundFixed = 'fixed' else assign backgroundFixed = 'scroll' endif\r\n  if section_settings.background_type == 'color' assign backgroundColor = 'background-color: ' | append: section_settings.background_color | append: ';' else assign backgroundColor = '' endif\r\n  if section_settings.background_type == 'image' assign backgroundImage = 'background-image: url(' | append: section_settings.background_image | append:\r\n  ');background-attachment: ' | append: backgroundFixed | append: ';background-size: ' | append: section_settings.background_size | append: ';' else assign backgroundImage = '' endif\r\n  assign sectionPadding = 'padding-top: ' | append: section_settings.padding.top | append: 'px;padding-right: ' | append: section_settings.padding.right | append: 'px;padding-bottom: ' | append: section_settings.padding.bottom | append: 'px;padding-left: ' | append: section_settings.padding.left | append: 'px;'\r\n%}\r\n\r\n<section data-id=\"{{uniqueId}}\" css=\"{{ backgroundColor }}{{ backgroundImage }}{{ sectionPadding }}\" class=\"h:320px h:300px@sm d:flex fld:column ai:center jc:center ta:center\">\r\n  {% if section_settings.background_overlay_enable %}\r\n    <div class=\"pos:absolute ins:0 z:-1\" css=\"background-color: {{ section_settings.background_overlay_color }}\"></div>\r\n  {% endif %}\r\n  <div class=\"container\">\r\n    <div class=\"row\">\r\n      <div class=\"col-lg-12 d:flex fld:column ai:center jc:center ta:center\">\r\n        <h2 class=\"fz:35px mb:25px fw:500 c:color-dark-freeze ff:font-primary\">{{content.sign_up_title}}</h2>\r\n        <p class=\"fz:15px mb:20px fw:400 c:color-dark-freeze ff:font-secondary\">{{content.sign_up_description}}</p>\r\n        <div class=\"d:flex fxw:wrap ai:center jc:center ta:center\">\r\n          <input class=\"h:40px w:100% w:283px@sm! bd:none! bgc:color-light-freeze! fw:400 fz:9px! ff:font-quinary c:color-gray4! bdrs:0px! bgc:color-light-freeze|h! fw:400||placeholder fz:9px||placeholder! c:color-gray4!||placeholder ff:font-quinary!\" type=\"text\" placeholder=\"{{content.sign_up_placeholder}}\">\r\n          <button class=\"h:40px fz:12px p:10px_20px_10px_20px ml:15px c:color-light-freeze! bgc:color-dark-freeze bdrs:0px! bgc:color-dark-freeze|h bd:1px_solid_color-dark-freeze bd:1px_solid_color-dark-freeze|h! ff:font-primary tt:uppercase fw:700\">{{content.button_subscribe_text}}</button>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n",
+    "schema": {
+      "blocks": [{
+        "id": "id_e7fec6fd-288a-4753-9625-dfab390a3c42",
+        "children": [{
+          "children": false,
+          "type": "switch",
+          "label": "Background Fixed",
+          "summary": "",
+          "name": "background_fixed",
+          "id": "id_8daf282c-b72d-453c-815b-c1c1fd98f47a",
+          "disable": false
+        }, {
+          "children": "none",
+          "type": "select",
+          "label": "Background Type",
+          "summary": "",
+          "name": "background_type",
+          "id": "id_66941ced-e961-4429-b4bf-2b80e26e6c39",
+          "disable": false,
+          "options": [{
+            "label": "Image",
+            "value": "image",
+            "id": "1145c5ff-bf01-4467-9f70-aea964d96552"
+          }, {
+            "label": "Color",
+            "value": "color",
+            "id": "67db8422-dd36-4c85-9de0-6d7273b1edef"
+          }, {
+            "label": "None",
+            "value": "none",
+            "id": "e13b1674-0313-4207-809c-9f2fae179900"
+          }]
+        }, {
+          "children": "",
+          "type": "image",
+          "label": "Background Image",
+          "summary": "",
+          "name": "background_image",
+          "id": "id_8cd80c9f-faf9-4d80-a3f8-8eeb30e29ae0",
+          "disable": false,
+          "deps": "section_settings.background_type === \"image\""
+        }, {
+          "children": "#fff",
+          "type": "color",
+          "label": "Background Color",
+          "summary": "",
+          "name": "background_color",
+          "id": "id_c7bec7dd-a45a-4dfc-9444-8f20062a270d",
+          "disable": false,
+          "deps": "section_settings.background_type === \"color\""
+        }, {
+          "children": "cover",
+          "type": "select",
+          "label": "Background Size",
+          "summary": "",
+          "name": "background_size",
+          "id": "id_e1c7af49-d83d-4fcf-ab22-8eac00efbb54",
+          "disable": false,
+          "options": [{
+            "label": "Cover",
+            "value": "cover",
+            "id": "433c2068-3242-487d-a5b1-0a43d33a5212"
+          }, {
+            "label": "Contain",
+            "value": "contain",
+            "id": "4275865c-d9a8-438e-a942-e82129b81edf"
+          }]
+        }, {
+          "children": false,
+          "type": "switch",
+          "label": "Background Overlay Enable",
+          "summary": "",
+          "name": "background_overlay_enable",
+          "id": "id_16bb2dbc-b6e4-4770-b93c-c8accb882f76",
+          "disable": false
+        }, {
+          "children": "#fff",
+          "type": "color",
+          "label": "Background Overlay Color",
+          "summary": "",
+          "name": "background_overlay_color",
+          "id": "id_26a49a6a-efb1-49f3-b724-9ba1361d2f46",
+          "disable": false
+        }, {
+          "children": {
+            "left": 0
+          },
+          "type": "space",
+          "label": "Padding",
+          "summary": "",
+          "name": "padding",
+          "id": "id_2d15089b-4202-416e-843d-5d892185c384",
+          "disable": false
+        }],
+        "type": "object",
+        "label": "Section Settings",
+        "summary": "",
+        "name": "section_settings",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_b6fa9bb3-0d48-48b3-a80d-22eb958f17b8",
+        "children": [{
+          "children": "Sign-up for Logo News",
+          "type": "text",
+          "label": "Sign Up Title",
+          "summary": "",
+          "name": "sign_up_title",
+          "id": "id_accfb4bb-30fd-486f-9c17-c461c11cb2ec",
+          "disable": false
+        }, {
+          "children": "Stay informed about the latest style advice and product launches.<br/> Learn more about our emails and our Privacy Policy.",
+          "type": "textarea",
+          "label": "Sign Up Description",
+          "summary": "",
+          "name": "sign_up_description",
+          "id": "id_713b3ce3-ed3e-470b-84fc-e952b5427eb6",
+          "disable": false
+        }, {
+          "children": "Email address",
+          "type": "text",
+          "label": "Sign Up Placeholder",
+          "summary": "",
+          "name": "sign_up_placeholder",
+          "id": "id_90d6b0fe-f5a1-47cf-8ce0-ab1bca150d44",
+          "disable": false
+        }, {
+          "children": "Subscribe",
+          "type": "text",
+          "label": "Button Subscribe Text",
+          "summary": "",
+          "name": "button_subscribe_text",
+          "id": "id_45a3304c-104d-46d3-b25b-4a3310d8a7ed",
+          "disable": false
+        }],
+        "type": "object",
+        "label": "Content",
+        "summary": "",
+        "name": "content",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }],
+      "settings": []
+    },
+    "scss": "$container: \"[data-id='#{$uniqueId}']\";",
+    "settings": [{
+      "id": "id_e7fec6fd-288a-4753-9625-dfab390a3c42",
+      "children": [{
+        "children": false,
+        "type": "switch",
+        "label": "Background Fixed",
+        "summary": "",
+        "name": "background_fixed",
+        "id": "id_8daf282c-b72d-453c-815b-c1c1fd98f47a",
+        "disable": false
+      }, {
+        "children": "color",
+        "type": "select",
+        "label": "Background Type",
+        "summary": "",
+        "name": "background_type",
+        "id": "id_66941ced-e961-4429-b4bf-2b80e26e6c39",
+        "disable": false,
+        "options": [{
+          "label": "Image",
+          "value": "image",
+          "id": "1145c5ff-bf01-4467-9f70-aea964d96552"
+        }, {
+          "label": "Color",
+          "value": "color",
+          "id": "67db8422-dd36-4c85-9de0-6d7273b1edef"
+        }, {
+          "label": "None",
+          "value": "none",
+          "id": "e13b1674-0313-4207-809c-9f2fae179900"
+        }]
+      }, {
+        "children": "",
+        "type": "image",
+        "label": "Background Image",
+        "summary": "",
+        "name": "background_image",
+        "id": "id_8cd80c9f-faf9-4d80-a3f8-8eeb30e29ae0",
+        "disable": false,
+        "deps": "section_settings.background_type === \"image\""
+      }, {
+        "children": "var(--color-gray2)",
+        "type": "color",
+        "label": "Background Color",
+        "summary": "",
+        "name": "background_color",
+        "id": "id_c7bec7dd-a45a-4dfc-9444-8f20062a270d",
+        "disable": false,
+        "deps": "section_settings.background_type === \"color\""
+      }, {
+        "children": "cover",
+        "type": "select",
+        "label": "Background Size",
+        "summary": "",
+        "name": "background_size",
+        "id": "id_e1c7af49-d83d-4fcf-ab22-8eac00efbb54",
+        "disable": false,
+        "options": [{
+          "label": "Cover",
+          "value": "cover",
+          "id": "433c2068-3242-487d-a5b1-0a43d33a5212"
+        }, {
+          "label": "Contain",
+          "value": "contain",
+          "id": "4275865c-d9a8-438e-a942-e82129b81edf"
+        }]
+      }, {
+        "children": false,
+        "type": "switch",
+        "label": "Background Overlay Enable",
+        "summary": "",
+        "name": "background_overlay_enable",
+        "id": "id_16bb2dbc-b6e4-4770-b93c-c8accb882f76",
+        "disable": false
+      }, {
+        "children": "#fff",
+        "type": "color",
+        "label": "Background Overlay Color",
+        "summary": "",
+        "name": "background_overlay_color",
+        "id": "id_26a49a6a-efb1-49f3-b724-9ba1361d2f46",
+        "disable": false
+      }, {
+        "children": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "type": "space",
+        "label": "Padding",
+        "summary": "",
+        "name": "padding",
+        "id": "id_2d15089b-4202-416e-843d-5d892185c384",
+        "disable": false
+      }],
+      "type": "object",
+      "label": "Section Settings",
+      "summary": "",
+      "name": "section_settings",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_b6fa9bb3-0d48-48b3-a80d-22eb958f17b8",
+      "children": [{
+        "children": "Sign-up for Logo News",
+        "type": "text",
+        "label": "Sign Up Title",
+        "summary": "",
+        "name": "sign_up_title",
+        "id": "id_accfb4bb-30fd-486f-9c17-c461c11cb2ec",
+        "disable": false
+      }, {
+        "children": "Stay informed about the latest style advice and product launches.<br/> Learn more about our emails and our Privacy Policy.",
+        "type": "textarea",
+        "label": "Sign Up Description",
+        "summary": "",
+        "name": "sign_up_description",
+        "id": "id_713b3ce3-ed3e-470b-84fc-e952b5427eb6",
+        "disable": false
+      }, {
+        "children": "Email address",
+        "type": "text",
+        "label": "Sign Up Placeholder",
+        "summary": "",
+        "name": "sign_up_placeholder",
+        "id": "id_90d6b0fe-f5a1-47cf-8ce0-ab1bca150d44",
+        "disable": false
+      }, {
+        "children": "Subscribe",
+        "type": "text",
+        "label": "Button Subscribe Text",
+        "summary": "",
+        "name": "button_subscribe_text",
+        "id": "id_45a3304c-104d-46d3-b25b-4a3310d8a7ed",
+        "disable": false
+      }],
+      "type": "object",
+      "label": "Content",
+      "summary": "",
+      "name": "content",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }]
+  },
+  "scope": "private",
+  "pageTypes": ["article"],
+  "sample": true,
+  "enable": true,
+  "userId": 1,
+  "synced": false,
+  "category": {
+    "commandId": "",
+    "name": ""
+  },
+  "createdDateTimestamp": 1655372401895,
+  "modifiedDateTimestamp": 1655372401895,
+  "parentCommandId": "",
+  "changelog": {
+    "version": "",
+    "versionId": "",
+    "content": ""
+  },
+  "categoryId": ""
+}

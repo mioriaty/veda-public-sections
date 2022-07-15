@@ -1,1 +1,670 @@
-{"id":"id_381717bc-a67b-4e7f-972e-3647cfba88de","commandId":"62ce86f6bc769449134408bb","label":"Menu Yasmina","image":{"src":"","width":0,"height":0},"addonIds":[],"megaMenuId":"","currentVersion":"1.0","versionId":"7f7ae2b4-094f-4ba4-a307-b2b0006d31b0","data":{"js":"\r\nconst { message, productCompare, productWishList, cart } = veda.plugins;\r\nconst menuTextConfig = JSON.parse(container.querySelector(\".menu-text-config-js\").textContent);\r\nfunction initCompare() {\r\n  const btnComparePopup = document.querySelector('.veda-compare-toggle-js');\r\n  if (!btnComparePopup) {\r\n    return;\r\n  }\r\n  const dataCompareOptions = btnComparePopup.getAttribute('data-options');\r\n  productCompare.customCompare(veda.utils.objectParse(dataCompareOptions));\r\n  //button popup\r\n  btnComparePopup.addEventListener('click', () => {\r\n    productCompare.togglePopup();\r\n  });\r\n  // compare badge\r\n  const compareBadge = document.querySelector('.veda-compare-badge-js');\r\n  compareBadge.innerHTML = productCompare.getData().length;\r\n  productCompare.getData().length ? compareBadge.style.display = 'flex' : compareBadge.style.display = 'none';\r\n  productCompare.subscribe((state) => {\r\n    compareBadge.innerHTML = state.length;\r\n    state.length ? compareBadge.style.display = 'flex' : compareBadge.style.display = 'none';\r\n  });\r\n}\r\nfunction initWishList() {\r\n  //wishlist badge\r\n  const wishlistBadge = document.querySelector('.veda-wishlist-badge-js');\r\n  if (!wishlistBadge) {\r\n    return;\r\n  }\r\n  wishlistBadge.innerHTML = productWishList.getData()?.length ?? \"0\";\r\n  productWishList.getData().length ? wishlistBadge.style.display = 'flex' : wishlistBadge.style.display = 'none';\r\n  productWishList.subscribe((state) => {\r\n    wishlistBadge.innerHTML = state.length;\r\n    productWishList.getData().length ? wishlistBadge.style.display = 'flex' : wishlistBadge.style.display = 'none';\r\n  });\r\n}\r\nfunction initCart() {\r\n  //init cart\r\n  cart.customCart({\r\n    // api: \"https://624eadac53326d0cfe5dba36.mockapi.io/cart\",\r\n    // onSuccess: (type) => {\r\n    //   if(type === 'add') {\r\n    //     message.success(menuTextConfig.add_to_cart_success_text);\r\n    //   }\r\n    //   if(type === 'delete') {\r\n    //     message.success(menuTextConfig.remove_from_cart_success_text);\r\n    //   }\r\n    // },\r\n    // onError: (type) => {\r\n    //   if(type === 'add') {\r\n    //     message.error(menuTextConfig.add_to_cart_error_text);\r\n    //   }\r\n    //   if(type === 'delete') {\r\n    //     message.error(menuTextConfig.remove_from_cart_error_text);\r\n    //   }\r\n    // },\r\n    // totalPrice: 12345,\r\n    link: \"mycart.html\"\r\n  })\r\n  // button popup\r\n  const btnCart = document.querySelector('.veda-cart-toggle-js');\r\n  if (!btnCart) {\r\n    return;\r\n  }\r\n  btnCart.addEventListener('click', () => {\r\n    cart.toggleDraw();\r\n  });\r\n  // cart badge\r\n  // TODO: Shopify cart\r\n  const cartBadge = document.querySelector('.veda-cart-badge-js');\r\n  cartBadge.innerHTML = cart.getData()?.items?.length ?? \"0\";\r\n  cart.getData().length ? cartBadge.style.display = 'flex' : cartBadge.style.display = 'none';\r\n  cart.subscribe((state) => {\r\n    cartBadge.innerHTML = state.items.length;\r\n    cart.getData().items.length ? cartBadge.style.display = 'flex' : cartBadge.style.display = 'none';\r\n  });\r\n  // const cartBadge = document.querySelector('.veda-cart-badge-js');\r\n  // cartBadge.innerHTML = cart.getData()?.length??\"0\";\r\n  // cart.getData().length ? cartBadge.style.display = 'flex' : cartBadge.style.display = 'none';\r\n  // cart.subscribe((state) => {\r\n  //   cartBadge.innerHTML = state.length;\r\n  //   cart.getData().length ? cartBadge.style.display = 'flex' : cartBadge.style.display = 'none';\r\n  // });\r\n}\r\ninitCompare();\r\ninitWishList();\r\ninitCart();\r\n\r\n","liquid":"{% liquid\r\n  if section_settings.background_fixed assign backgroundFixed = 'fixed' else assign backgroundFixed = 'scroll' endif\r\n  if section_settings.background_type == 'color' assign backgroundColor = 'background-color: ' | append: section_settings.background_color | append: ';' else assign backgroundColor = '' endif\r\n  if section_settings.background_type == 'image' assign backgroundImage = 'background-image: url(' | append: section_settings.background_image | append:\r\n  ');background-attachment: ' | append: backgroundFixed | append: ';background-size: ' | append: section_settings.background_size | append: ';' else assign backgroundImage = '' endif\r\n  assign sectionPadding = 'padding-top: ' | append: section_settings.padding.top | append: 'px;padding-right: ' | append: section_settings.padding.right | append: 'px;padding-bottom: ' | append: section_settings.padding.bottom | append: 'px;padding-left: ' | append: section_settings.padding.left | append: 'px;'\r\n%}\r\n\r\n<nav data-id=\"{{uniqueId}}\" class=\"nav\" id=\"nav\" css=\"{{ backgroundColor }}{{ backgroundImage }}{{ sectionPadding }}\">\r\n  {% if section_settings.background_overlay_enable %}\r\n    <div class=\"pos:absolute ins:0 z:-1\" css=\"background-color: {{ section_settings.background_overlay_color }}\"></div>\r\n  {% endif %}\r\n  <script class=\"menu-text-config-js\" type=\"application/json\">{{text_menu_config | json}}</script>\r\n  <div class=\"container d:flex ai:center jc:space-between maw:100% p:0\">\r\n      <div class=\"h:60px! ovy:hidden\">\r\n        <div class=\"ovx:auto h:80px\">\r\n          <ul class=\"d:flex ai:center m:0 pt:0 pb:0 h:60px list-style:none pl:15px pl:55px!@md\">\r\n            {% if logo.enable %}\r\n              <li class=\"d:inline-block w:auto ml:15px@md h:42px\">\r\n                <a href=\"{{logo.link}}\" class=\"d:flex w:100% h:100% ai:center\">\r\n                  <img class=\"w:100% h:100%\" src=\"{{logo.logo_image}}\" alt=\"{{logo.logo_text}}\">\r\n                  <div class=\"fz:17px fw:800 cur:pointer c:color-light-freeze whs:nowrap tt:uppercase bdr:1px_solid_color-light-freeze pr:15px\">{{logo.logo_text}}</div>\r\n                </a>\r\n              </li>\r\n            {% else %}\r\n              <li class=\"d:inline-block bdr:1px_solid_color-light\">\r\n                <a href=\"/\" class=\"w:100% pl:15px pr:15px fz:17px fw:800 cur:pointer c:color-light-freeze whs:nowrap tt:uppercase\">{{logo.logo_text}}</a>\r\n              </li>\r\n            {% endif %}\r\n            {% for item in navigation %}\r\n              <li class=\"d:inline-block bdr:1px_solid_color-light-freeze bd:none|lc\">\r\n                <a href=\"{{item.link}}\" class=\"w:100% pl:15px pr:15px fz:17px fw:800 cur:pointer c:color-light-freeze whs:nowrap tt:uppercase\">{{item.label}}</a>\r\n              </li>\r\n            {% endfor %}\r\n          </ul>\r\n        </div>\r\n      </div>\r\n      <div>\r\n        <div class=\"h:100% d:flex jc:flex-end ai:center c:color-light fz:20px pr:15px pr:70px@md\">\r\n          {% if account_enable %}\r\n          <a href=\"#\">\r\n            <span class=\"ml:10px mr:10px cur:pointer c:color-light-freeze\">\r\n              {{account_icon}}\r\n            </span>\r\n          </a>\r\n          {% endif %}\r\n          {% if compare_enable %}\r\n            <span class=\"veda-compare-toggle-js pos:relative cur:pointer\" data-options='{\r\n              compareOptionsTitle: {{ compareOptionsTitle | split: ', ' | json }},\r\n            }'>\r\n              <span class=\"ml:10px mr:10px cur:pointer c:color-light-freeze\">\r\n                {{compare_icon}}\r\n              </span>\r\n              <div class=\"veda-compare-badge-js d:flex jc:center ai:center c:color-light-freeze pos:absolute b:50% l:75% miw:16px h:16px fz:9px bdrs:8px bgc:red fw:500 pl:2px pr:2px\"></div>\r\n            </span>\r\n          {% endif %}\r\n          {% if wishlist_enable %}\r\n            <a href=\"#\" class=\"pos:relative c:color-light-freeze|h! c:color-light-freeze!\">\r\n              <span class=\"ml:10px mr:10px cur:pointer c:color-light-freeze c:color-light-freeze|h!\">\r\n                {{wishlist_icon}}\r\n              </span>\r\n              <div class=\"veda-wishlist-badge-js d:flex jc:center ai:center c:color-light-freeze pos:absolute b:50% l:75% miw:16px h:16px fz:9px bdrs:8px bgc:red fw:500 c:color-light-freeze! pl:2px pr:2px\"></div>\r\n            </a>\r\n          {% endif %}\r\n          {% if cart_enable %}\r\n            <span class=\"veda-cart-toggle-js pos:relative\">\r\n              <span class=\"ml:10px mr:10px cur:pointer c:color-light-freeze!\">\r\n                {{cart_icon}}\r\n              </span>\r\n              <div class=\"veda-cart-badge-js d:flex jc:center ai:center c:color-light-freeze pos:absolute b:50% l:75% miw:16px h:16px fz:9px bdrs:8px bgc:red fw:500 pl:2px pr:2px\"></div>\r\n            </span>\r\n          {% endif %}\r\n        </div>\r\n      </div>\r\n\r\n  </div>\r\n</nav>\r\n","schema":{"blocks":[{"id":"id_b527cbd8-7c8d-4a0a-99e1-4000f6054ecc","children":[{"children":false,"type":"switch","label":"Background Fixed","summary":"","name":"background_fixed","id":"id_b200eaf3-3314-4877-903a-a1a71f26cd59","disable":false},{"children":"none","type":"select","label":"Background Type","summary":"","name":"background_type","id":"id_afbeef07-4e05-4146-b726-04017e1baa93","disable":false,"options":[{"label":"Image","value":"image","id":"cbd0d91c-8837-45e9-9f04-ae75128ddee6"},{"label":"Color","value":"color","id":"8bf28576-4708-48c0-ad55-a54b5cf2380f"},{"label":"None","value":"none","id":"efa7ac1c-74bd-4f00-b8b3-d977a0caab94"}]},{"children":"","type":"image","label":"Background Image","summary":"","name":"background_image","id":"id_c04c613a-0afc-416c-adf2-712a76352b40","disable":false,"deps":"section_settings.background_type === \"image\""},{"children":"#fff","type":"color","label":"Background Color","summary":"","name":"background_color","id":"id_c434bade-3074-4a83-8ea3-f757a84a706e","disable":false,"deps":"section_settings.background_type === \"color\""},{"children":"cover","type":"select","label":"Background Size","summary":"","name":"background_size","id":"id_ee874029-3fd3-41ff-829d-459aa468a206","disable":false,"options":[{"label":"Cover","value":"cover","id":"7d36a23a-33f0-4f24-983a-f19c64e44647"},{"label":"Contain","value":"contain","id":"aea4b39e-e4c5-4204-931b-80ce53afd9f6"}]},{"children":false,"type":"switch","label":"Background Overlay Enable","summary":"","name":"background_overlay_enable","id":"id_31a8d767-ad23-44ae-93c1-1af3cbddd53f","disable":false},{"children":"#fff","type":"color","label":"Background Overlay Color","summary":"","name":"background_overlay_color","id":"id_9917fa37-c2f6-49d9-90a0-c568b52e68a1","disable":false},{"children":{"left":0},"type":"space","label":"Padding","summary":"","name":"padding","id":"id_d22bf2bb-f581-43ce-91d2-a5999dec69f7","disable":false}],"type":"object","label":"Section Settings","summary":"","name":"section_settings","open":false,"drawer":false,"disable":false},{"id":"id_cda7e8f8-4c2c-40dd-a6b1-3b239192cd5f","children":[{"children":true,"type":"switch","label":"Enable","summary":"","name":"enable","id":"id_9f0110c1-2f4c-414a-be9d-fc088589d08b","disable":false},{"children":"","type":"image","label":"Logo Image","summary":"","name":"logo_image","id":"id_a8f10605-5c5f-4b66-b876-fde5ad010a07","disable":false},{"children":"Yasmina","type":"text","label":"Logo Text","summary":"","name":"logo_text","id":"id_1be82cfc-cc90-477f-89bb-b7ad12c696ad","disable":false},{"children":"","type":"linkPicker","label":"Link","summary":"","name":"link","id":"id_8d402af7-5691-467c-9287-4013bce91b15","disable":false}],"type":"object","label":"Logo","summary":"","name":"logo","open":false,"drawer":false,"disable":false},{"id":"id_8dbad697-880d-47a2-826f-88b103969c4a","children":[{"children":"Label","type":"text","label":"Label","summary":"","name":"label","id":"id_a8506ca1-43a9-4296-8c8d-adec4b660b90","disable":false},{"children":"","type":"linkPicker","label":"Link","summary":"","name":"link","id":"id_189a997f-fe04-4a62-8bc9-033b28a3c638","disable":false}],"type":"array","label":"Navigation","summary":"","name":"navigation","open":false,"drawer":false,"disable":false},{"id":"id_458fbefe-5a16-4b4d-b274-585fb8259d24","children":[{"children":"Add to Cart","type":"text","label":"Add to Cart Success Text","summary":"","name":"add_to_cart_success_text","id":"id_67a343f9-d7f5-4b3f-abef-03c88abfdfca","disable":false},{"children":"Add to Cart Error","type":"text","label":"Add to Cart Error Text","summary":"","name":"add_to_cart_error_text","id":"id_409de0c2-7319-4f26-a09d-d6b48640af84","disable":false},{"children":"Remove From Cart","type":"text","label":"Remove From Cart Success Text","summary":"","name":"remove_from_cart_success_text","id":"id_1a0e46e5-919c-438c-80cf-e8fc3d071134","disable":false},{"children":"Remove from cart error","type":"text","label":"Remove From Cart Error Text","summary":"","name":"remove_from_cart_error_text","id":"id_298a8e90-7f47-49e6-b014-c8ea3a6ae872","disable":false}],"type":"object","label":"Text Menu Config","summary":"","name":"text_menu_config","open":false,"drawer":false,"disable":false}],"settings":[{"id":"id_00eee446-17b8-4226-8e3e-81994103b45e","type":"switch","children":true,"label":"Account Enable","summary":"","name":"account_enable","disable":false},{"id":"id_60443427-1eee-4c96-9fc0-1c1063cc1f4f","type":"icon","children":"<i class=\"far fa-atom\"></i>","label":"Account Icon","summary":"","name":"account_icon","disable":false},{"id":"id_8180dc91-1767-405f-993d-42326744294f","type":"switch","children":true,"label":"Compare Enable","summary":"","name":"compare_enable","disable":false},{"id":"id_794bd20b-8b4d-497e-b225-24bdd068dd52","type":"icon","children":"<i class=\"far fa-atom\"></i>","label":"Compare Icon","summary":"","name":"compare_icon","disable":false},{"id":"id_b837cdc7-7bdd-4467-919c-5942615ced99","type":"switch","children":true,"label":"Wishlist Enable","summary":"","name":"wishlist_enable","disable":false},{"id":"id_8a273c0b-7764-4a09-9518-0e38cb842e79","type":"icon","children":"<i class=\"far fa-atom\"></i>","label":"Wishlist Icon","summary":"","name":"wishlist_icon","disable":false},{"id":"id_6115af6f-b729-49b2-b618-029781583dc8","type":"switch","children":true,"label":"Cart Enable","summary":"","name":"cart_enable","disable":false},{"id":"id_b5201fe1-d2e6-42a6-a814-134da5c68d96","type":"icon","children":"<i class=\"far fa-atom\"></i>","label":"Cart Icon","summary":"","name":"cart_icon","disable":false},{"id":"id_ec5d1015-986e-423d-ae93-551550ca4e0e","type":"tags","children":"Color,Size","label":"Compare Options Title","summary":"","name":"compareOptionsTitle","disable":false}]},"scss":"$container: \"[data-id='#{$uniqueId}']\";","settings":[{"id":"id_b527cbd8-7c8d-4a0a-99e1-4000f6054ecc","children":[{"children":false,"type":"switch","label":"Background Fixed","summary":"","name":"background_fixed","id":"id_b200eaf3-3314-4877-903a-a1a71f26cd59","disable":false},{"children":"color","type":"select","label":"Background Type","summary":"","name":"background_type","id":"id_afbeef07-4e05-4146-b726-04017e1baa93","disable":false,"options":[{"label":"Image","value":"image","id":"cbd0d91c-8837-45e9-9f04-ae75128ddee6"},{"label":"Color","value":"color","id":"8bf28576-4708-48c0-ad55-a54b5cf2380f"},{"label":"None","value":"none","id":"efa7ac1c-74bd-4f00-b8b3-d977a0caab94"}]},{"children":"","type":"image","label":"Background Image","summary":"","name":"background_image","id":"id_c04c613a-0afc-416c-adf2-712a76352b40","disable":false,"deps":"section_settings.background_type === \"image\""},{"children":"var(--color-dark)","type":"color","label":"Background Color","summary":"","name":"background_color","id":"id_c434bade-3074-4a83-8ea3-f757a84a706e","disable":false,"deps":"section_settings.background_type === \"color\""},{"children":"cover","type":"select","label":"Background Size","summary":"","name":"background_size","id":"id_ee874029-3fd3-41ff-829d-459aa468a206","disable":false,"options":[{"label":"Cover","value":"cover","id":"7d36a23a-33f0-4f24-983a-f19c64e44647"},{"label":"Contain","value":"contain","id":"aea4b39e-e4c5-4204-931b-80ce53afd9f6"}]},{"children":false,"type":"switch","label":"Background Overlay Enable","summary":"","name":"background_overlay_enable","id":"id_31a8d767-ad23-44ae-93c1-1af3cbddd53f","disable":false},{"children":"#fff","type":"color","label":"Background Overlay Color","summary":"","name":"background_overlay_color","id":"id_9917fa37-c2f6-49d9-90a0-c568b52e68a1","disable":false},{"children":{"left":0,"top":0,"right":0,"bottom":0},"type":"space","label":"Padding","summary":"","name":"padding","id":"id_d22bf2bb-f581-43ce-91d2-a5999dec69f7","disable":false}],"type":"object","label":"Section Settings","summary":"","name":"section_settings","open":false,"drawer":false,"disable":false},{"id":"id_cda7e8f8-4c2c-40dd-a6b1-3b239192cd5f","children":[{"children":true,"type":"switch","label":"Enable","summary":"","name":"enable","id":"id_9f0110c1-2f4c-414a-be9d-fc088589d08b","disable":false},{"children":"https://shopify-theme-yasmina.netlify.app/img/yasmina-logo.png","type":"image","label":"Logo Image","summary":"","name":"logo_image","id":"id_a8f10605-5c5f-4b66-b876-fde5ad010a07","disable":false},{"children":"Yasmina","type":"text","label":"Logo Text","summary":"","name":"logo_text","id":"id_1be82cfc-cc90-477f-89bb-b7ad12c696ad","disable":false},{"children":"","type":"linkPicker","label":"Link","summary":"","name":"link","id":"id_8d402af7-5691-467c-9287-4013bce91b15","disable":false}],"type":"object","label":"Logo","summary":"","name":"logo","open":false,"drawer":false,"disable":false},{"id":"id_8dbad697-880d-47a2-826f-88b103969c4a","children":[{"id":"2b1f004d-70e1-4087-aa4d-fd397d5a018f","children":[{"children":"GENTLEMEN","type":"text","label":"Label","summary":"","name":"label","id":"id_a8506ca1-43a9-4296-8c8d-adec4b660b90","disable":false},{"children":"","type":"linkPicker","label":"Link","summary":"","name":"link","id":"id_189a997f-fe04-4a62-8bc9-033b28a3c638","disable":false}]},{"id":"def9e1f1-6c3a-4214-99dd-f4b9a9714997","children":[{"children":"BELLE DOLL","type":"text","label":"Label","summary":"","name":"label","id":"id_a8506ca1-43a9-4296-8c8d-adec4b660b90","disable":false},{"children":"","type":"linkPicker","label":"Link","summary":"","name":"link","id":"id_189a997f-fe04-4a62-8bc9-033b28a3c638","disable":false}]},{"id":"eb5723f7-1734-4ae2-92b2-f65c1d3351b2","children":[{"children":"AMBER.","type":"text","label":"Label","summary":"","name":"label","id":"id_a8506ca1-43a9-4296-8c8d-adec4b660b90","disable":false},{"children":"","type":"linkPicker","label":"Link","summary":"","name":"link","id":"id_189a997f-fe04-4a62-8bc9-033b28a3c638","disable":false}]},{"id":"760d6a23-f9d9-4194-9d85-640ed16d3a80","children":[{"children":"GLASSY","type":"text","label":"Label","summary":"","name":"label","id":"id_a8506ca1-43a9-4296-8c8d-adec4b660b90","disable":false},{"children":"","type":"linkPicker","label":"Link","summary":"","name":"link","id":"id_189a997f-fe04-4a62-8bc9-033b28a3c638","disable":false}]}],"type":"array","label":"Navigation","summary":"","name":"navigation","open":false,"drawer":false,"disable":false},{"id":"id_458fbefe-5a16-4b4d-b274-585fb8259d24","children":[{"children":"Add to Cart","type":"text","label":"Add to Cart Success Text","summary":"","name":"add_to_cart_success_text","id":"id_67a343f9-d7f5-4b3f-abef-03c88abfdfca","disable":false},{"children":"Add to Cart Error","type":"text","label":"Add to Cart Error Text","summary":"","name":"add_to_cart_error_text","id":"id_409de0c2-7319-4f26-a09d-d6b48640af84","disable":false},{"children":"Remove From Cart","type":"text","label":"Remove From Cart Success Text","summary":"","name":"remove_from_cart_success_text","id":"id_1a0e46e5-919c-438c-80cf-e8fc3d071134","disable":false},{"children":"Remove from cart error","type":"text","label":"Remove From Cart Error Text","summary":"","name":"remove_from_cart_error_text","id":"id_298a8e90-7f47-49e6-b014-c8ea3a6ae872","disable":false}],"type":"object","label":"Text Menu Config","summary":"","name":"text_menu_config","open":false,"drawer":false,"disable":false},{"id":"id_00eee446-17b8-4226-8e3e-81994103b45e","type":"switch","children":true,"label":"Account Enable","summary":"","name":"account_enable","disable":false},{"id":"id_8180dc91-1767-405f-993d-42326744294f","type":"switch","children":true,"label":"Compare Enable","summary":"","name":"compare_enable","disable":false},{"id":"id_b837cdc7-7bdd-4467-919c-5942615ced99","type":"switch","children":true,"label":"Wishlist Enable","summary":"","name":"wishlist_enable","disable":false},{"id":"id_6115af6f-b729-49b2-b618-029781583dc8","type":"switch","children":true,"label":"Cart Enable","summary":"","name":"cart_enable","disable":false},{"id":"id_b5201fe1-d2e6-42a6-a814-134da5c68d96","type":"icon","children":"<i class=\"far fa-shopping-cart\"></i>","label":"Cart Icon","summary":"","name":"cart_icon","disable":false},{"id":"id_ec5d1015-986e-423d-ae93-551550ca4e0e","type":"tags","children":"","label":"Compare Options Title","summary":"","name":"compareOptionsTitle","disable":false},{"id":"id_8a273c0b-7764-4a09-9518-0e38cb842e79","type":"icon","children":"<i class=\"far fa-heart\"></i>","label":"Wishlist Icon","summary":"","name":"wishlist_icon","disable":false},{"id":"id_794bd20b-8b4d-497e-b225-24bdd068dd52","type":"icon","children":"<i class=\"far fa-repeat\"></i>","label":"Compare Icon","summary":"","name":"compare_icon","disable":false},{"id":"id_60443427-1eee-4c96-9fc0-1c1063cc1f4f","type":"icon","children":"<i class=\"far fa-user\"></i>","label":"Account Icon","summary":"","name":"account_icon","disable":false}]},"scope":"publish","pageTypes":["page","product","collection","article","home"],"type":"default","sample":true,"enable":true,"userId":1,"synced":false,"category":{"commandId":"62aaa8add316833cf19c25cf","name":"header"},"modifiedDateTimestamp":1657767068600,"parentCommandId":"","changelog":{"version":"1.1","versionId":"","content":""},"categoryId":"header"}
+{
+  "id": "id_381717bc-a67b-4e7f-972e-3647cfba88de",
+  "commandId": "62ce86f6bc769449134408bb",
+  "label": "Menu Yasmina",
+  "image": {
+    "src": "",
+    "width": 0,
+    "height": 0
+  },
+  "addonIds": [],
+  "megaMenuId": "",
+  "currentVersion": "1.0",
+  "versionId": "7f7ae2b4-094f-4ba4-a307-b2b0006d31b0",
+  "data": {
+    "js": "\r\nconst { message, productCompare, productWishList, cart } = veda.plugins;\r\nconst menuTextConfig = JSON.parse(container.querySelector(\".menu-text-config-js\").textContent);\r\nfunction initCompare() {\r\n  const btnComparePopup = document.querySelector('.veda-compare-toggle-js');\r\n  if (!btnComparePopup) {\r\n    return;\r\n  }\r\n  const dataCompareOptions = btnComparePopup.getAttribute('data-options');\r\n  productCompare.customCompare(veda.utils.objectParse(dataCompareOptions));\r\n  //button popup\r\n  btnComparePopup.addEventListener('click', () => {\r\n    productCompare.togglePopup();\r\n  });\r\n  // compare badge\r\n  const compareBadge = document.querySelector('.veda-compare-badge-js');\r\n  compareBadge.innerHTML = productCompare.getData().length;\r\n  productCompare.getData().length ? compareBadge.style.display = 'flex' : compareBadge.style.display = 'none';\r\n  productCompare.subscribe((state) => {\r\n    compareBadge.innerHTML = state.length;\r\n    state.length ? compareBadge.style.display = 'flex' : compareBadge.style.display = 'none';\r\n  });\r\n}\r\nfunction initWishList() {\r\n  //wishlist badge\r\n  const wishlistBadge = document.querySelector('.veda-wishlist-badge-js');\r\n  if (!wishlistBadge) {\r\n    return;\r\n  }\r\n  wishlistBadge.innerHTML = productWishList.getData()?.length ?? \"0\";\r\n  productWishList.getData().length ? wishlistBadge.style.display = 'flex' : wishlistBadge.style.display = 'none';\r\n  productWishList.subscribe((state) => {\r\n    wishlistBadge.innerHTML = state.length;\r\n    productWishList.getData().length ? wishlistBadge.style.display = 'flex' : wishlistBadge.style.display = 'none';\r\n  });\r\n}\r\nfunction initCart() {\r\n  //init cart\r\n  cart.customCart({\r\n    // api: \"https://624eadac53326d0cfe5dba36.mockapi.io/cart\",\r\n    // onSuccess: (type) => {\r\n    //   if(type === 'add') {\r\n    //     message.success(menuTextConfig.add_to_cart_success_text);\r\n    //   }\r\n    //   if(type === 'delete') {\r\n    //     message.success(menuTextConfig.remove_from_cart_success_text);\r\n    //   }\r\n    // },\r\n    // onError: (type) => {\r\n    //   if(type === 'add') {\r\n    //     message.error(menuTextConfig.add_to_cart_error_text);\r\n    //   }\r\n    //   if(type === 'delete') {\r\n    //     message.error(menuTextConfig.remove_from_cart_error_text);\r\n    //   }\r\n    // },\r\n    // totalPrice: 12345,\r\n    link: \"mycart.html\"\r\n  })\r\n  // button popup\r\n  const btnCart = document.querySelector('.veda-cart-toggle-js');\r\n  if (!btnCart) {\r\n    return;\r\n  }\r\n  btnCart.addEventListener('click', () => {\r\n    cart.toggleDraw();\r\n  });\r\n  // cart badge\r\n  // TODO: Shopify cart\r\n  const cartBadge = document.querySelector('.veda-cart-badge-js');\r\n  cartBadge.innerHTML = cart.getData()?.items?.length ?? \"0\";\r\n  cart.getData().length ? cartBadge.style.display = 'flex' : cartBadge.style.display = 'none';\r\n  cart.subscribe((state) => {\r\n    cartBadge.innerHTML = state.items.length;\r\n    cart.getData().items.length ? cartBadge.style.display = 'flex' : cartBadge.style.display = 'none';\r\n  });\r\n  // const cartBadge = document.querySelector('.veda-cart-badge-js');\r\n  // cartBadge.innerHTML = cart.getData()?.length??\"0\";\r\n  // cart.getData().length ? cartBadge.style.display = 'flex' : cartBadge.style.display = 'none';\r\n  // cart.subscribe((state) => {\r\n  //   cartBadge.innerHTML = state.length;\r\n  //   cart.getData().length ? cartBadge.style.display = 'flex' : cartBadge.style.display = 'none';\r\n  // });\r\n}\r\ninitCompare();\r\ninitWishList();\r\ninitCart();\r\n\r\n",
+    "liquid": "{% liquid\r\n  if section_settings.background_fixed assign backgroundFixed = 'fixed' else assign backgroundFixed = 'scroll' endif\r\n  if section_settings.background_type == 'color' assign backgroundColor = 'background-color: ' | append: section_settings.background_color | append: ';' else assign backgroundColor = '' endif\r\n  if section_settings.background_type == 'image' assign backgroundImage = 'background-image: url(' | append: section_settings.background_image | append:\r\n  ');background-attachment: ' | append: backgroundFixed | append: ';background-size: ' | append: section_settings.background_size | append: ';' else assign backgroundImage = '' endif\r\n  assign sectionPadding = 'padding-top: ' | append: section_settings.padding.top | append: 'px;padding-right: ' | append: section_settings.padding.right | append: 'px;padding-bottom: ' | append: section_settings.padding.bottom | append: 'px;padding-left: ' | append: section_settings.padding.left | append: 'px;'\r\n%}\r\n\r\n<nav data-id=\"{{uniqueId}}\" class=\"nav\" id=\"nav\" css=\"{{ backgroundColor }}{{ backgroundImage }}{{ sectionPadding }}\">\r\n  {% if section_settings.background_overlay_enable %}\r\n    <div class=\"pos:absolute ins:0 z:-1\" css=\"background-color: {{ section_settings.background_overlay_color }}\"></div>\r\n  {% endif %}\r\n  <script class=\"menu-text-config-js\" type=\"application/json\">{{text_menu_config | json}}</script>\r\n  <div class=\"container d:flex ai:center jc:space-between maw:100% p:0\">\r\n      <div class=\"h:60px! ovy:hidden\">\r\n        <div class=\"ovx:auto h:80px\">\r\n          <ul class=\"d:flex ai:center m:0 pt:0 pb:0 h:60px list-style:none pl:15px pl:55px!@md\">\r\n            {% if logo.enable %}\r\n              <li class=\"d:inline-block w:auto ml:15px@md h:42px\">\r\n                <a href=\"{{logo.link}}\" class=\"d:flex w:100% h:100% ai:center\">\r\n                  <img class=\"w:100% h:100%\" src=\"{{logo.logo_image}}\" alt=\"{{logo.logo_text}}\">\r\n                  <div class=\"fz:17px fw:800 cur:pointer c:color-light-freeze whs:nowrap tt:uppercase bdr:1px_solid_color-light-freeze pr:15px\">{{logo.logo_text}}</div>\r\n                </a>\r\n              </li>\r\n            {% else %}\r\n              <li class=\"d:inline-block bdr:1px_solid_color-light\">\r\n                <a href=\"/\" class=\"w:100% pl:15px pr:15px fz:17px fw:800 cur:pointer c:color-light-freeze whs:nowrap tt:uppercase\">{{logo.logo_text}}</a>\r\n              </li>\r\n            {% endif %}\r\n            {% for item in navigation %}\r\n              <li class=\"d:inline-block bdr:1px_solid_color-light-freeze bd:none|lc\">\r\n                <a href=\"{{item.link}}\" class=\"w:100% pl:15px pr:15px fz:17px fw:800 cur:pointer c:color-light-freeze whs:nowrap tt:uppercase\">{{item.label}}</a>\r\n              </li>\r\n            {% endfor %}\r\n          </ul>\r\n        </div>\r\n      </div>\r\n      <div>\r\n        <div class=\"h:100% d:flex jc:flex-end ai:center c:color-light fz:20px pr:15px pr:70px@md\">\r\n          {% if account_enable %}\r\n          <a href=\"#\">\r\n            <span class=\"ml:10px mr:10px cur:pointer c:color-light-freeze\">\r\n              {{account_icon}}\r\n            </span>\r\n          </a>\r\n          {% endif %}\r\n          {% if compare_enable %}\r\n            <span class=\"veda-compare-toggle-js pos:relative cur:pointer\" data-options='{\r\n              compareOptionsTitle: {{ compareOptionsTitle | split: ', ' | json }},\r\n            }'>\r\n              <span class=\"ml:10px mr:10px cur:pointer c:color-light-freeze\">\r\n                {{compare_icon}}\r\n              </span>\r\n              <div class=\"veda-compare-badge-js d:flex jc:center ai:center c:color-light-freeze pos:absolute b:50% l:75% miw:16px h:16px fz:9px bdrs:8px bgc:red fw:500 pl:2px pr:2px\"></div>\r\n            </span>\r\n          {% endif %}\r\n          {% if wishlist_enable %}\r\n            <a href=\"#\" class=\"pos:relative c:color-light-freeze|h! c:color-light-freeze!\">\r\n              <span class=\"ml:10px mr:10px cur:pointer c:color-light-freeze c:color-light-freeze|h!\">\r\n                {{wishlist_icon}}\r\n              </span>\r\n              <div class=\"veda-wishlist-badge-js d:flex jc:center ai:center c:color-light-freeze pos:absolute b:50% l:75% miw:16px h:16px fz:9px bdrs:8px bgc:red fw:500 c:color-light-freeze! pl:2px pr:2px\"></div>\r\n            </a>\r\n          {% endif %}\r\n          {% if cart_enable %}\r\n            <span class=\"veda-cart-toggle-js pos:relative\">\r\n              <span class=\"ml:10px mr:10px cur:pointer c:color-light-freeze!\">\r\n                {{cart_icon}}\r\n              </span>\r\n              <div class=\"veda-cart-badge-js d:flex jc:center ai:center c:color-light-freeze pos:absolute b:50% l:75% miw:16px h:16px fz:9px bdrs:8px bgc:red fw:500 pl:2px pr:2px\"></div>\r\n            </span>\r\n          {% endif %}\r\n        </div>\r\n      </div>\r\n\r\n  </div>\r\n</nav>\r\n",
+    "schema": {
+      "blocks": [{
+        "id": "id_b527cbd8-7c8d-4a0a-99e1-4000f6054ecc",
+        "children": [{
+          "children": false,
+          "type": "switch",
+          "label": "Background Fixed",
+          "summary": "",
+          "name": "background_fixed",
+          "id": "id_b200eaf3-3314-4877-903a-a1a71f26cd59",
+          "disable": false
+        }, {
+          "children": "none",
+          "type": "select",
+          "label": "Background Type",
+          "summary": "",
+          "name": "background_type",
+          "id": "id_afbeef07-4e05-4146-b726-04017e1baa93",
+          "disable": false,
+          "options": [{
+            "label": "Image",
+            "value": "image",
+            "id": "cbd0d91c-8837-45e9-9f04-ae75128ddee6"
+          }, {
+            "label": "Color",
+            "value": "color",
+            "id": "8bf28576-4708-48c0-ad55-a54b5cf2380f"
+          }, {
+            "label": "None",
+            "value": "none",
+            "id": "efa7ac1c-74bd-4f00-b8b3-d977a0caab94"
+          }]
+        }, {
+          "children": "",
+          "type": "image",
+          "label": "Background Image",
+          "summary": "",
+          "name": "background_image",
+          "id": "id_c04c613a-0afc-416c-adf2-712a76352b40",
+          "disable": false,
+          "deps": "section_settings.background_type === \"image\""
+        }, {
+          "children": "#fff",
+          "type": "color",
+          "label": "Background Color",
+          "summary": "",
+          "name": "background_color",
+          "id": "id_c434bade-3074-4a83-8ea3-f757a84a706e",
+          "disable": false,
+          "deps": "section_settings.background_type === \"color\""
+        }, {
+          "children": "cover",
+          "type": "select",
+          "label": "Background Size",
+          "summary": "",
+          "name": "background_size",
+          "id": "id_ee874029-3fd3-41ff-829d-459aa468a206",
+          "disable": false,
+          "options": [{
+            "label": "Cover",
+            "value": "cover",
+            "id": "7d36a23a-33f0-4f24-983a-f19c64e44647"
+          }, {
+            "label": "Contain",
+            "value": "contain",
+            "id": "aea4b39e-e4c5-4204-931b-80ce53afd9f6"
+          }]
+        }, {
+          "children": false,
+          "type": "switch",
+          "label": "Background Overlay Enable",
+          "summary": "",
+          "name": "background_overlay_enable",
+          "id": "id_31a8d767-ad23-44ae-93c1-1af3cbddd53f",
+          "disable": false
+        }, {
+          "children": "#fff",
+          "type": "color",
+          "label": "Background Overlay Color",
+          "summary": "",
+          "name": "background_overlay_color",
+          "id": "id_9917fa37-c2f6-49d9-90a0-c568b52e68a1",
+          "disable": false
+        }, {
+          "children": {
+            "left": 0
+          },
+          "type": "space",
+          "label": "Padding",
+          "summary": "",
+          "name": "padding",
+          "id": "id_d22bf2bb-f581-43ce-91d2-a5999dec69f7",
+          "disable": false
+        }],
+        "type": "object",
+        "label": "Section Settings",
+        "summary": "",
+        "name": "section_settings",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_cda7e8f8-4c2c-40dd-a6b1-3b239192cd5f",
+        "children": [{
+          "children": true,
+          "type": "switch",
+          "label": "Enable",
+          "summary": "",
+          "name": "enable",
+          "id": "id_9f0110c1-2f4c-414a-be9d-fc088589d08b",
+          "disable": false
+        }, {
+          "children": "",
+          "type": "image",
+          "label": "Logo Image",
+          "summary": "",
+          "name": "logo_image",
+          "id": "id_a8f10605-5c5f-4b66-b876-fde5ad010a07",
+          "disable": false
+        }, {
+          "children": "Yasmina",
+          "type": "text",
+          "label": "Logo Text",
+          "summary": "",
+          "name": "logo_text",
+          "id": "id_1be82cfc-cc90-477f-89bb-b7ad12c696ad",
+          "disable": false
+        }, {
+          "children": "",
+          "type": "linkPicker",
+          "label": "Link",
+          "summary": "",
+          "name": "link",
+          "id": "id_8d402af7-5691-467c-9287-4013bce91b15",
+          "disable": false
+        }],
+        "type": "object",
+        "label": "Logo",
+        "summary": "",
+        "name": "logo",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_8dbad697-880d-47a2-826f-88b103969c4a",
+        "children": [{
+          "children": "Label",
+          "type": "text",
+          "label": "Label",
+          "summary": "",
+          "name": "label",
+          "id": "id_a8506ca1-43a9-4296-8c8d-adec4b660b90",
+          "disable": false
+        }, {
+          "children": "",
+          "type": "linkPicker",
+          "label": "Link",
+          "summary": "",
+          "name": "link",
+          "id": "id_189a997f-fe04-4a62-8bc9-033b28a3c638",
+          "disable": false
+        }],
+        "type": "array",
+        "label": "Navigation",
+        "summary": "",
+        "name": "navigation",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_458fbefe-5a16-4b4d-b274-585fb8259d24",
+        "children": [{
+          "children": "Add to Cart",
+          "type": "text",
+          "label": "Add to Cart Success Text",
+          "summary": "",
+          "name": "add_to_cart_success_text",
+          "id": "id_67a343f9-d7f5-4b3f-abef-03c88abfdfca",
+          "disable": false
+        }, {
+          "children": "Add to Cart Error",
+          "type": "text",
+          "label": "Add to Cart Error Text",
+          "summary": "",
+          "name": "add_to_cart_error_text",
+          "id": "id_409de0c2-7319-4f26-a09d-d6b48640af84",
+          "disable": false
+        }, {
+          "children": "Remove From Cart",
+          "type": "text",
+          "label": "Remove From Cart Success Text",
+          "summary": "",
+          "name": "remove_from_cart_success_text",
+          "id": "id_1a0e46e5-919c-438c-80cf-e8fc3d071134",
+          "disable": false
+        }, {
+          "children": "Remove from cart error",
+          "type": "text",
+          "label": "Remove From Cart Error Text",
+          "summary": "",
+          "name": "remove_from_cart_error_text",
+          "id": "id_298a8e90-7f47-49e6-b014-c8ea3a6ae872",
+          "disable": false
+        }],
+        "type": "object",
+        "label": "Text Menu Config",
+        "summary": "",
+        "name": "text_menu_config",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }],
+      "settings": [{
+        "id": "id_00eee446-17b8-4226-8e3e-81994103b45e",
+        "type": "switch",
+        "children": true,
+        "label": "Account Enable",
+        "summary": "",
+        "name": "account_enable",
+        "disable": false
+      }, {
+        "id": "id_60443427-1eee-4c96-9fc0-1c1063cc1f4f",
+        "type": "icon",
+        "children": "<i class=\"far fa-atom\"></i>",
+        "label": "Account Icon",
+        "summary": "",
+        "name": "account_icon",
+        "disable": false
+      }, {
+        "id": "id_8180dc91-1767-405f-993d-42326744294f",
+        "type": "switch",
+        "children": true,
+        "label": "Compare Enable",
+        "summary": "",
+        "name": "compare_enable",
+        "disable": false
+      }, {
+        "id": "id_794bd20b-8b4d-497e-b225-24bdd068dd52",
+        "type": "icon",
+        "children": "<i class=\"far fa-atom\"></i>",
+        "label": "Compare Icon",
+        "summary": "",
+        "name": "compare_icon",
+        "disable": false
+      }, {
+        "id": "id_b837cdc7-7bdd-4467-919c-5942615ced99",
+        "type": "switch",
+        "children": true,
+        "label": "Wishlist Enable",
+        "summary": "",
+        "name": "wishlist_enable",
+        "disable": false
+      }, {
+        "id": "id_8a273c0b-7764-4a09-9518-0e38cb842e79",
+        "type": "icon",
+        "children": "<i class=\"far fa-atom\"></i>",
+        "label": "Wishlist Icon",
+        "summary": "",
+        "name": "wishlist_icon",
+        "disable": false
+      }, {
+        "id": "id_6115af6f-b729-49b2-b618-029781583dc8",
+        "type": "switch",
+        "children": true,
+        "label": "Cart Enable",
+        "summary": "",
+        "name": "cart_enable",
+        "disable": false
+      }, {
+        "id": "id_b5201fe1-d2e6-42a6-a814-134da5c68d96",
+        "type": "icon",
+        "children": "<i class=\"far fa-atom\"></i>",
+        "label": "Cart Icon",
+        "summary": "",
+        "name": "cart_icon",
+        "disable": false
+      }, {
+        "id": "id_ec5d1015-986e-423d-ae93-551550ca4e0e",
+        "type": "tags",
+        "children": "Color,Size",
+        "label": "Compare Options Title",
+        "summary": "",
+        "name": "compareOptionsTitle",
+        "disable": false
+      }]
+    },
+    "scss": "$container: \"[data-id='#{$uniqueId}']\";",
+    "settings": [{
+      "id": "id_b527cbd8-7c8d-4a0a-99e1-4000f6054ecc",
+      "children": [{
+        "children": false,
+        "type": "switch",
+        "label": "Background Fixed",
+        "summary": "",
+        "name": "background_fixed",
+        "id": "id_b200eaf3-3314-4877-903a-a1a71f26cd59",
+        "disable": false
+      }, {
+        "children": "color",
+        "type": "select",
+        "label": "Background Type",
+        "summary": "",
+        "name": "background_type",
+        "id": "id_afbeef07-4e05-4146-b726-04017e1baa93",
+        "disable": false,
+        "options": [{
+          "label": "Image",
+          "value": "image",
+          "id": "cbd0d91c-8837-45e9-9f04-ae75128ddee6"
+        }, {
+          "label": "Color",
+          "value": "color",
+          "id": "8bf28576-4708-48c0-ad55-a54b5cf2380f"
+        }, {
+          "label": "None",
+          "value": "none",
+          "id": "efa7ac1c-74bd-4f00-b8b3-d977a0caab94"
+        }]
+      }, {
+        "children": "",
+        "type": "image",
+        "label": "Background Image",
+        "summary": "",
+        "name": "background_image",
+        "id": "id_c04c613a-0afc-416c-adf2-712a76352b40",
+        "disable": false,
+        "deps": "section_settings.background_type === \"image\""
+      }, {
+        "children": "var(--color-dark)",
+        "type": "color",
+        "label": "Background Color",
+        "summary": "",
+        "name": "background_color",
+        "id": "id_c434bade-3074-4a83-8ea3-f757a84a706e",
+        "disable": false,
+        "deps": "section_settings.background_type === \"color\""
+      }, {
+        "children": "cover",
+        "type": "select",
+        "label": "Background Size",
+        "summary": "",
+        "name": "background_size",
+        "id": "id_ee874029-3fd3-41ff-829d-459aa468a206",
+        "disable": false,
+        "options": [{
+          "label": "Cover",
+          "value": "cover",
+          "id": "7d36a23a-33f0-4f24-983a-f19c64e44647"
+        }, {
+          "label": "Contain",
+          "value": "contain",
+          "id": "aea4b39e-e4c5-4204-931b-80ce53afd9f6"
+        }]
+      }, {
+        "children": false,
+        "type": "switch",
+        "label": "Background Overlay Enable",
+        "summary": "",
+        "name": "background_overlay_enable",
+        "id": "id_31a8d767-ad23-44ae-93c1-1af3cbddd53f",
+        "disable": false
+      }, {
+        "children": "#fff",
+        "type": "color",
+        "label": "Background Overlay Color",
+        "summary": "",
+        "name": "background_overlay_color",
+        "id": "id_9917fa37-c2f6-49d9-90a0-c568b52e68a1",
+        "disable": false
+      }, {
+        "children": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "type": "space",
+        "label": "Padding",
+        "summary": "",
+        "name": "padding",
+        "id": "id_d22bf2bb-f581-43ce-91d2-a5999dec69f7",
+        "disable": false
+      }],
+      "type": "object",
+      "label": "Section Settings",
+      "summary": "",
+      "name": "section_settings",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_cda7e8f8-4c2c-40dd-a6b1-3b239192cd5f",
+      "children": [{
+        "children": true,
+        "type": "switch",
+        "label": "Enable",
+        "summary": "",
+        "name": "enable",
+        "id": "id_9f0110c1-2f4c-414a-be9d-fc088589d08b",
+        "disable": false
+      }, {
+        "children": "https://shopify-theme-yasmina.netlify.app/img/yasmina-logo.png",
+        "type": "image",
+        "label": "Logo Image",
+        "summary": "",
+        "name": "logo_image",
+        "id": "id_a8f10605-5c5f-4b66-b876-fde5ad010a07",
+        "disable": false
+      }, {
+        "children": "Yasmina",
+        "type": "text",
+        "label": "Logo Text",
+        "summary": "",
+        "name": "logo_text",
+        "id": "id_1be82cfc-cc90-477f-89bb-b7ad12c696ad",
+        "disable": false
+      }, {
+        "children": "",
+        "type": "linkPicker",
+        "label": "Link",
+        "summary": "",
+        "name": "link",
+        "id": "id_8d402af7-5691-467c-9287-4013bce91b15",
+        "disable": false
+      }],
+      "type": "object",
+      "label": "Logo",
+      "summary": "",
+      "name": "logo",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_8dbad697-880d-47a2-826f-88b103969c4a",
+      "children": [{
+        "id": "2b1f004d-70e1-4087-aa4d-fd397d5a018f",
+        "children": [{
+          "children": "GENTLEMEN",
+          "type": "text",
+          "label": "Label",
+          "summary": "",
+          "name": "label",
+          "id": "id_a8506ca1-43a9-4296-8c8d-adec4b660b90",
+          "disable": false
+        }, {
+          "children": "",
+          "type": "linkPicker",
+          "label": "Link",
+          "summary": "",
+          "name": "link",
+          "id": "id_189a997f-fe04-4a62-8bc9-033b28a3c638",
+          "disable": false
+        }]
+      }, {
+        "id": "def9e1f1-6c3a-4214-99dd-f4b9a9714997",
+        "children": [{
+          "children": "BELLE DOLL",
+          "type": "text",
+          "label": "Label",
+          "summary": "",
+          "name": "label",
+          "id": "id_a8506ca1-43a9-4296-8c8d-adec4b660b90",
+          "disable": false
+        }, {
+          "children": "",
+          "type": "linkPicker",
+          "label": "Link",
+          "summary": "",
+          "name": "link",
+          "id": "id_189a997f-fe04-4a62-8bc9-033b28a3c638",
+          "disable": false
+        }]
+      }, {
+        "id": "eb5723f7-1734-4ae2-92b2-f65c1d3351b2",
+        "children": [{
+          "children": "AMBER.",
+          "type": "text",
+          "label": "Label",
+          "summary": "",
+          "name": "label",
+          "id": "id_a8506ca1-43a9-4296-8c8d-adec4b660b90",
+          "disable": false
+        }, {
+          "children": "",
+          "type": "linkPicker",
+          "label": "Link",
+          "summary": "",
+          "name": "link",
+          "id": "id_189a997f-fe04-4a62-8bc9-033b28a3c638",
+          "disable": false
+        }]
+      }, {
+        "id": "760d6a23-f9d9-4194-9d85-640ed16d3a80",
+        "children": [{
+          "children": "GLASSY",
+          "type": "text",
+          "label": "Label",
+          "summary": "",
+          "name": "label",
+          "id": "id_a8506ca1-43a9-4296-8c8d-adec4b660b90",
+          "disable": false
+        }, {
+          "children": "",
+          "type": "linkPicker",
+          "label": "Link",
+          "summary": "",
+          "name": "link",
+          "id": "id_189a997f-fe04-4a62-8bc9-033b28a3c638",
+          "disable": false
+        }]
+      }],
+      "type": "array",
+      "label": "Navigation",
+      "summary": "",
+      "name": "navigation",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_458fbefe-5a16-4b4d-b274-585fb8259d24",
+      "children": [{
+        "children": "Add to Cart",
+        "type": "text",
+        "label": "Add to Cart Success Text",
+        "summary": "",
+        "name": "add_to_cart_success_text",
+        "id": "id_67a343f9-d7f5-4b3f-abef-03c88abfdfca",
+        "disable": false
+      }, {
+        "children": "Add to Cart Error",
+        "type": "text",
+        "label": "Add to Cart Error Text",
+        "summary": "",
+        "name": "add_to_cart_error_text",
+        "id": "id_409de0c2-7319-4f26-a09d-d6b48640af84",
+        "disable": false
+      }, {
+        "children": "Remove From Cart",
+        "type": "text",
+        "label": "Remove From Cart Success Text",
+        "summary": "",
+        "name": "remove_from_cart_success_text",
+        "id": "id_1a0e46e5-919c-438c-80cf-e8fc3d071134",
+        "disable": false
+      }, {
+        "children": "Remove from cart error",
+        "type": "text",
+        "label": "Remove From Cart Error Text",
+        "summary": "",
+        "name": "remove_from_cart_error_text",
+        "id": "id_298a8e90-7f47-49e6-b014-c8ea3a6ae872",
+        "disable": false
+      }],
+      "type": "object",
+      "label": "Text Menu Config",
+      "summary": "",
+      "name": "text_menu_config",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_00eee446-17b8-4226-8e3e-81994103b45e",
+      "type": "switch",
+      "children": true,
+      "label": "Account Enable",
+      "summary": "",
+      "name": "account_enable",
+      "disable": false
+    }, {
+      "id": "id_8180dc91-1767-405f-993d-42326744294f",
+      "type": "switch",
+      "children": true,
+      "label": "Compare Enable",
+      "summary": "",
+      "name": "compare_enable",
+      "disable": false
+    }, {
+      "id": "id_b837cdc7-7bdd-4467-919c-5942615ced99",
+      "type": "switch",
+      "children": true,
+      "label": "Wishlist Enable",
+      "summary": "",
+      "name": "wishlist_enable",
+      "disable": false
+    }, {
+      "id": "id_6115af6f-b729-49b2-b618-029781583dc8",
+      "type": "switch",
+      "children": true,
+      "label": "Cart Enable",
+      "summary": "",
+      "name": "cart_enable",
+      "disable": false
+    }, {
+      "id": "id_b5201fe1-d2e6-42a6-a814-134da5c68d96",
+      "type": "icon",
+      "children": "<i class=\"far fa-shopping-cart\"></i>",
+      "label": "Cart Icon",
+      "summary": "",
+      "name": "cart_icon",
+      "disable": false
+    }, {
+      "id": "id_ec5d1015-986e-423d-ae93-551550ca4e0e",
+      "type": "tags",
+      "children": "",
+      "label": "Compare Options Title",
+      "summary": "",
+      "name": "compareOptionsTitle",
+      "disable": false
+    }, {
+      "id": "id_8a273c0b-7764-4a09-9518-0e38cb842e79",
+      "type": "icon",
+      "children": "<i class=\"far fa-heart\"></i>",
+      "label": "Wishlist Icon",
+      "summary": "",
+      "name": "wishlist_icon",
+      "disable": false
+    }, {
+      "id": "id_794bd20b-8b4d-497e-b225-24bdd068dd52",
+      "type": "icon",
+      "children": "<i class=\"far fa-repeat\"></i>",
+      "label": "Compare Icon",
+      "summary": "",
+      "name": "compare_icon",
+      "disable": false
+    }, {
+      "id": "id_60443427-1eee-4c96-9fc0-1c1063cc1f4f",
+      "type": "icon",
+      "children": "<i class=\"far fa-user\"></i>",
+      "label": "Account Icon",
+      "summary": "",
+      "name": "account_icon",
+      "disable": false
+    }]
+  },
+  "scope": "publish",
+  "pageTypes": ["page", "article", "collection", "product", "home", "cart", "pageNotFound", "password", "search", "login", "resetPassword", "activateAccount", "register", "account", "order", "addresses", "giftCard", "collections"],
+  "type": "default",
+  "sample": true,
+  "enable": true,
+  "userId": 1,
+  "synced": false,
+  "category": {
+    "commandId": "",
+    "name": ""
+  },
+  "modifiedDateTimestamp": 1657767068600,
+  "parentCommandId": "",
+  "changelog": {
+    "version": "1.1",
+    "versionId": "",
+    "content": ""
+  },
+  "categoryId": ""
+}

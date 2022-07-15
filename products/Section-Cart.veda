@@ -1,1 +1,291 @@
-{"id":"id_7ff874a7-7513-4bbe-bc0e-ce3772ac1964","commandId":"62c643a5c96c9867a474dd72","label":"Cart","image":{"src":"https://app.vedabuilder.com/api/v1/command/medias/files/2022/07/pkztpvsuib.png","width":350,"height":306},"addonIds":[],"megaMenuId":"","currentVersion":"1.0","versionId":"bb19f703-31d5-47a4-a6ae-878e40db4f64","data":{"js":"\r\nconst { debounce } = veda.utils;\r\nconst { html } = veda.utils.csr;\r\nfunction customDebounceCart(fn, todo, timeout = 300) {\r\n  let timeoutId = -1;\r\n  return function (...args) {\r\n    todo.apply(this, args);\r\n    clearTimeout(timeoutId);\r\n    timeoutId = setTimeout(() => {\r\n      fn.apply(this, args);\r\n    }, timeout);\r\n  };\r\n}\r\nfunction onChangeQuantity(event, id) {\r\n  const currentEl = event.target;\r\n  const quantity = currentEl.value;\r\n  //TODO: Cart Shopify\r\n  if (quantity == 0) {\r\n    veda.plugins.cart.removeCart(Number(id));\r\n  } else {\r\n    veda.plugins.cart.updateCart(Number(id), Number(quantity));\r\n  }\r\n  // if (quantity == 0) {\r\n  //   veda.plugins.cart.removeCart(id);\r\n  // } else {\r\n  //   veda.plugins.cart.updateCart(id, quantity);\r\n  // }\r\n}\r\nfunction handleClickChangeQuantity(event, id) {\r\n  const currentEl = event.target;\r\n  const quantityEl = currentEl.closest('.veda-counter').querySelector('.veda-counter__input');\r\n  //TODO: Cart Shopify\r\n  if (quantityEl.value == 0) {\r\n    veda.plugins.cart.removeCart(Number(id));\r\n  } else {\r\n    veda.plugins.cart.updateCart(Number(id), Number(quantityEl.value));\r\n  }\r\n  // if (quantityEl.value == 0) {\r\n  //   veda.plugins.cart.removeCart(id);\r\n  // } else {\r\n  //   veda.plugins.cart.updateCart(id, quantityEl.value);\r\n  // }\r\n}\r\nfunction handleClickIncrement(event) {\r\n  const currentEl = event.target;\r\n  const quantityEl = currentEl.closest('.veda-counter').querySelector('.veda-counter__input');\r\n  quantityEl.value = Number(quantityEl.value) + 1;\r\n}\r\nfunction handleClickDecrement(event) {\r\n  const currentEl = event.target;\r\n  const quantityEl = currentEl.closest('.veda-counter').querySelector('.veda-counter__input');\r\n  if (Number(quantityEl.value) > 0) {\r\n    quantityEl.value = Number(quantityEl.value) - 1;\r\n  }\r\n}\r\nfunction getImage(image) {\r\n  if (typeof image === \"string\") {\r\n    return image;\r\n  } else {\r\n    return image.url;\r\n  }\r\n}\r\nveda.plugins.cart.customCart({\r\n  renderCart: (product) => {\r\n    console.log('product', product);\r\n    return html`\r\n        <tr class=\"fz:15px bd:none bdb:1px_solid_color-gray2\">\r\n          <td class=\"bd:none pt:30px pb:30px d:flex pl:0px!\">\r\n            <a href=\"#\" class=\"veda-image-cover d:block w:140px bd:none! h:132px\" css=\"--aspect-ratio: 4/4\">\r\n              <img src=\"${getImage(product.featured_image)}\" alt=\"product-card\"></img>\r\n              </a>\r\n              <div class=\"pl:20px c:color-primary\">\r\n                <div class=\"c:color-gray9 mb:10px fw:500 fz:15px\">${product.title}</div>\r\n                <div class=\"c:color-gray4 mb:10px fw:400 fz:15px\">${product.vendor}</div>\r\n                ${product.options_with_values?.[1] ? html`<div class=\"mb:10px c:color-gray6 fz:15px fw:500\">Color: ${product.options_with_values?.[1]?.selected_value}</div>` : \"\"}\r\n                <a class=\"td:none bd:none c:color-primary fz:13px fw:400 cur:pointer\" onClick=${() => veda.plugins.cart.removeCart(Number(product.id))}>Remove</a>\r\n              </div>\r\n            </td>\r\n            <td class=\" bd:none va:middle!\">\r\n              <div class=\"c:color-gray9 fw:400 fz:20px\">$${product.price}.00</div>\r\n            </td>\r\n            <td class=\" bd:none va:middle!\">\r\n              <div data-id=\"${product.id}\" class=\"veda-counter d:flex w:108px bd:1px_solid_color-gray3\">\r\n                <div class=\"veda-counter__decrement c:color-gray9 w:30px h:40px bd:none o:none bgc:transparent d:flex ai:center jc:flex-start cur:pointer bgc:transparent|h! c:color-gray9|h! ta:center\" onClick=${customDebounceCart(event => handleClickChangeQuantity(event, product.id), event => handleClickDecrement(event))}>\r\n                  <i class=\"fal fa-minus fz:13px w:100% h:100% lh:40px\"></i>\r\n                </div>\r\n                <input class=\"veda-counter__input w:48px! h:40px p:0! bd:none! o:none ta:center fz:15px fw:500 c:color-gray9\" data-id=\"${product.id}\" type=\"number\" data-button=\"disabled\" onInPut=${debounce(event => onChangeQuantity(event, product.id))} value=${product.quantity} />\r\n                <div class=\"veda-counter__increment c:color-gray9 w:30px h:40px bd:none o:none bgc:transparent d:flex ai:center jc:flex-end bgc:transparent|h! cur:pointer c:color-gray9|h! ta:center\" onClick=${customDebounceCart(event => handleClickChangeQuantity(event, product.id), event => handleClickIncrement(event))}>\r\n                  <i class=\"fal fa-plus fz:13px w:100% h:100% lh:40px\"></i>\r\n                </div>\r\n              </div>\r\n            </td>\r\n            <td class=\" bd:none va:middle!\">\r\n              <p class=\"card-cart__total fz:20px fw:500 c:color-gray9\">$${product.price * product.quantity}.00</p>\r\n            </td>\r\n          </tr>`;\r\n  },\r\n});\r\nconst cartWrapper = document.querySelector('.card-cart__tbody');\r\nveda.plugins.cart.subscribe(() => veda.plugins.cart.renderCart(cartWrapper))\r\nveda.plugins.cart.renderCart(cartWrapper);\r\n\r\n\r\n\r\n","liquid":"{% liquid\r\n  if section_settings.background_fixed assign backgroundFixed = 'fixed' else assign backgroundFixed = 'scroll' endif\r\n  if section_settings.background_type == 'color' assign backgroundColor = 'background-color: ' | append: section_settings.background_color | append: ';' else assign backgroundColor = '' endif\r\n  if section_settings.background_type == 'image' assign backgroundImage = 'background-image: url(' | append: section_settings.background_image | append:\r\n  ');background-attachment: ' | append: backgroundFixed | append: ';background-size: ' | append: section_settings.background_size | append: ';' else assign backgroundImage = '' endif\r\n  assign sectionPadding = 'padding-top: ' | append: section_settings.padding.top | append: 'px;padding-right: ' | append: section_settings.padding.right | append: 'px;padding-bottom: ' | append: section_settings.padding.bottom | append: 'px;padding-left: ' | append: section_settings.padding.left | append: 'px;'\r\n%}\r\n\r\n\r\n<section data-id=\"{{uniqueId}}\" class=\"\" css=\"{{ backgroundColor }}{{ backgroundImage }}{{ sectionPadding }}\">\r\n  {% if section_settings.background_overlay_enable %}\r\n    <div class=\"pos:absolute ins:0 z:-1\" css=\"background-color: {{ section_settings.background_overlay_color }}\"></div>\r\n  {% endif %}\r\n  <div class=\"container\">\r\n    <div class=\"row jc:center\">\r\n      <div class=\"row row-cols-lg-{{ content.column.lg }} row-cols-md-{{ content.column.md }} row-cols-sm-{{ content.column.sm }} row-cols-{{ content.column.xs }}\">\r\n        <div class=\"col d:flex fld:column ai:center ov:auto\" >\r\n          <div class=\"w:100%\">\r\n            <table class=\"bdcl:collapse mt:20px miw:550px w:100%\">\r\n              <thead>\r\n                <tr>\r\n                  <th class=\"pb:10px bdb:1px_solid_color-gray2 fz:15px fw:500 c:color-gray9 bd:none ta:left\" style=\"width:400px;font-size: 15px;\">Product</th>\r\n                  <th class=\"pb:10px bdb:1px_solid_color-gray2 fz:15px fw:500 c:color-gray9 bd:none ta:left\" style=\"width:200px;font-size: 15px;\">Price</th>\r\n                  <th class=\"pb:10px bdb:1px_solid_color-gray2 fz:15px fw:500 c:color-gray9 bd:none ta:left\" style=\"width:280px;font-size: 15px;\">Quantity</th>\r\n                  <th class=\"pb:10px bdb:1px_solid_color-gray2 fz:15px fw:500 c:color-gray9 bd:none ta:left\" style=\"width: 200px;font-size: 15px;\">Total</th>\r\n                </tr>\r\n              </thead>\r\n              <tbody class=\"card-cart__tbody\">\r\n                \r\n              </tbody>\r\n\r\n            </table>\r\n          </div>\r\n\r\n\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n","schema":{"settings":[],"blocks":[{"id":"id_c7328e5c-970a-4e06-9e5e-007b1a7e5ebf","children":[{"children":false,"type":"switch","label":"Background Fixed","summary":"","name":"background_fixed","id":"id_502a9706-af87-44c6-9d18-9d6cec93af3b","disable":false},{"children":"none","type":"select","label":"Background Type","summary":"","name":"background_type","id":"id_b17d7f92-6942-444b-b686-4ad18fffb48b","disable":false,"options":[{"label":"Image","value":"image","id":"76c39830-1ead-4436-a2b8-a0986ffd566d"},{"label":"Color","value":"color","id":"d3c05df4-2126-4323-a974-ca33f1bade3d"},{"label":"None","value":"none","id":"5c731f31-755c-4924-8709-c3e8dd92df30"}]},{"children":"","type":"image","label":"Background Image","summary":"","name":"background_image","id":"id_816db89f-acab-425c-9f4e-b019d5fd6c9c","disable":false,"deps":"section_settings.background_type === \"image\""},{"children":"#fff","type":"color","label":"Background Color","summary":"","name":"background_color","id":"id_18e90617-43d3-4382-934f-ae299a5984bf","disable":false,"deps":"section_settings.background_type === \"color\""},{"children":"cover","type":"select","label":"Background Size","summary":"","name":"background_size","id":"id_951f288e-ef46-4111-82b7-45e62c73ce32","disable":false,"options":[{"label":"Cover","value":"cover","id":"f6cbd5f4-37f9-404b-9f08-f125453bd248"},{"label":"Contain","value":"contain","id":"2370a40e-2216-40fc-8aa7-7596b43222ff"}]},{"children":false,"type":"switch","label":"Background Overlay Enable","summary":"","name":"background_overlay_enable","id":"id_1a2b592e-ca81-4834-b998-b60709fe9d0f","disable":false},{"children":"#fff","type":"color","label":"Background Overlay Color","summary":"","name":"background_overlay_color","id":"id_0fd13a21-7f33-4dca-8ded-427cdd493013","disable":false},{"children":{"left":0},"type":"space","label":"Padding","summary":"","name":"padding","id":"id_be327b0d-2fc1-4358-8ad1-648eb0a96036","disable":false}],"type":"object","label":"Section Settings","summary":"","name":"section_settings","open":false,"drawer":false,"disable":false},{"id":"id_129d4e2c-983f-4092-b06c-cfd9506b6b19","children":[{"children":{"lg":1,"md":1,"sm":1,"xs":1},"type":"responsive","label":"Column","summary":"","name":"column","id":"id_7efbeefa-7da5-4d73-bd4b-c2ad2d23dd92","disable":false,"max":12,"min":1}],"type":"object","label":"Content","summary":"","name":"content","open":false,"drawer":false,"disable":false}]},"scss":"$container: \"[data-id='#{$uniqueId}']\";","settings":[{"id":"id_c7328e5c-970a-4e06-9e5e-007b1a7e5ebf","children":[{"children":false,"type":"switch","label":"Background Fixed","summary":"","name":"background_fixed","id":"id_502a9706-af87-44c6-9d18-9d6cec93af3b","disable":false},{"children":"none","type":"select","label":"Background Type","summary":"","name":"background_type","id":"id_b17d7f92-6942-444b-b686-4ad18fffb48b","disable":false,"options":[{"label":"Image","value":"image","id":"76c39830-1ead-4436-a2b8-a0986ffd566d"},{"label":"Color","value":"color","id":"d3c05df4-2126-4323-a974-ca33f1bade3d"},{"label":"None","value":"none","id":"5c731f31-755c-4924-8709-c3e8dd92df30"}]},{"children":"","type":"image","label":"Background Image","summary":"","name":"background_image","id":"id_816db89f-acab-425c-9f4e-b019d5fd6c9c","disable":false,"deps":"section_settings.background_type === \"image\""},{"children":"#fff","type":"color","label":"Background Color","summary":"","name":"background_color","id":"id_18e90617-43d3-4382-934f-ae299a5984bf","disable":false,"deps":"section_settings.background_type === \"color\""},{"children":"cover","type":"select","label":"Background Size","summary":"","name":"background_size","id":"id_951f288e-ef46-4111-82b7-45e62c73ce32","disable":false,"options":[{"label":"Cover","value":"cover","id":"f6cbd5f4-37f9-404b-9f08-f125453bd248"},{"label":"Contain","value":"contain","id":"2370a40e-2216-40fc-8aa7-7596b43222ff"}]},{"children":false,"type":"switch","label":"Background Overlay Enable","summary":"","name":"background_overlay_enable","id":"id_1a2b592e-ca81-4834-b998-b60709fe9d0f","disable":false},{"children":"#fff","type":"color","label":"Background Overlay Color","summary":"","name":"background_overlay_color","id":"id_0fd13a21-7f33-4dca-8ded-427cdd493013","disable":false},{"children":{"left":0,"bottom":50},"type":"space","label":"Padding","summary":"","name":"padding","id":"id_be327b0d-2fc1-4358-8ad1-648eb0a96036","disable":false}],"type":"object","label":"Section Settings","summary":"","name":"section_settings","open":false,"drawer":false,"disable":false},{"id":"id_129d4e2c-983f-4092-b06c-cfd9506b6b19","children":[{"children":{"lg":1,"md":1,"sm":1,"xs":1},"type":"responsive","label":"Column","summary":"","name":"column","id":"id_7efbeefa-7da5-4d73-bd4b-c2ad2d23dd92","disable":false,"max":12,"min":1}],"type":"object","label":"Content","summary":"","name":"content","open":false,"drawer":false,"disable":false}]},"scope":"private","pageTypes":["product","cart"],"type":"default","sample":true,"enable":true,"userId":1,"synced":false,"category":{"commandId":"62c64346c96c9867a474dd70","name":"cart"},"changelog":{"content":"","version":"1.0","versionId":""}}
+{
+  "id": "id_7ff874a7-7513-4bbe-bc0e-ce3772ac1964",
+  "commandId": "62c643a5c96c9867a474dd72",
+  "label": "Cart",
+  "image": {
+    "src": "https://app.vedabuilder.com/api/v1/command/medias/files/2022/07/pkztpvsuib.png",
+    "width": 350,
+    "height": 306
+  },
+  "addonIds": [],
+  "megaMenuId": "",
+  "currentVersion": "1.0",
+  "versionId": "bb19f703-31d5-47a4-a6ae-878e40db4f64",
+  "data": {
+    "js": "\r\nconst { debounce } = veda.utils;\r\nconst { html } = veda.utils.csr;\r\nfunction customDebounceCart(fn, todo, timeout = 300) {\r\n  let timeoutId = -1;\r\n  return function (...args) {\r\n    todo.apply(this, args);\r\n    clearTimeout(timeoutId);\r\n    timeoutId = setTimeout(() => {\r\n      fn.apply(this, args);\r\n    }, timeout);\r\n  };\r\n}\r\nfunction onChangeQuantity(event, id) {\r\n  const currentEl = event.target;\r\n  const quantity = currentEl.value;\r\n  //TODO: Cart Shopify\r\n  if (quantity == 0) {\r\n    veda.plugins.cart.removeCart(Number(id));\r\n  } else {\r\n    veda.plugins.cart.updateCart(Number(id), Number(quantity));\r\n  }\r\n  // if (quantity == 0) {\r\n  //   veda.plugins.cart.removeCart(id);\r\n  // } else {\r\n  //   veda.plugins.cart.updateCart(id, quantity);\r\n  // }\r\n}\r\nfunction handleClickChangeQuantity(event, id) {\r\n  const currentEl = event.target;\r\n  const quantityEl = currentEl.closest('.veda-counter').querySelector('.veda-counter__input');\r\n  //TODO: Cart Shopify\r\n  if (quantityEl.value == 0) {\r\n    veda.plugins.cart.removeCart(Number(id));\r\n  } else {\r\n    veda.plugins.cart.updateCart(Number(id), Number(quantityEl.value));\r\n  }\r\n  // if (quantityEl.value == 0) {\r\n  //   veda.plugins.cart.removeCart(id);\r\n  // } else {\r\n  //   veda.plugins.cart.updateCart(id, quantityEl.value);\r\n  // }\r\n}\r\nfunction handleClickIncrement(event) {\r\n  const currentEl = event.target;\r\n  const quantityEl = currentEl.closest('.veda-counter').querySelector('.veda-counter__input');\r\n  quantityEl.value = Number(quantityEl.value) + 1;\r\n}\r\nfunction handleClickDecrement(event) {\r\n  const currentEl = event.target;\r\n  const quantityEl = currentEl.closest('.veda-counter').querySelector('.veda-counter__input');\r\n  if (Number(quantityEl.value) > 0) {\r\n    quantityEl.value = Number(quantityEl.value) - 1;\r\n  }\r\n}\r\nfunction getImage(image) {\r\n  if (typeof image === \"string\") {\r\n    return image;\r\n  } else {\r\n    return image.url;\r\n  }\r\n}\r\nveda.plugins.cart.customCart({\r\n  renderCart: (product) => {\r\n    console.log('product', product);\r\n    return html`\r\n        <tr class=\"fz:15px bd:none bdb:1px_solid_color-gray2\">\r\n          <td class=\"bd:none pt:30px pb:30px d:flex pl:0px!\">\r\n            <a href=\"#\" class=\"veda-image-cover d:block w:140px bd:none! h:132px\" css=\"--aspect-ratio: 4/4\">\r\n              <img src=\"${getImage(product.featured_image)}\" alt=\"product-card\"></img>\r\n              </a>\r\n              <div class=\"pl:20px c:color-primary\">\r\n                <div class=\"c:color-gray9 mb:10px fw:500 fz:15px\">${product.title}</div>\r\n                <div class=\"c:color-gray4 mb:10px fw:400 fz:15px\">${product.vendor}</div>\r\n                ${product.options_with_values?.[1] ? html`<div class=\"mb:10px c:color-gray6 fz:15px fw:500\">Color: ${product.options_with_values?.[1]?.selected_value}</div>` : \"\"}\r\n                <a class=\"td:none bd:none c:color-primary fz:13px fw:400 cur:pointer\" onClick=${() => veda.plugins.cart.removeCart(Number(product.id))}>Remove</a>\r\n              </div>\r\n            </td>\r\n            <td class=\" bd:none va:middle!\">\r\n              <div class=\"c:color-gray9 fw:400 fz:20px\">$${product.price}.00</div>\r\n            </td>\r\n            <td class=\" bd:none va:middle!\">\r\n              <div data-id=\"${product.id}\" class=\"veda-counter d:flex w:108px bd:1px_solid_color-gray3\">\r\n                <div class=\"veda-counter__decrement c:color-gray9 w:30px h:40px bd:none o:none bgc:transparent d:flex ai:center jc:flex-start cur:pointer bgc:transparent|h! c:color-gray9|h! ta:center\" onClick=${customDebounceCart(event => handleClickChangeQuantity(event, product.id), event => handleClickDecrement(event))}>\r\n                  <i class=\"fal fa-minus fz:13px w:100% h:100% lh:40px\"></i>\r\n                </div>\r\n                <input class=\"veda-counter__input w:48px! h:40px p:0! bd:none! o:none ta:center fz:15px fw:500 c:color-gray9\" data-id=\"${product.id}\" type=\"number\" data-button=\"disabled\" onInPut=${debounce(event => onChangeQuantity(event, product.id))} value=${product.quantity} />\r\n                <div class=\"veda-counter__increment c:color-gray9 w:30px h:40px bd:none o:none bgc:transparent d:flex ai:center jc:flex-end bgc:transparent|h! cur:pointer c:color-gray9|h! ta:center\" onClick=${customDebounceCart(event => handleClickChangeQuantity(event, product.id), event => handleClickIncrement(event))}>\r\n                  <i class=\"fal fa-plus fz:13px w:100% h:100% lh:40px\"></i>\r\n                </div>\r\n              </div>\r\n            </td>\r\n            <td class=\" bd:none va:middle!\">\r\n              <p class=\"card-cart__total fz:20px fw:500 c:color-gray9\">$${product.price * product.quantity}.00</p>\r\n            </td>\r\n          </tr>`;\r\n  },\r\n});\r\nconst cartWrapper = document.querySelector('.card-cart__tbody');\r\nveda.plugins.cart.subscribe(() => veda.plugins.cart.renderCart(cartWrapper))\r\nveda.plugins.cart.renderCart(cartWrapper);\r\n\r\n\r\n\r\n",
+    "liquid": "{% liquid\r\n  if section_settings.background_fixed assign backgroundFixed = 'fixed' else assign backgroundFixed = 'scroll' endif\r\n  if section_settings.background_type == 'color' assign backgroundColor = 'background-color: ' | append: section_settings.background_color | append: ';' else assign backgroundColor = '' endif\r\n  if section_settings.background_type == 'image' assign backgroundImage = 'background-image: url(' | append: section_settings.background_image | append:\r\n  ');background-attachment: ' | append: backgroundFixed | append: ';background-size: ' | append: section_settings.background_size | append: ';' else assign backgroundImage = '' endif\r\n  assign sectionPadding = 'padding-top: ' | append: section_settings.padding.top | append: 'px;padding-right: ' | append: section_settings.padding.right | append: 'px;padding-bottom: ' | append: section_settings.padding.bottom | append: 'px;padding-left: ' | append: section_settings.padding.left | append: 'px;'\r\n%}\r\n\r\n\r\n<section data-id=\"{{uniqueId}}\" class=\"\" css=\"{{ backgroundColor }}{{ backgroundImage }}{{ sectionPadding }}\">\r\n  {% if section_settings.background_overlay_enable %}\r\n    <div class=\"pos:absolute ins:0 z:-1\" css=\"background-color: {{ section_settings.background_overlay_color }}\"></div>\r\n  {% endif %}\r\n  <div class=\"container\">\r\n    <div class=\"row jc:center\">\r\n      <div class=\"row row-cols-lg-{{ content.column.lg }} row-cols-md-{{ content.column.md }} row-cols-sm-{{ content.column.sm }} row-cols-{{ content.column.xs }}\">\r\n        <div class=\"col d:flex fld:column ai:center ov:auto\" >\r\n          <div class=\"w:100%\">\r\n            <table class=\"bdcl:collapse mt:20px miw:550px w:100%\">\r\n              <thead>\r\n                <tr>\r\n                  <th class=\"pb:10px bdb:1px_solid_color-gray2 fz:15px fw:500 c:color-gray9 bd:none ta:left\" style=\"width:400px;font-size: 15px;\">Product</th>\r\n                  <th class=\"pb:10px bdb:1px_solid_color-gray2 fz:15px fw:500 c:color-gray9 bd:none ta:left\" style=\"width:200px;font-size: 15px;\">Price</th>\r\n                  <th class=\"pb:10px bdb:1px_solid_color-gray2 fz:15px fw:500 c:color-gray9 bd:none ta:left\" style=\"width:280px;font-size: 15px;\">Quantity</th>\r\n                  <th class=\"pb:10px bdb:1px_solid_color-gray2 fz:15px fw:500 c:color-gray9 bd:none ta:left\" style=\"width: 200px;font-size: 15px;\">Total</th>\r\n                </tr>\r\n              </thead>\r\n              <tbody class=\"card-cart__tbody\">\r\n                \r\n              </tbody>\r\n\r\n            </table>\r\n          </div>\r\n\r\n\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n",
+    "schema": {
+      "settings": [],
+      "blocks": [{
+        "id": "id_c7328e5c-970a-4e06-9e5e-007b1a7e5ebf",
+        "children": [{
+          "children": false,
+          "type": "switch",
+          "label": "Background Fixed",
+          "summary": "",
+          "name": "background_fixed",
+          "id": "id_502a9706-af87-44c6-9d18-9d6cec93af3b",
+          "disable": false
+        }, {
+          "children": "none",
+          "type": "select",
+          "label": "Background Type",
+          "summary": "",
+          "name": "background_type",
+          "id": "id_b17d7f92-6942-444b-b686-4ad18fffb48b",
+          "disable": false,
+          "options": [{
+            "label": "Image",
+            "value": "image",
+            "id": "76c39830-1ead-4436-a2b8-a0986ffd566d"
+          }, {
+            "label": "Color",
+            "value": "color",
+            "id": "d3c05df4-2126-4323-a974-ca33f1bade3d"
+          }, {
+            "label": "None",
+            "value": "none",
+            "id": "5c731f31-755c-4924-8709-c3e8dd92df30"
+          }]
+        }, {
+          "children": "",
+          "type": "image",
+          "label": "Background Image",
+          "summary": "",
+          "name": "background_image",
+          "id": "id_816db89f-acab-425c-9f4e-b019d5fd6c9c",
+          "disable": false,
+          "deps": "section_settings.background_type === \"image\""
+        }, {
+          "children": "#fff",
+          "type": "color",
+          "label": "Background Color",
+          "summary": "",
+          "name": "background_color",
+          "id": "id_18e90617-43d3-4382-934f-ae299a5984bf",
+          "disable": false,
+          "deps": "section_settings.background_type === \"color\""
+        }, {
+          "children": "cover",
+          "type": "select",
+          "label": "Background Size",
+          "summary": "",
+          "name": "background_size",
+          "id": "id_951f288e-ef46-4111-82b7-45e62c73ce32",
+          "disable": false,
+          "options": [{
+            "label": "Cover",
+            "value": "cover",
+            "id": "f6cbd5f4-37f9-404b-9f08-f125453bd248"
+          }, {
+            "label": "Contain",
+            "value": "contain",
+            "id": "2370a40e-2216-40fc-8aa7-7596b43222ff"
+          }]
+        }, {
+          "children": false,
+          "type": "switch",
+          "label": "Background Overlay Enable",
+          "summary": "",
+          "name": "background_overlay_enable",
+          "id": "id_1a2b592e-ca81-4834-b998-b60709fe9d0f",
+          "disable": false
+        }, {
+          "children": "#fff",
+          "type": "color",
+          "label": "Background Overlay Color",
+          "summary": "",
+          "name": "background_overlay_color",
+          "id": "id_0fd13a21-7f33-4dca-8ded-427cdd493013",
+          "disable": false
+        }, {
+          "children": {
+            "left": 0
+          },
+          "type": "space",
+          "label": "Padding",
+          "summary": "",
+          "name": "padding",
+          "id": "id_be327b0d-2fc1-4358-8ad1-648eb0a96036",
+          "disable": false
+        }],
+        "type": "object",
+        "label": "Section Settings",
+        "summary": "",
+        "name": "section_settings",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }, {
+        "id": "id_129d4e2c-983f-4092-b06c-cfd9506b6b19",
+        "children": [{
+          "children": {
+            "lg": 1,
+            "md": 1,
+            "sm": 1,
+            "xs": 1
+          },
+          "type": "responsive",
+          "label": "Column",
+          "summary": "",
+          "name": "column",
+          "id": "id_7efbeefa-7da5-4d73-bd4b-c2ad2d23dd92",
+          "disable": false,
+          "max": 12,
+          "min": 1
+        }],
+        "type": "object",
+        "label": "Content",
+        "summary": "",
+        "name": "content",
+        "open": false,
+        "drawer": false,
+        "disable": false
+      }]
+    },
+    "scss": "$container: \"[data-id='#{$uniqueId}']\";",
+    "settings": [{
+      "id": "id_c7328e5c-970a-4e06-9e5e-007b1a7e5ebf",
+      "children": [{
+        "children": false,
+        "type": "switch",
+        "label": "Background Fixed",
+        "summary": "",
+        "name": "background_fixed",
+        "id": "id_502a9706-af87-44c6-9d18-9d6cec93af3b",
+        "disable": false
+      }, {
+        "children": "none",
+        "type": "select",
+        "label": "Background Type",
+        "summary": "",
+        "name": "background_type",
+        "id": "id_b17d7f92-6942-444b-b686-4ad18fffb48b",
+        "disable": false,
+        "options": [{
+          "label": "Image",
+          "value": "image",
+          "id": "76c39830-1ead-4436-a2b8-a0986ffd566d"
+        }, {
+          "label": "Color",
+          "value": "color",
+          "id": "d3c05df4-2126-4323-a974-ca33f1bade3d"
+        }, {
+          "label": "None",
+          "value": "none",
+          "id": "5c731f31-755c-4924-8709-c3e8dd92df30"
+        }]
+      }, {
+        "children": "",
+        "type": "image",
+        "label": "Background Image",
+        "summary": "",
+        "name": "background_image",
+        "id": "id_816db89f-acab-425c-9f4e-b019d5fd6c9c",
+        "disable": false,
+        "deps": "section_settings.background_type === \"image\""
+      }, {
+        "children": "#fff",
+        "type": "color",
+        "label": "Background Color",
+        "summary": "",
+        "name": "background_color",
+        "id": "id_18e90617-43d3-4382-934f-ae299a5984bf",
+        "disable": false,
+        "deps": "section_settings.background_type === \"color\""
+      }, {
+        "children": "cover",
+        "type": "select",
+        "label": "Background Size",
+        "summary": "",
+        "name": "background_size",
+        "id": "id_951f288e-ef46-4111-82b7-45e62c73ce32",
+        "disable": false,
+        "options": [{
+          "label": "Cover",
+          "value": "cover",
+          "id": "f6cbd5f4-37f9-404b-9f08-f125453bd248"
+        }, {
+          "label": "Contain",
+          "value": "contain",
+          "id": "2370a40e-2216-40fc-8aa7-7596b43222ff"
+        }]
+      }, {
+        "children": false,
+        "type": "switch",
+        "label": "Background Overlay Enable",
+        "summary": "",
+        "name": "background_overlay_enable",
+        "id": "id_1a2b592e-ca81-4834-b998-b60709fe9d0f",
+        "disable": false
+      }, {
+        "children": "#fff",
+        "type": "color",
+        "label": "Background Overlay Color",
+        "summary": "",
+        "name": "background_overlay_color",
+        "id": "id_0fd13a21-7f33-4dca-8ded-427cdd493013",
+        "disable": false
+      }, {
+        "children": {
+          "left": 0,
+          "bottom": 50
+        },
+        "type": "space",
+        "label": "Padding",
+        "summary": "",
+        "name": "padding",
+        "id": "id_be327b0d-2fc1-4358-8ad1-648eb0a96036",
+        "disable": false
+      }],
+      "type": "object",
+      "label": "Section Settings",
+      "summary": "",
+      "name": "section_settings",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }, {
+      "id": "id_129d4e2c-983f-4092-b06c-cfd9506b6b19",
+      "children": [{
+        "children": {
+          "lg": 1,
+          "md": 1,
+          "sm": 1,
+          "xs": 1
+        },
+        "type": "responsive",
+        "label": "Column",
+        "summary": "",
+        "name": "column",
+        "id": "id_7efbeefa-7da5-4d73-bd4b-c2ad2d23dd92",
+        "disable": false,
+        "max": 12,
+        "min": 1
+      }],
+      "type": "object",
+      "label": "Content",
+      "summary": "",
+      "name": "content",
+      "open": false,
+      "drawer": false,
+      "disable": false
+    }]
+  },
+  "scope": "private",
+  "pageTypes": ["product", "cart"],
+  "type": "default",
+  "sample": true,
+  "enable": true,
+  "userId": 1,
+  "synced": false,
+  "category": {
+    "commandId": "",
+    "name": ""
+  },
+  "changelog": {
+    "content": "",
+    "version": "",
+    "versionId": ""
+  }
+}
